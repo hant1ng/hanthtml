@@ -1,2 +1,3 @@
-DIMAIN-SUFFIX,adobestats.io,DIRECT
-DIMAIN-SUFFIX,adobe.io,DIRECT
+#阻止 adobe 验证
+DIMAIN-SUFFIX,adobestats.io
+DIMAIN-SUFFIX,adobe.io
