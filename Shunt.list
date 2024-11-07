@@ -1,1 +1,4 @@
+# NAME: Surge 分流
 
+DIMAIN-SUFFIX,adobestats.io,DIRECT
+DIMAIN-SUFFIX,adobe.io,DIRECT
