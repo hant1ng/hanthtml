@@ -1,3 +1,10 @@
-# 阻止 adobe 验证
+# NAME: shunt
+# AUTHOR: hant
+# REPO: https://github.com/getsomecat/GetSomeCats
+# UPDATED: 2023-03-25 14:46:30
+# DOMAIN-SUFFIX: 2
+# TOTAL: 2
+
+
 DIMAIN-SUFFIX,adobestats.io
 DIMAIN-SUFFIX,adobe.io
