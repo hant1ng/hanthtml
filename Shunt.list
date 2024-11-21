@@ -1,4 +1,4 @@
-# NAME: shunt
+# NAME: hantnet
 # AUTHOR: hant
 # REPO: https://github.com/getsomecat/GetSomeCats
 # UPDATED: 2023-03-25 14:46:30
@@ -6,5 +6,10 @@
 # TOTAL: 2
 
 
-DOMAIN-SUFFIX,adobestats.io
-DOMAIN-SUFFIX,adobe.io
+# DOMAIN-SUFFIX,adobestats.io
+# DOMAIN-SUFFIX,adobe.io
+
+# 需要代理
+DOMAIN-SUFFIX,siwazyw.tv
+DOMAIN-SUFFIX,heimuer.tv
+DOMAIN-SUFFIX,fuliba2023.net
