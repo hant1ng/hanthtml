@@ -1,19 +1,20 @@
 # NAME: hantnet
 # AUTHOR: hant
-# REPO: https://github.com/getsomecat/GetSomeCats
-# UPDATED: 2023-03-25 14:46:30
-# DOMAIN-SUFFIX: 2
-# TOTAL: 2
+# REPO: 
+# UPDATED: 
+# DOMAIN-SUFFIX: 
+# TOTAL: 
 
-
-# DOMAIN-SUFFIX,adobestats.io
-# DOMAIN-SUFFIX,adobe.io
-
-# 需要代理
+# 影视站
 DOMAIN-SUFFIX,siwazyw.tv
+DOMAIN-SUFFIX,4k-av.com
 DOMAIN-SUFFIX,heimuer.tv
 DOMAIN-SUFFIX,fuliba2023.net
-DOMAIN-SUFFIX,limbopro.com
+
+# 博彩
 DOMAIN-SUFFIX,sss620084.com
+
+# 其他
+DOMAIN-SUFFIX,limbopro.com
 
 
