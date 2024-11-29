@@ -6,13 +6,26 @@
 # TOTAL: 
 
 # 影视站
-DOMAIN-SUFFIX,siwazyw.tv
 DOMAIN-SUFFIX,4k-av.com
 DOMAIN-SUFFIX,heimuer.tv
-DOMAIN-SUFFIX,fuliba2023.net
+
+# A 站
+DOMAIN-SUFFIX,slapibf.com
+DOMAIN-SUFFIX,apittzy.com
+DOMAIN-SUFFIX,aosikazy.com
+DOMAIN-SUFFIX,91md.me
+DOMAIN-SUFFIX,api.yikanapi.com
+DOMAIN-SUFFIX,fhapi9.com
+DOMAIN-SUFFIX,siwazyw.tv
+DOMAIN-SUFFIX,shayuapi.com
+DOMAIN-SUFFIX,zy018.com
+
+
+
 
 # 博彩
 DOMAIN-SUFFIX,sss620084.com
 
 # 其他
 DOMAIN-SUFFIX,limbopro.com
+DOMAIN-SUFFIX,fuliba2023.net
