@@ -1,7 +1,15 @@
 # 影视站
 DOMAIN-SUFFIX,4k-av.com
 DOMAIN-SUFFIX,heimuer.tv
+DOMAIN-SUFFIX,360zy.com
+DOMAIN-SUFFIX,mdzyapi.com
+DOMAIN-SUFFIX,fuju2024.cc
+DOMAIN-SUFFIX,image.jingyingimage.com
+DOMAIN-SUFFIX,pic.okzy.xyz
+DOMAIN-SUFFIX,zpsps.com
 
+
+# A站
 DOMAIN-SUFFIX,slapibf.com
 DOMAIN-SUFFIX,apittzy.com
 DOMAIN-SUFFIX,aosikazy.com
@@ -11,6 +19,14 @@ DOMAIN-SUFFIX,fhapi9.com
 DOMAIN-SUFFIX,siwazyw.tv
 DOMAIN-SUFFIX,shayuapi.com
 DOMAIN-SUFFIX,zy018.com
+DOMAIN-SUFFIX,apiyutu.com
+DOMAIN-SUFFIX,cctv123456.com
+DOMAIN-SUFFIX,apilj.com
+DOMAIN-SUFFIX,naixxzy.com
+DOMAIN-SUFFIX,jingpinx.com
+DOMAIN-SUFFIX,caoliuzyw.com
+DOMAIN-SUFFIX,apilsbzy1.com
+
 
 # 博彩
 DOMAIN-SUFFIX,sss620084.com
