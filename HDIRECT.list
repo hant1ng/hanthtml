@@ -68,7 +68,7 @@ DOMAIN, api.9cec79d.com
 #播放
 DOMAIN, wjm.kemfsj.com
 #4k-av播放
-DOMAIN, www.4k-av.com
+#DOMAIN, www.4k-av.com
 #囧动漫主页
 IP-CIDR, 43.142.232.217/32
 #播放
@@ -167,7 +167,7 @@ DOMAIN-SUFFIX, zxzja.com
 DOMAIN, www.subaibaiys.com
 #CMS源
 #360主页
-DOMAIN, 360zy.com
+#DOMAIN, 360zy.com
 #播放
 DOMAIN, vod.lyhuicheng.com
 #非凡主页和播放
