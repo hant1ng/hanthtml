@@ -1,6 +1,23 @@
 # 影视站
 DOMAIN-SUFFIX,4k-av.com
-
+# 木偶PAN
+DOMAIN-SUFFIX,mogg.top
+# 雷鲸PAN
+DOMAIN-SUFFIX,leijing.xyz
+# 森林资源
+DOMAIN-SUFFIX,slapibf.com
+# 探探资源
+DOMAIN-SUFFIX,apittzy.com
+# 奥斯卡资源
+DOMAIN-SUFFIX,apittzy.com
+# 91麻豆
+DOMAIN-SUFFIX,91md.me
+# 易看资源
+DOMAIN-SUFFIX,api.yikanapi.com
+# 番号资源
+DOMAIN-SUFFIX,fhapi9.com
+# 鲨鱼资源
+DOMAIN-SUFFIX,shayuapi.com
 
 # 博彩
 # DOMAIN-SUFFIX,sss620084.com
