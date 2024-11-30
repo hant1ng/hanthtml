@@ -424,7 +424,7 @@ DOMAIN, api.yikanapi.com
 DOMAIN, v.ykv3.com
 #番号主页
 DOMAIN, fm.fhpicpic.com
-DOMAIN, fhapi9.com
+#DOMAIN, fhapi9.com
 #播放
 DOMAIN, v2024.fhbbff.com
 #鲨鱼主页
