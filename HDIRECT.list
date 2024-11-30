@@ -103,7 +103,7 @@ DOMAIN, www.xlys01.com
 #播放
 DOMAIN-SUFFIX, bytetos.com
 #烧火影视主页
-DOMAIN, saohuo.tv
+#DOMAIN, saohuo.tv
 #播放
 DOMAIN, hhjx.hhplayer.comundefined
 DOMAIN-SUFFIX, video.iqiyi.com
@@ -362,7 +362,7 @@ DOMAIN, zuidazy.me
 #播放
 DOMAIN-SUFFIX, daayee.com
 #新浪主页
-DOMAIN, xinlangtupian.com
+#DOMAIN, xinlangtupian.com
 #播放
 DOMAIN, play.xluuss.com
 #八戒播放
