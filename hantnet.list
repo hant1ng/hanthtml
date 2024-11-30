@@ -45,36 +45,25 @@ DOMAIN-SUFFIX,zpsps.com
 # 烧火
 DOMAIN-SUFFIX,saohuo.tv
 # AGE动漫
-api.aliprice.com
+DOMAIN-SUFFIX,api.aliprice.com
 # 独播库
-duboku.tv
+DOMAIN-SUFFIX,duboku.tv
 # 动漫
 DOMAIN,anime.girigirilove.com
 # 欧乐
-
+DOMAIN-SUFFIX,olehdtv.com
 # koreaPornMovie
-
+DOMAIN-SUFFIX,koreanpornmovie.com
 # hohoj
-
-# Supjav
-
+DOMAIN-SUFFIX,holoj.tv
 # 秋名山见
 DOMAIN, api.maiyoux.com
-#Hnime1
-
 # 玩偶姐姐
 DOMAIN-SUFFIX,hongkongdollvideo.com
-
 # 麻豆社
 madou.club
-
-# MISSAV
-DOMAIN-SUFFIX,missav.com
-
 # 新浪点播
 DOMAIN-SUFFIX,xinlangtupian.com
-
-
 
 
 
