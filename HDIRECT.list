@@ -1,5 +1,5 @@
-DIMAIN-SUFFIX,hw8.live
-DIMAIN-SUFFIX,novipnoad.net
+DOMAIN-SUFFIX,hw8.live
+DOMAIN-SUFFIX,novipnoad.net
 
 #小苹果播放
 IP-CIDR, 163.123.192.184/32
