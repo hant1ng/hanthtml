@@ -173,7 +173,7 @@ DOMAIN, vod.lyhuicheng.com
 #非凡主页和播放
 DOMAIN-KEYWORD, ffzy
 #墨斗主页
-DOMAIN, www.mdzyapi.com
+#DOMAIN, www.mdzyapi.com
 #黑木耳主页
 DOMAIN-SUFFIX, heimuer.tv
 DOMAIN-SUFFIX, heimuer.xyz
