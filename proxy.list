@@ -3,9 +3,9 @@ DOMAIN-SUFFIX,sss620084.com
 
 # XPTV 
 #  missav
-DOMAIN-SUFFIX,missav.com
+DOMAIN,missav.com
 #  木偶PAN
-DOMAIN-SUFFIX,mogg.top
+DOMAIN,mogg.top
 #  雷鲸
 DOMAIN, www.leijing.xyz
 #  森林主页
