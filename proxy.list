@@ -1,7 +1,7 @@
-# 胜游
+# 赌博胜游
 DOMAIN-SUFFIX,sss620084.com
 
-# XPTV 
+# XPTV 影视站
 #  missav
 DOMAIN,missav.com
 #  木偶PAN
@@ -14,4 +14,23 @@ DOMAIN, slapibf.com
 DOMAIN, aosikazy.com
 #  易看主页
 DOMAIN, api.yikanapi.com
+#  91麻豆主页
+DOMAIN, 91md.me
+#  鲨鱼主页
+DOMAIN, shayuapi.com
+#  黄瓜主页
+DOMAIN, www.zy018.com
+#  玉兔主页
+DOMAIN, apiyutu.com
+#  辣椒主页
+DOMAIN, apilj.com
+#  奶香香主页
+DOMAIN, naixxzy.com
+#  精品主页
+DOMAIN, jinpinxm.com
+#  草榴主页
+DOMAIN, www.caoliuzyw.com
+# 老色屄主页
+DOMAIN, apilsbzy1.com
+
 
