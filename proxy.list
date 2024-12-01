@@ -49,7 +49,7 @@ DOMAIN-SUFFIX, xpgtv.xyz
 #  烧火影视主页
 DOMAIN, saohuo.tv
 #  4k-av播放
-DOMAIN, www.4k-av.com
+DOMAIN-SUFFIX, 4k-av.com
 #  AGE主页
 DOMAIN-SUFFIX, agedm.org
 #  ギリギリ主页
@@ -58,9 +58,26 @@ DOMAIN, anime.girigirilove.com
 DOMAIN, tv.gboku.com
 #  在线之家主页
 DOMAIN-SUFFIX, zxzja.com
-#  欧乐
-DOMAIN, www.oledhtv.com
-
+#  欧乐-
+DOMAIN-SUFFIX, www.oledhtv.com
+#  KoreaPornMovie
+DOMAIN,KoreaPornMovie.com
+#  Hohoj
+DOMAIN,hohoj.tv
+#  91Jav
+DOMAIN,041.bndmpsjx.com
+#  SupJav
+DOMAIN,supjav.com
+#  秋名山见主页
+DOMAIN, api.maiyoux.com
+#  Hanime1
+DOMAIN, hanime1.me
+#  玩偶姐姐
+DOMAIN, hongkongdollvideo.com
+#  麻豆社
+DOMAIN, madou.club
+#  新浪主页
+DOMAIN, xinlangtupian.com
 
 # XPTV End ------------
 
