@@ -1,7 +1,7 @@
 # 赌博胜游
 DOMAIN-SUFFIX,sss620084.com
 
-# XPTV 影视站
+# XPTV Start ------------
 #  missav
 DOMAIN,missav.com
 #  木偶PAN
@@ -32,5 +32,22 @@ DOMAIN, jinpinxm.com
 DOMAIN, www.caoliuzyw.com
 # 老色屄主页
 DOMAIN, apilsbzy1.com
+#  360主页
+DOMAIN, 360zy.com
+#  墨斗主页
+DOMAIN, www.mdzyapi.com
+#  腐剧主页
+DOMAIN, www.fuju2024.cc
+#  宝片主页
+DOMAIN, zpsps.com
+#  丫丫主页
+DOMAIN, cj.yayazy.net
+#  索尼主页
+DOMAIN, suoniapi.com
+#  小苹果主页
+DOMAIN, xpgtv.xyz
+
+# XPTV End ------------
+
 
 
