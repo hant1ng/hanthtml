@@ -77,7 +77,10 @@ DOMAIN, hongkongdollvideo.com
 #  麻豆社
 DOMAIN, madou.club
 #  新浪主页
-DOMAIN, xinlangtupian.com
+DOMAIN, api.xinlangapi.com
+#  魔都
+DOMAIN,caiji.moduapi.cc
+
 
 # XPTV End ------------
 
