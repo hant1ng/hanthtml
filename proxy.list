@@ -45,7 +45,7 @@ DOMAIN, cj.yayazy.net
 #  索尼主页
 DOMAIN, suoniapi.com
 #  小苹果主页
-DOMAIN, xpgtv.xyz
+DOMAIN-SUFFIX, xpgtv.xyz
 
 # XPTV End ------------
 
