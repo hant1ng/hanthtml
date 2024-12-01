@@ -46,6 +46,21 @@ DOMAIN, cj.yayazy.net
 DOMAIN, suoniapi.com
 #  小苹果主页
 DOMAIN-SUFFIX, xpgtv.xyz
+#  烧火影视主页
+DOMAIN, saohuo.tv
+#  4k-av播放
+DOMAIN, www.4k-av.com
+#  AGE主页
+DOMAIN-SUFFIX, agedm.org
+#  ギリギリ主页
+DOMAIN, anime.girigirilove.com
+#  独播主页
+DOMAIN, tv.gboku.com
+#  在线之家主页
+DOMAIN-SUFFIX, zxzja.com
+#  欧乐
+DOMAIN, www.oledhtv.com
+
 
 # XPTV End ------------
 
