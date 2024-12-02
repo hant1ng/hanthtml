@@ -85,7 +85,7 @@ DOMAIN,caiji.moduapi.cc
 # XPTV End ------------
 
 # google翻译
-DOMAIN,translate.googleapis.com
+DOMAIN-SUFFIX,translate.googleapis.com
 # 91porn
 DOMAIN,www.91porn.com
 DOMAIN,la.btc620.com
