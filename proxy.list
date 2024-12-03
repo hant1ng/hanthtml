@@ -77,7 +77,7 @@ DOMAIN, hanime1.me
 #  玩偶姐姐
 DOMAIN, hongkongdollvideo.com
 #  麻豆社
-DOMAIN, madou.club
+DOMAIN-SUFFIX, madou.club
 #  新浪主页
 DOMAIN, api.xinlangapi.com
 #  魔都
@@ -95,5 +95,7 @@ DOMAIN-SUFFIX,www.pornhub.com
 DOMAIN,jable.tv
 # v2ex
 DOMAIN-SUFFIX,v2ex.com
+# 万能福利吧
+DOMAIN-SUFFIX, wnflb2023.com
 
 
