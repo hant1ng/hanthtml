@@ -1,9 +1,32 @@
-<div style="display: flex; justify-content: center;">
-  <iframe class="airtable-embed"
-          src="https://airtable.com/embed/appFjXSizO0N9gUiY/shr1UNYv38B0LuGf5?viewControls=on"
-          frameborder="0"
-          onmousewheel=""
-          width="90%"
-          height="80%"
-          style="background: transparent; border: 1px solid #ccc;"></iframe>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    .iframe-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    iframe {
+      width: 90%;
+      height: 90%;
+      border: 1px solid #ccc;
+      background: transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="iframe-container">
+    <iframe class="airtable-embed"
+            src="https://airtable.com/embed/appFjXSizO0N9gUiY/shr1UNYv38B0LuGf5?viewControls=on"
+            frameborder="0"
+            onmousewheel="">
+    </iframe>
+  </div>
+</body>
+</html>
