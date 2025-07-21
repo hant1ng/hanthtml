@@ -1,26 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Collection of AI tools, prompts, and methods for product development and business growth">
-  <meta name="keywords" content="AI tools, prompts, methods, product development, business growth, productivity">
-  <meta name="author" content="Product Pushers">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Collection of AI tools, prompts, and methods for product development and business growth" />
+  <meta name="keywords" content="AI tools, prompts, methods, product development, business growth, productivity" />
+  <meta name="author" content="Product Pushers" />
   <title>Hant</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png" />
   <style>
     html, body {
       height: 100%;
       margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background-image: url(tree.svg);
+      background-attachment: fixed;
+      background-position: center left;
+      background-repeat: no-repeat;
+      background-size: auto;
     }
 
     body {
       display: flex;
       flex-direction: column;
-      background: none;
       font-family: sans-serif;
+      background: none;
     }
 
     .wrapper {
@@ -35,17 +44,32 @@
       padding: 20px;
     }
 
-    html {
-      background-image: url(tree.svg);
-      background-attachment: fixed;
-      background-position: center left;
-      background-repeat: no-repeat;
-      background-size: auto;
+    pre {
+      font-family: monospace;
+      font-size: 16px;
+      line-height: 1.3; /* 缩小行距 */
+      white-space: pre-wrap;
+      margin: 0;
+    }
+
+    a {
+      color: #0000FF;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
 
     footer {
-      background: transparent;
       padding: 10px 20px;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
     }
   </style>
 </head>
@@ -53,28 +77,31 @@
   <div class="wrapper">
 
     <div class="main-content">
-      main directory:
-      <br><br>
       <pre>
-      └─resources  
-      ├─<a href="page/software.html" style="color: #0000FF;">Software.html</a><br>
-      ├─<a href="page/tools.html" style="color: #0000FF;">null</a><br>
-      └─<a href="null" style="color: #0000FF;">null</a><br><br>
+main directory:
 
-      └─education<br>
-      ├─<a href="null" style="color: #0000FF;">null</a><br>
-      └─<a href="null" style="color: #0000FF;">null</a><br><br>
+└─resources
+    ├─<a href="page/software.html">Software.html</a>
+    ├─<a href="page/tools.html">null</a>
+    └─<a href="null">null</a>
 
-      └─secret<br>
-      └─<a href="page/about.html" style="color: #0000FF;">about</a><br><br>
+└─education
+    ├─<a href="null">null</a>
+    └─<a href="null">null</a>
+
+└─secret
+    └─<a href="page/about.html">about</a>
       </pre>
-      初衷是因为小伙伴们在电脑上下载常用软件时经常会下到流氓软件，因为他们无法分辨谁是官网。 :p<br>
-      Send me a message on Telegram: <a href="https://t.me/ritamadiao" target="_blank">t.me/ritamadiao</a>
+
+      <p style="margin-top: 16px;">
+        初衷是因为小伙伴们在电脑上下载常用软件时经常会下到流氓软件，因为他们无法分辨谁是官网。 :p<br />
+        Send me a message on Telegram: <a href="https://t.me/ritamadiao" target="_blank">t.me/ritamadiao</a>
+      </p>
     </div>
 
     <footer id="brx-footer">
       <section class="fw-footer__wrapper">
-        <div class="footer-content" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div class="footer-content">
           <p class="text-basic" style="margin: 0;">© 2025 <a href="https://www.hant.me" title="The by Hant" aria-label="Made by Hant"><strong>The</strong> by Hant</a></p>
           <div style="display: flex; align-items: center; margin-top: 10px;">
             <p class="text-basic" style="margin: 0 10px 0 0;">When in doubt, minimize.</p>
