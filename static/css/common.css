@@ -108,3 +108,8 @@ a {
     color: inherit;
     text-decoration: none
 }
+
+p.custom-style {
+  background-color: yellow;
+  font-size: 20px;
+}
