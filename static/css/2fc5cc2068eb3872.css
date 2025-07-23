@@ -1,0 +1,61 @@
+.site-container {
+    padding: 56px;
+    width: 100%;
+    max-width: 550px;
+    text-align: left;
+    box-sizing: border-box;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    align-items: flex-start;
+    justify-content: flex-start
+}
+
+.site-container .site-logo {
+    margin-bottom: 8px
+}
+
+.site-container .inline-icon--clap {
+    display: inline-block;
+    margin: 0;
+    transform: translateY(1px)
+}
+
+.site-container .inline-icon--wand {
+    display: inline-block;
+    margin: 0;
+    transform: translateY(-2px)
+}
+
+.site-container p {
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 36px;
+    letter-spacing: -.08px;
+    margin: 28px 0 0;
+    padding: 0
+}
+
+.site-container .page-footer {
+    display: flex;
+    flex: 1 1;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end
+}
+
+.site-container .page-footer p {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: -.08px;
+    padding: 0;
+    margin: 8px 0 0;
+    color: #4b5563
+}
+.site-container .page-footer a {
+    color: #3474ff
+}
