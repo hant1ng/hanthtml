@@ -45,6 +45,11 @@ p.custom-style {
   color: black;
 }
 
+.align-right {
+  width: 100%;       /* 让 p 撑满父容器宽度 */
+  text-align: right; /* 文字靠右 */
+}
+
 .site-container .page-footer {
     display: flex;
     flex: 1 1;
