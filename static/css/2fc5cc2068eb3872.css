@@ -38,6 +38,13 @@
     padding: 0
 }
 
+p.custom-style {
+  color: red;
+  font-size: 14px;
+  line-height: 1.8; /* 调整行间距 */
+  color: black;
+}
+
 .site-container .page-footer {
     display: flex;
     flex: 1 1;
