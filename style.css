@@ -1,0 +1,56 @@
+body {
+    font-family: monospace;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    padding: 20px;
+    max-width: 100%;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    font-size: 15px;
+}
+
+a {
+    color: #0000FF;
+    text-decoration: underline;
+    word-break: break-all;
+}
+
+.back-nav {
+    display: block;
+    color: #0000FF;
+    text-decoration: underline;
+    margin-bottom: 20px;
+}
+
+.copy-button {
+    background: #4444FF;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: monospace;
+    margin-bottom: 20px;
+    opacity: 0.8;
+    font-size: 15px;
+}
+
+.copy-button:hover {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    body {
+        font-size: 12px;
+    }
+    body .copy-button {
+        width: 100% !important;
+        display: block !important;
+    }
+}
+
+pre {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
