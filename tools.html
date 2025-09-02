@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>常用软件</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #fff;
+      color: #333;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 900px;
+      width: 100%;
+    }
+    h2 {
+      font-size: 1.5em;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 4px;
+      text-align: left;
+    }
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .media-grid li a {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 8px;
+      background: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      color: #007acc;
+      text-decoration: none;
+      font-size: 0.92em;
+      text-align: left;
+    }
+    .media-grid li a:hover {
+      background: #eaf4ff;
+      text-decoration: underline;
+    }
+    .favicon {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+	/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace;
+  background-color: #f5f5f5;
+  color: #d6336c;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.95em;
+}
+
+/* 多行代码块 */
+pre {
+  font-family: Consolas, "Courier New", monospace;
+  background-color: #f5f5f5;
+  color: #333;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95em;
+  line-height: 1.4;
+  overflow-x: auto;     /* 横向溢出时出现滚动条 */
+  margin: 1em 0;        /* 与上下文隔开 */
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>常用软件</h2>
+    <ul class="media-grid">
+<li><a href="https://sunlogin.oray.com/download" target="_blank">向日葵远程</a></li>
+<li><a href="https://www.google.cn/chrome/next-steps.html?statcb=0&installdataindex=empty&defaultbrowser=0" target="_blank">Chrome</a></li>
+<li><a href="https://wps.cn/" target="_blank">WPS OFFICE</a></li>
+<li><a href="https://pc.qq.com/" target="_blank">腾讯软件中心</a></li>
+<li><a href="https://desktop.telegram.org/" target="_blank">Telegram</a></li>
+<li><a href="https://www.fxsound.com/download" target="_blank">FxSound</a></li>
+<li><a href="https://store.steampowered.com/about/" target="_blank">Steam</a></li>
+<li><a href="https://img.hant.me/file/1753526098238_WinRAR_5.61_x64_SC.exe" target="_blank">WINRAR</a></li>
+<li><a href="https://www.7-zip.org/" target="_blank">7zip</a></li>
+<li><a href="https://codecpack.co/" target="_blank">codecpack.co</a></li>
+<li><a href="https://xiaowang.com/" target="_blank">小旺截图</a></li>
+<li><a href="https://www.letsvpn.world/" target="_blank">快连VPN</a></li>
+<li><a href="https://mihomo.party/" target="_blank">MiHomo Partu</a></li>
+<li><a href="https://learn.microsoft.com/zh-cn/sysinternals/downloads/autoruns" target="_blank">Autoruns</a></li>
+<li><a href="https://www.logitechg.com/zh-cn/innovation/g-hub.html" target="_blank">G hub</a></li>
+<li><a href="https://geekuninstaller.com/download" target="_blank">Geek Uninstaller</a></li>
+<li><a href="https://www.hibitsoft.ir/Uninstaller.html" target="_blank">hibitsoft</a></li>
+<li><a href="https://free.lanzoui.com/b0cpu1guf" target="_blank">SoftCnKiller</a></li>
+<li><a href="https://blog.csdn.net/vbcom/article/details/6962388" target="_blank">DirectX Repair</a></li>
+<li><a href="https://support.logi.com/hc/zh-cn/articles/360059641133-Onboard-Memory-Manager" target="_blank">罗技OMM</a></li>
+<li><a href="https://kms.cangshui.net/" target="_blank">KMS系统激活</a></li>
+
+    </ul>
+	
+    <h2>常用网址</h2>
+    <ul class="media-grid">
+<li><a href="https://www.ChatGPT.com" target="_blank">ChatGPT</a></li>
+
+
+
+    </ul>
+	
+	  <h2>代码</h2>
+ 
+<p>激活命令</p>
+<CODE>irm https://get.activated.win | iex</code>
+<p>系统重装命令</p>
+<CODE>cmd /c "bitsadmin /transfer a http://win11.ink %cd%\1.cmd&1 #u"</code>
+
+
+
+    </ul>
+	
+  </div>
+
+  <script>
+    document.querySelectorAll('.media-grid li a').forEach(link => {
+      let domain;
+      try {
+        domain = new URL(link.href).hostname;
+      } catch {
+        return;
+      }
+
+      const img = document.createElement('img');
+      img.className = 'favicon';
+
+      // 先用 DuckDuckGo 图标服务
+      img.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+
+      // 如果加载失败，则回退到 Google S2
+      img.onerror = () => {
+        img.onerror = null;
+        img.src = `https://www.google.com/s2/favicons?sz=64&domain_url=${domain}`;
+      };
+
+      link.prepend(img);
+    });
+  </script>
+</body>
+</html>
