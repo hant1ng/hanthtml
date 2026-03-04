@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>我的个人主页</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no,email=no,address=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <link rel="stylesheet" href="./style/normalize.min.css">
+  <link rel="stylesheet" href="./style/all.min.css">
+  <script src="./style/jquery.min.js"></script>
+  <style type="text/css">
+  @font-face {
+    font-family: 'HarmonyOS Sans';
+    src: url('https://cdn.jsdelivr.net/gh/ohohohkam/webfont/HarmonyOS_Sans_medium.woff2') format('woff2');
+    font-weight: 500;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'HarmonyOS Sans';
+    src: url('https://cdn.jsdelivr.net/gh/ohohohkam/webfont/HarmonyOS_Sans_regular.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'HarmonyOS Sans';
+    src: url('https://cdn.jsdelivr.net/gh/ohohohkam/webfont/HarmonyOS_Sans_light.woff2') format('woff2');
+    font-weight: 300;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Color Emoji';
+    src: local('Apple Color Emoji'), local('Segoe UI Emoji'), local('Segoe UI Symbol'), local('Noto Color Emoji');
+  }
+
+  :root {
+    --background_color_page: #f3f3f3;
+    --text_color_primary: #191919;
+    --text_color_secondary: #b2b2b2;
+    --text_color_highlight_green: #07c160;
+    --text_color_highlight_yellow: #fa9d3b;
+    --text_color_reversal: #fff;
+  }
+  :root {
+    --font_size: 16px;
+    --font_size_venti: calc(var(--font_size) * 1.125);
+    --font_size_grande: calc(var(--font_size) * 1);
+    --font_size_tall: calc(var(--font_size) * 0.875);
+    --font_size_short: calc(var(--font_size) * 0.75);
+  }
+
+  @media screen and (min-width: 500px) { .g-width { width: 500px; } }
+  @media screen and (max-width: 499px) {
+    .g-width { width: 100%; min-width: 320px; max-width: 500px; }
+  }
+  .g-block-center { margin: 0 auto; }
+  .g-inline-center { text-align: center; }
+  .g-txt-ellipsis { color: inherit; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+  .g-user-select { -webkit-user-select: text; user-select: text; }
+  .g-alias-imgblock { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+
+  html {
+    color: var(--text_color_primary);
+    font: normal var(--font_size)/1.75rem 'HarmonyOS Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif, 'Color Emoji';
+    background-color: var(--background_color_page);
+    margin-right: calc((100vw - 100%) * -1);
+    overflow-x: hidden;
+    user-select: none;
+    cursor: default;
+  }
+  ruby { color: inherit; font-size: inherit; }
+  rt { color: var(--text_color_secondary); font-size: var(--font_size_short); }
+
+  #banner {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding-bottom: 40px;
+  }
+  #banner > .mask {
+    clip-path: polygon(0 0, 100% 0, 100% 97%, 87% 97%, 85% 100%, 83% 97%, 0 97%);
+    min-height: 180px;
+    background: linear-gradient(135deg, #6b7fd7 0%, #8b9dcf 50%, #a8b8e0 100%);
+  }
+  #banner > .mask > img {
+    filter: grayscale(20%);
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    object-fit: cover;
+    object-position: 50% 50%;
+  }
+  #author {
+    position: absolute;
+    right: 5%;
+    bottom: 0;
+    width: 20%;
+    z-index: 1;
+  }
+  #author > .avatar {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10%;
+    box-shadow: 0 0 0 1px var(--text_color_primary);
+    object-fit: cover;
+    object-position: 50% 50%;
+  }
+  @media screen and (max-width: 499px) {
+    #author > .avatar { display: none; }
+  }
+  #author > .nickname {
+    display: block;
+    width: 100%;
+    font-weight: 500;
+    font-size: var(--font_size_venti);
+  }
+  #description {
+    padding: 1rem 0;
+    text-align: justify;
+    text-justify: inter-word;
+  }
+  @media screen and (max-width: 499px) {
+    #description { padding: 1rem; }
+  }
+  #links .link-a { color: inherit; text-decoration: none; }
+  #links-me, #links-sns {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: baseline;
+    list-style: none;
+    margin: 0;
+    padding: 1rem 0;
+  }
+  #links-me > .link-item {
+    height: 3rem;
+    padding: 0 1rem;
+    border-radius: 7px;
+    color: var(--text_color_reversal);
+    line-height: 3rem;
+    background-color: var(--text_color_secondary);
+  }
+  #links-me > .link-item.green { background-color: var(--text_color_highlight_green); }
+  #links-me > .link-item.yellow { background-color: var(--text_color_highlight_yellow); }
+  #links-sns > .link-item { font-weight: 300; }
+  #copyright {
+    padding: 1rem 0;
+    color: var(--text_color_secondary);
+    font-weight: 300;
+    font-size: var(--font_size_short);
+  }
+  #copyright a { color: inherit; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main id="container" class="g-width g-block-center">
+    <header id="banner">
+      <div class="mask">
+        <!-- 可选：放一张头图，把下面这行取消注释并改成你的图片路径；没有图片时会显示渐变背景 -->
+        <img class="g-alias-imgblock" src="./style/banner.jpg" loading="lazy" draggable="false" alt=""> 
+      </div>
+      <div id="author">
+        <!-- 改成你的名字 -->
+        <strong class="nickname g-inline-center g-txt-ellipsis g-user-select">Hant</strong>
+        <!-- 可选：放头像图片 -->
+        <!-- <img class="avatar g-block-center" src="你的头像图片路径.jpg" alt=""> -->
+      </div>
+    </header>
+
+    <section id="description" class="g-user-select">
+      <!-- 在这里写你的个人简介，可以多写几段 -->
+      在这里写一段个人简介，比如你是谁、在做什么、喜欢什么，或者随便写几句想说的话。
+    </section>
+
+    <aside id="links">
+      <!-- 主要链接（绿色/黄色按钮）：博客、作品集等 -->
+      <ul id="links-me">
+       <!--  <li class="link-item green"><a class="link-a g-user-select" href="#"><i class="fa-brands fa-wordpress-simple"></i> 我的博客 →</a></li>-->
+        <!-- <li class="link-item yellow"><a class="link-a g-user-select" href="#"><i class="fa-solid fa-folder"></i> 作品集 →</a></li>-->
+      </ul>
+      <!-- 社交/其他链接（和原页一样的四个图标：WeChat / Unsplash / GitHub / CodePen） -->
+      <ul id="links-sns">
+        <li class="link-item"><span class="g-user-select"><i class="fa-brands fa-weixin"></i> <ruby>WeChat<rt>ritamadiao</rt></ruby></span></li>
+		<li class="link-item"><span class="g-user-select"><i class="fa-brands fa-telegram"></i> <ruby>Telegram<rt>@ritamadiao</rt></ruby></span></li>
+        <li class="link-item"><a class="link-a g-user-select" href="https://github.com/你的用户名"><i class="fa-brands fa-weibo"></i> GitHub</a></li>
+        <li class="link-item"><a class="link-a g-user-select" href="https://codepen.io/你的用户名"><i class="fa-brands fa-tiktok"></i> CodePen</a></li>
+      </ul>
+    </aside>
+
+    <footer id="copyright" class="g-inline-center">
+      <!-- 可选：备案号或版权文字，不需要可留空或删掉下一行 -->
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">您的备案号（可选）</a>
+    </footer>
+  </main>
+  <script>
+  document.addEventListener('contextmenu', function(e) { e.preventDefault(); }, true);
+  </script>
+</body>
+</html>
