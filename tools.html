@@ -153,30 +153,24 @@ pre {
 	
   </div>
 
-  <script>
-    document.querySelectorAll('.media-grid li a').forEach(link => {
-      let domain;
-      try {
-        domain = new URL(link.href).hostname;
-      } catch {
-        return;
-      }
+ <script>
+document.querySelectorAll('.media-grid li a').forEach(link => {
+  let domain;
+  try {
+    domain = new URL(link.href).hostname;
+  } catch {
+    return;
+  }
 
-      const img = document.createElement('img');
-      img.className = 'favicon';
+  const img = document.createElement('img');
+  img.className = 'favicon';
 
-      // 先用 DuckDuckGo 图标服务
-      img.src = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+  img.src = `https://api.iowen.cn/favicon/${domain}.png`;
 
-      // 如果加载失败，则回退到 Google S2
-      img.onerror = () => {
-        img.onerror = null;
-        img.src = `https://www.google.com/s2/favicons?sz=64&domain_url=${domain}`;
-      };
-
-      link.prepend(img);
-    });
-  </script>
+  link.prepend(img);
+});
+</script>
 </body>
 </html>
+
 
