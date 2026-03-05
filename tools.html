@@ -1,217 +1,264 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Tools · Hant</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tools · Hant</title>
 
-<style>
-/* ===== 字体系统（与主页一致） ===== */
-@font-face {
-  font-family: 'HarmonyOS Sans';
-  src: url('https://cdn.jsdelivr.net/gh/ohohohkam/webfont/HarmonyOS_Sans_medium.woff2') format('woff2');
-  font-weight: 500;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'HarmonyOS Sans';
-  src: url('https://cdn.jsdelivr.net/gh/ohohohkam/webfont/HarmonyOS_Sans_regular.woff2') format('woff2');
-  font-weight: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'HarmonyOS Sans';
-  src: url('https://cdn.jsdelivr.net/gh/ohohohkam/webfont/HarmonyOS_Sans_light.woff2') format('woff2');
-  font-weight: 300;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Color Emoji';
-  src: local('Apple Color Emoji'), local('Segoe UI Emoji'),
-       local('Segoe UI Symbol'), local('Noto Color Emoji');
-}
+  <style>
+    /* ===== 字体系统（与主页一致） ===== */
+    @font-face {
+      font-family: 'HarmonyOS Sans';
+      src: url('https://cdn.jsdelivr.net/gh/ohohohkam/webfont/HarmonyOS_Sans_medium.woff2') format('woff2');
+      font-weight: 500;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'HarmonyOS Sans';
+      src: url('https://cdn.jsdelivr.net/gh/ohohohkam/webfont/HarmonyOS_Sans_regular.woff2') format('woff2');
+      font-weight: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'HarmonyOS Sans';
+      src: url('https://cdn.jsdelivr.net/gh/ohohohkam/webfont/HarmonyOS_Sans_light.woff2') format('woff2');
+      font-weight: 300;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Color Emoji';
+      src: local('Apple Color Emoji'), local('Segoe UI Emoji'),
+           local('Segoe UI Symbol'), local('Noto Color Emoji');
+    }
 
-/* ===== 主页变量体系 ===== */
-:root {
-  --background_color_page: #f3f3f3;
-  --text_color_primary: #191919;
-  --text_color_secondary: #b2b2b2;
-  --card_background: #ffffff;
-  --card_border: #eaeaea;
-}
+    /* ===== 主页变量体系 ===== */
+    :root {
+      --background_color_page: #f3f3f3;
+      --text_color_primary: #191919;
+      --text_color_secondary: #b2b2b2;
+      --card_background: #ffffff;
+      --card_border: #eaeaea;
+    }
 
-html {
-  font: normal 16px/1.75rem 'HarmonyOS Sans',
-        'PingFang SC','Microsoft YaHei',
-        sans-serif,'Color Emoji';
-  background: var(--background_color_page);
-  color: var(--text_color_primary);
-}
+    html {
+      font: normal 16px/1.75rem 'HarmonyOS Sans',
+            'PingFang SC','Microsoft YaHei',
+            sans-serif,'Color Emoji';
+      background: var(--background_color_page);
+      color: var(--text_color_primary);
+    }
 
-body{
-  margin:0;
-  padding:60px 20px;
-  display:flex;
-  justify-content:center;
-}
+    body {
+      margin: 0;
+      padding: 60px 20px;
+      display: flex;
+      justify-content: center;
+    }
 
-.container{
-  width:100%;
-  max-width:960px;
-}
+    .container {
+      width: 100%;
+      max-width: 960px;
+    }
 
-h2{
-  position:relative;
-  font-weight:600;
-  font-size:20px;
-  margin:70px 0 28px;
-  padding-left:14px;
-  color:var(--text_color_primary);
-}
+    h2 {
+      position: relative;
+      font-weight: 600;
+      font-size: 20px;
+      margin: 70px 0 28px;
+      padding-left: 14px;
+      color: var(--text_color_primary);
+    }
 
-h2::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:50%;
-  transform:translateY(-50%);
-  width:4px;
-  height:20px;
-  border-radius:2px;
-  background:var(--text_color_primary);
-}
+    h2::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 20px;
+      border-radius: 2px;
+      background: var(--text_color_primary);
+    }
 
-/* ===== 卡片网格 ===== */
-.media-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:20px;
-  list-style:none;
-  padding:0;
-  margin:0;
-}
+    /* ===== 卡片网格（四个一行） ===== */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); /* 设置四个一行 */
+      gap: 20px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
 
-.media-grid li a{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  padding:18px;
-  background:var(--card_background);
-  border:1px solid var(--card_border);
-  border-radius:14px;
-  text-decoration:none;
-  color:var(--text_color_primary);
-  transition:all .25s ease;
-}
+    .media-grid li a {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 12px;  /* 缩小内边距 */
+      background: var(--card_background);
+      border: 1px solid var(--card_border);
+      border-radius: 10px; /* 小一点的圆角 */
+      text-decoration: none;
+      color: var(--text_color_primary);
+      transition: all 0.25s ease;
+    }
 
-.media-grid li a:hover{
-  transform:translateY(-5px);
-  box-shadow:0 12px 28px rgba(0,0,0,0.06);
-  border-color:#dcdcdc;
-}
+    .media-grid li a:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+      border-color: #dcdcdc;
+    }
 
-/* favicon */
-.favicon{
-  width:24px;
-  height:24px;
-  border-radius:6px;
-  margin-bottom:12px;
-}
+    /* favicon */
+    .favicon {
+      width: 20px;  /* 调小图标 */
+      height: 20px;
+      border-radius: 6px;
+      margin-bottom: 8px;  /* 调整间距 */
+    }
 
-/* 标题 */
-.title{
-  font-weight:500;
-  font-size:15px;
-  margin-bottom:6px;
-}
+    /* 标题 */
+    .title {
+      font-weight: 500;
+      font-size: 14px;  /* 调小标题字体 */
+      margin-bottom: 4px;  /* 调整间距 */
+    }
 
-/* 简介 */
-.desc{
-  font-weight:300;
-  font-size:13px;
-  color:var(--text_color_secondary);
-  line-height:1.5;
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-}
+    /* 简介 */
+    .desc {
+      font-weight: 300;
+      font-size: 12px;  /* 调小简介字体 */
+      color: var(--text_color_secondary);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
 
-.footer{
-  text-align:center;
-  margin-top:80px;
-  font-size:13px;
-  color:var(--text_color_secondary);
-}
-</style>
+    .footer {
+      text-align: center;
+      margin-top: 80px;
+      font-size: 13px;
+      color: var(--text_color_secondary);
+    }
+  </style>
 </head>
 
 <body>
 
 <div class="container">
 
-<h2>常用软件</h2>
-<ul class="media-grid">
+  <h2>远程软件</h2>
+  <ul class="media-grid">
 
-<li>
-<a href="https://sunlogin.oray.com/download" target="_blank">
-<span class="title">向日葵远程</span>
-<span class="desc">远程控制与设备管理工具</span>
-</a>
-</li>
+    <li>
+      <a href="https://anydesk.com" target="_blank">
+        <span class="title">Anydesk</span>
+        <span class="desc">远程控制与设备管理工具</span>
+      </a>
+    </li>
 
-<li>
-<a href="https://desktop.telegram.org/" target="_blank">
-<span class="title">Telegram</span>
-<span class="desc">跨平台即时通讯软件</span>
-</a>
-</li>
+    <li>
+      <a href="https://sunlogin.oray.com" target="_blank">
+        <span class="title">向日葵远程</span>
+        <span class="desc">远程控制与设备管理工具</span>
+      </a>
+    </li>
 
-<li>
-<a href="https://store.steampowered.com/about/" target="_blank">
-<span class="title">Steam</span>
-<span class="desc">全球最大的数字游戏平台</span>
-</a>
-</li>
+    <li>
+      <a href="https://www.todesk.com/" target="_blank">
+        <span class="title">Todesk</span>
+        <span class="desc">远程控制与设备管理工具</span>
+      </a>
+    </li>
 
-<li>
-<a href="https://www.7-zip.org/" target="_blank">
-<span class="title">7-Zip</span>
-<span class="desc">开源高压缩率文件压缩工具</span>
-</a>
-</li>
+  </ul>
 
-</ul>
+  <h2>聊天通讯</h2>
+  <ul class="media-grid">
 
-<h2>常用网址</h2>
-<ul class="media-grid">
+    <li>
+      <a href="https://telegram.org" target="_blank">
+        <span class="title">Telegram</span>
+        <span class="desc">纸灰机~</span>
+      </a>
+    </li>
 
-<li>
-<a href="https://www.chatgpt.com" target="_blank">
-<span class="title">ChatGPT</span>
-<span class="desc">AI 智能对话与生产力工具</span>
-</a>
-</li>
+    <li>
+      <a href="https://weixin.qq.com" target="_blank">
+        <span class="title">微信</span>
+        <span class="desc">国民聊天</span>
+      </a>
+    </li>
 
-<li>
-<a href="https://www.airtable.com" target="_blank">
-<span class="title">Airtable</span>
-<span class="desc">在线数据库与协作平台</span>
-</a>
-</li>
+    <li>
+      <a href="https://IM.QQ.COM" target="_blank">
+        <span class="title">QQ</span>
+        <span class="desc">你的企鹅还在吗</span>
+      </a>
+    </li>
 
-<li>
-<a href="https://www.figma.com" target="_blank">
-<span class="title">Figma</span>
-<span class="desc">在线界面设计与协作工具</span>
-</a>
-</li>
+    <li>
+      <a href="https://line.me" target="_blank">
+        <span class="title">LINE</span>
+        <span class="desc">跨国通讯</span>
+      </a>
+    </li>
+	
+    <li>
+      <a href="https://www.whatsapp.com/" target="_blank">
+        <span class="title">whatsapp</span>
+        <span class="desc">跨国通讯</span>
+      </a>
+    </li>
 
-</ul>
+  </ul>
+  
+  <h2>工具</h2>
+  <ul class="media-grid">
 
-<div class="footer">
-Hant · Workspace
-</div>
+ 
+
+  </ul>
+
+  <h2>网络工具</h2>
+  <ul class="media-grid">
+  
+     <li>
+      <a href="https://www.google.cn/chrome/next-steps.html?statcb=0&installdataindex=empty&defaultbrowser=0" target="_blank">
+        <span class="title">谷歌浏览器</span>
+        <span class="desc"></span>
+      </a>
+    </li>
+
+    <li>
+      <a href="https://www.quickq.io/" target="_blank">
+        <span class="title">快客VPN</span>
+        <span class="desc"> </span>
+      </a>
+    </li>
+	
+    <li>
+      <a href="https://b4zk7yqa.onelink.me/Lm5M/khng1wzk" target="_blank">
+        <span class="title">快连VPN</span>
+        <span class="desc"> </span>
+      </a>
+    </li>
+	
+    <li>
+      <a href="https://apkcombo.com/downloader/" target="_blank">
+        <span class="title">APK 下载器</span>
+        <span class="desc"> </span>
+      </a>
+    </li>
+
+  </ul>
+
+  <div class="footer">
+    Hant · Workspace
+  </div>
 
 </div>
 
@@ -219,18 +266,60 @@ Hant · Workspace
 document.querySelectorAll('.media-grid li a').forEach(link => {
   let domain;
   try {
-    domain = new URL(link.href).hostname;
+    domain = new URL(link.href).hostname;  // 获取到根域名
   } catch {
     return;
   }
 
   const img = document.createElement('img');
   img.className = 'favicon';
-  img.src = link.href + '/favicon.ico';
+
+  // ① 优先加载本地图标
+  img.src = '/icons/' + domain + '.png';
 
   img.onerror = () => {
     img.onerror = null;
-    img.src = 'https://api.iowen.cn/favicon/' + domain + '.png';
+
+    // ② 尝试直接请求网站 favicon（从根域名获取）
+    img.src = 'https://' + domain + '/favicon.ico';
+
+    img.onerror = () => {
+      img.onerror = null;
+
+      // ③ 使用国内 favicon API
+      img.src = 'https://api.iowen.cn/favicon/' + domain + '.png';
+
+      img.onerror = () => {
+        img.onerror = null;
+
+        // ④ 最终 fallback 默认 SVG（美化版）
+        img.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#667eea"/>
+                <stop offset="100%" stop-color="#764ba2"/>
+              </linearGradient>
+              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/>
+              </filter>
+            </defs>
+
+            <rect width="100%" height="100%" rx="14" fill="url(#g)" filter="url(#shadow)"/>
+
+            <text x="50%" y="52%" 
+              dominant-baseline="middle" 
+              text-anchor="middle"
+              font-size="30"
+              fill="#ffffff"
+              font-family="Segoe UI, Arial, sans-serif"
+              font-weight="600">
+              ${domain.replace(/^www\./,'')[0].toUpperCase()}
+            </text>
+          </svg>
+        `);
+      };
+    };
   };
 
   link.prepend(img);
