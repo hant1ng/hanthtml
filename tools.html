@@ -317,22 +317,74 @@
 </div>
 
 <script>
+const TIMEOUT = 1500;
+
+function loadWithTimeout(img, src) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject('timeout'), TIMEOUT);
+
+    img.onload = () => {
+      clearTimeout(timer);
+      resolve();
+    };
+
+    img.onerror = () => {
+      clearTimeout(timer);
+      reject('error');
+    };
+
+    img.src = src;
+  });
+}
+
+function createFallback(domain) {
+  const letter = domain.replace(/^www\./, '')[0]?.toUpperCase() || '?';
+
+  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+      <rect width="100%" height="100%" rx="12" fill="#667eea"/>
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+        font-size="28" fill="#fff" font-family="Arial">
+        ${letter}
+      </text>
+    </svg>
+  `);
+}
+
 async function loadFavicon(img, domain) {
   const sources = [
-    `/icons/${domain}.png`,
     `https://favicon.im/${domain}`,
+    `https://icon.horse/icon/${domain}`,
+    `https://api.faviconkit.com/${domain}/64`,
     `https://${domain}/favicon.ico`
   ];
 
   for (const src of sources) {
     try {
-      await loadWithTimeout(img, src, 1500);
+      await loadWithTimeout(img, src);
       return;
     } catch {}
   }
 
-  img.src = createFallbackSVG(domain);
+  img.src = createFallback(domain);
 }
+
+document.querySelectorAll('.media-grid li a').forEach(link => {
+  let domain;
+  try {
+    domain = new URL(link.href).hostname.replace(/^www\./, '');
+  } catch {
+    return;
+  }
+
+  const img = document.createElement('img');
+  img.className = 'favicon';
+  img.loading = 'lazy';
+
+  loadFavicon(img, domain);
+
+  link.prepend(img);
+});
 </script>
 
 </body>
