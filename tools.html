@@ -317,66 +317,79 @@
 </div>
 
 <script>
-document.querySelectorAll('.media-grid li a').forEach(link => {
-  let domain;
+const faviconCache = new Map();
+
+function getDomain(url) {
   try {
-    domain = new URL(link.href).hostname;  // 获取到根域名
+    return new URL(url).hostname;
   } catch {
+    return null;
+  }
+}
+
+function createFallbackSVG(domain) {
+  const letter = domain.replace(/^www\./, '')[0]?.toUpperCase() || '?';
+
+  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#667eea"/>
+          <stop offset="100%" stop-color="#764ba2"/>
+        </linearGradient>
+      </defs>
+      <rect width="100%" height="100%" rx="14" fill="url(#g)"/>
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+        font-size="30" fill="#fff" font-family="Arial" font-weight="600">
+        ${letter}
+      </text>
+    </svg>
+  `);
+}
+
+function loadFavicon(img, domain) {
+  const sources = [
+    `/icons/${domain}.png`,
+    `https://${domain}/favicon.ico`,
+    `https://api.iowen.cn/favicon/${domain}.png`
+  ];
+
+  let index = 0;
+
+  const tryNext = () => {
+    if (index >= sources.length) {
+      img.src = createFallbackSVG(domain);
+      return;
+    }
+
+    img.src = sources[index++];
+  };
+
+  img.onerror = tryNext;
+  tryNext();
+}
+
+document.querySelectorAll('.media-grid li a').forEach(link => {
+  const domain = getDomain(link.href);
+  if (!domain) return;
+
+  // ✅ 避免重复加载
+  if (faviconCache.has(domain)) {
+    link.prepend(faviconCache.get(domain).cloneNode());
     return;
   }
 
   const img = document.createElement('img');
   img.className = 'favicon';
+  img.loading = 'lazy'; // ✅ 性能优化
+  img.decoding = 'async';
 
-  // ① 优先加载本地图标
-  img.src = '/icons/' + domain + '.png';
+  loadFavicon(img, domain);
 
-  img.onerror = () => {
-    img.onerror = null;
+  // ✅ 缓存节点
+  faviconCache.set(domain, img);
 
-    // ② 尝试直接请求网站 favicon（从根域名获取）
-    img.src = 'https://' + domain + '/favicon.ico';
-
-    img.onerror = () => {
-      img.onerror = null;
-
-      // ③ 使用国内 favicon API
-      img.src = 'https://api.iowen.cn/favicon/' + domain + '.png';
-
-      img.onerror = () => {
-        img.onerror = null;
-
-        // ④ 最终 fallback 默认 SVG（美化版）
-        img.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
-            <defs>
-              <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#667eea"/>
-                <stop offset="100%" stop-color="#764ba2"/>
-              </linearGradient>
-              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/>
-              </filter>
-            </defs>
-
-            <rect width="100%" height="100%" rx="14" fill="url(#g)" filter="url(#shadow)"/>
-
-            <text x="50%" y="52%" 
-              dominant-baseline="middle" 
-              text-anchor="middle"
-              font-size="30"
-              fill="#ffffff"
-              font-family="Segoe UI, Arial, sans-serif"
-              font-weight="600">
-              ${domain.replace(/^www\./,'')[0].toUpperCase()}
-            </text>
-          </svg>
-        `);
-      };
-    };
-  };
-
-  link.prepend(img);
+  link.prepend(img.cloneNode());
 });
 </script>
 
