@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+    }
+
+    .tip {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+    }
+
+    .item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid #dcdcdc;
+      padding: 12px;
+    }
+
+    .item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .copy-btn {
+      border: 1px solid #0b63d1;
+      background: #1677ff;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+      background: #0f67dd;
+    }
+
+    .note {
+      border: 1px solid #d8d8d8;
+      background: #f8f8f8;
+      padding: 8px 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #444;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 84px;
+      border: 1px solid #d0d0d0;
+      padding: 10px;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+      font-family: inherit;
+      color: #222;
+      background: #fff;
+      cursor: default;
+    }
+
+    .status {
+      min-height: 20px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 10px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      textarea {
+        min-height: 72px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <p class="tip">每个框里的内容只能看和复制，不能直接修改，避免误操作。</p>
+    </div>
+
+    <div class="grid">
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 1｜首次回复客户</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note">感谢您的关注和支持！我们免费分享有潜力股票、上涨股票以及交易技巧方面的信息。参与完全免费，没有任何附加条件。如果您想参与，请回复“是”。如果您不想参与，请回复“否”。谢谢！</div>
+        <textarea readonly>ご注目とご支援ありがとうございます！私たちは、注目株や上昇株情報、トレードスキルなどを無料で共有します。参加には一切の費用や条件はありません。参加希望の方は「はい」と返信してください。ご不要の場合は「いいえ」とお知らせください。よろしくお願いいたします。</textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 2｜问年龄</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note">在你加入我们之前，我可以问你几个问题吗？
+
+你今年几岁了？</div>
+        <textarea readonly>ご参加いただく前に、少しだけ質問してもよろしいですか？
+今年おいくつですか？</textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 3｜让客户补充需求</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note">您有多少年股票投资经验？或者您目前持有股票吗？
+
+如果没有，您是否愿意联系我们了解更多信息？</div>
+        <textarea readonly>あなたは何年の株式経験がありますか？それとも株を持っていますか？
+もしどちらもない場合には、あなたは接触して理解したいですか？</textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 4｜注意老师名字要改</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note">请点击链接添加我们为LINE好友。
+
+山崎博负责邀请您加入群组。
+
+感谢您的配合。</div>
+        <textarea readonly>リンクをクリックしてLINEを追加してください。
+山崎宏志さんがグループへの招待を担当しています。
+どうぞよろしくお願いいたします。</textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 5｜是的</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note">是的</div>
+        <textarea readonly>はい</textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 6｜</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note">中文说明：</div>
+        <textarea readonly></textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 7｜</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note">中文说明：</div>
+        <textarea readonly></textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 8｜</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note"></div>
+        <textarea readonly></textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 9｜</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note"></div>
+        <textarea readonly></textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 10｜</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note"></div>
+        <textarea readonly></textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 11｜</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note"></div>
+        <textarea readonly></textarea>
+        <div class="status"></div>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <span class="label">话术 12｜</span>
+          <button class="copy-btn" type="button">复制</button>
+        </div>
+        <div class="note"></div>
+        <textarea readonly></textarea>
+        <div class="status"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const items = document.querySelectorAll(".item");
+
+    async function copyText(textarea, button, status) {
+      try {
+        await navigator.clipboard.writeText(textarea.value);
+      } catch (error) {
+        textarea.select();
+        document.execCommand("copy");
+      }
+
+      button.textContent = "已复制";
+      status.textContent = "复制成功";
+
+      setTimeout(() => {
+        button.textContent = "复制";
+        status.textContent = "";
+      }, 1200);
+    }
+
+    items.forEach((item) => {
+      const button = item.querySelector(".copy-btn");
+      const textarea = item.querySelector("textarea");
+      const status = item.querySelector(".status");
+
+      button.addEventListener("click", () => {
+        copyText(textarea, button, status);
+      });
+    });
+  </script>
+</body>
+</html>
