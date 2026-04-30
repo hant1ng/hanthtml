@@ -38,7 +38,7 @@ dns:
       value: 国外dns
       disabled: false
   - proxy_rule_set:
-      match: https://raw.githubusercontent.com/IBL3ND/rule/refs/heads/main/Gemini.list
+      match: https://raw.githubusercontent.com/Proxy/rule/refs/heads/main/Gemini.list
       value: 国外dns
       disabled: false
   - proxy_rule_set:
@@ -75,10 +75,6 @@ dns:
       disabled: false
   - proxy_rule_set:
       match: https://yfamilys.com/rule/Telegram.list
-      value: 国外dns
-      disabled: false
-  - proxy_rule_set:
-      match: https://yfamilys.com/rule/Twitter.list
       value: 国外dns
       disabled: false
   - proxy_rule_set:
@@ -125,3 +121,314 @@ dns:
       match: '*'
       value: 兜底dns
       disabled: false
+policy_groups:
+- select:
+    name: PROXY
+    policies:
+    - 自动选择
+    - 香港节点
+    - 台湾节点
+    - 日本节点
+    - 狮城节点
+    - 美国节点
+    - DIRECT
+    flatten: false
+    icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/02ProxySoftLogo/Egern.png
+    hidden: false
+- select:
+    name: NoAuto
+    policies:
+    - 自动选择
+    - 香港节点
+    - 台湾节点
+    - 日本节点
+    - 狮城节点
+    - 美国节点
+    - DIRECT
+    flatten: false
+    icon: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/02ProxySoftLogo/Egern.png
+    hidden: false
+- select:
+    name: Ai
+    policies:
+    - 美国节点
+    - 日本节点
+    - 狮城节点
+    - PROXY
+    flatten: false
+    hidden: false
+- select:
+    name: Google服务
+    policies:
+    - 美国节点
+    - 日本节点
+    - 香港节点
+    - PROXY
+    flatten: false
+    hidden: false
+- select:
+    name: Telegram
+    policies:
+    - 狮城节点
+    - 香港节点
+    - 日本节点
+    - PROXY
+    flatten: false
+    hidden: false
+- external:
+    name: 机场订阅
+    type: select
+    urls:
+    - 机场链接
+    update_interval: 86400
+    hidden: true
+- fallback:
+    name: 自动选择
+    policies:
+    - 机场订阅
+    flatten: true
+    hidden: true
+- fallback:
+    name: 香港节点
+    policies:
+    - 机场订阅
+    flatten: true
+    filter: 🇭🇰|香港|Hong Kong|HK|HKG
+    hidden: true
+- fallback:
+    name: 台湾节点
+    policies:
+    - 机场订阅
+    flatten: true
+    filter: 🇹🇼|台湾|Taiwan|TW|Tai
+    hidden: true
+- fallback:
+    name: 日本节点
+    policies:
+    - 机场订阅
+    flatten: true
+    filter: 🇯🇵|日本|Japan|JP
+    hidden: true
+- fallback:
+    name: 狮城节点
+    policies:
+    - 机场订阅
+    flatten: true
+    filter: 🇸🇬|新加坡|Singapore|SG
+    hidden: true
+- fallback:
+    name: 美国节点
+    policies:
+    - 机场订阅
+    flatten: true
+    filter: 🇺🇸|美国|United States|USA|US|States
+    hidden: true
+rules:
+- rule_set:
+    match: https://johnshall.github.io/Shadowrocket-ADBlock-Rules-Forever/sr_ad_only.conf
+    policy: REJECT-NO-DROP
+    disabled: false
+- rule_set:
+    match: https://raw.githubusercontent.com/fmz200/wool_scripts/main/Loon/rule/rejectAd.list
+    policy: REJECT-NO-DROP
+    disabled: false
+- rule_set:
+    match: https://raw.githubusercontent.com/Uber-Eins/NetConfig/refs/heads/main/Rules/Advertising.list
+    policy: REJECT-NO-DROP
+    disabled: false
+- rule_set:
+    match: https://yfamilys.com/rule/DouYin.list
+    policy: DIRECT
+    disabled: false
+- rule_set:
+    match: https://yfamilys.com/rule/TikTok.list
+    policy: TK
+    disabled: false
+- rule_set:
+    match: https://raw.githubusercontent.com/Proxy/rule/refs/heads/main/Gemini.list
+    policy: Ai
+    disabled: false
+- rule_set:
+    match: https://kelee.one/Tool/Loon/Lsr/AI.lsr
+    policy: Ai
+    disabled: false
+- rule_set:
+    match: https://whatshub.top/rule/Gemini.list
+    policy: Ai
+    disabled: false
+- rule_set:
+    match: https://www.naiixi.com/Extra_Crypto.list
+    policy: Ai
+    disabled: false
+- rule_set:
+    match: https://whatshub.top/rule/OpenAI.list
+    policy: Ai
+    disabled: false
+- rule_set:
+    match: https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/rule/openai.list
+    policy: Ai
+    disabled: false
+- rule_set:
+    match: https://raw.githubusercontent.com/ConnersHua/RuleGo/master/Surge/Ruleset/Extra/AI.list
+    policy: Ai
+    disabled: false
+- rule_set:
+    match: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OpenAI/OpenAI.list
+    policy: Ai
+    disabled: false
+- rule_set:
+    match: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Crypto/Crypto.list
+    policy: Ai
+    disabled: false
+- rule_set:
+    match: https://whatshub.top/rule/Binance.list
+    policy: Ai
+    disabled: false
+- rule_set:
+    match: https://yfamilys.com/rule/Twitter.list
+    policy: X
+    disabled: false
+- rule_set:
+    match: https://yfamilys.com/rule/Telegram.list
+    policy: TG
+    disabled: false
+- rule_set:
+    match: https://yfamilys.com/rule/YouTube.list
+    policy: YouTube
+    disabled: false
+- rule_set:
+    match: https://yfamilys.com/rule/Instagram.list
+    policy: IG
+    disabled: false
+- rule_set:
+    match: https://yfamilys.com/rule/ProxyMedia.list
+    policy: Proxy
+    disabled: false
+- rule_set:
+    match: https://yfamilys.com/rule/Cloudflare.list
+    policy: Proxy
+    disabled: false
+- rule_set:
+    match: https://raw.githubusercontent.com/GMOogway/shadowrocket-rules/master/sr_proxy_list.module
+    policy: Proxy
+    disabled: false
+- rule_set:
+    match: https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/ruleset/direct.txt
+    policy: DIRECT
+    disabled: false
+- rule_set:
+    match: https://raw.githubusercontent.com/GMOogway/shadowrocket-rules/master/sr_direct_list.module
+    policy: DIRECT
+    disabled: false
+- rule_set:
+    name: 域间路由
+    match: https://raw.githubusercontent.com/Proxy/rule/refs/heads/main/LAN.list
+    policy: DIRECT
+    disabled: false
+- default:
+    policy: NoAuto
+scriptings:
+- schedule:
+    name: TestFlight监控
+    cron: '* * * * * ?'
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/TestFlight.js
+    env:
+      TF: PpJMnnTY
+    timeout: 120
+    disabled: true
+- generic:
+    name: 和风天气小组件
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/Weather_Widget.JS
+    timeout: 120
+- generic:
+    name: 机场订阅小组件
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/Sub_Widget.JS
+    timeout: 120
+- generic:
+    name: 聚合热搜小组件
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/HSW_Widget.JS
+- generic:
+    name: 万年历小组件
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/CN_Cal.JS
+- generic:
+    name: 节日倒计时小组件
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/Holiday_Countdown.js
+- generic:
+    name: 油价查询小组件
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/Oil_Widget.JS
+- generic:
+    name: 虚拟货币小组件
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/Crypto_Widget.JS
+- generic:
+    name: 彩票开奖小组件
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/Lottery-Widget.JS
+- generic:
+    name: 网络诊断雷达小组件
+    script_url: https://raw.githubusercontent.com/xcgtb/Egern-Widgets/main/Network-Pro.js
+- generic:
+    name: ip数据中心小组件
+    script_url: https://raw.githubusercontent.com/shadowlynx319/Egern/main/ip-dch.js
+- generic:
+    name: 每日限免小组件
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/App_Store_Widget.JS
+- generic:
+    name: '测试网络下载速度小组件 '
+    script_url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/NetSpeed_Widget.JS
+mitm:
+  ca_p12: egern.p12
+  ca_passphrase: egern
+widgets:
+- name: 和风天气
+  script_name: 和风天气小组件
+- name: 测试网络下载速度
+  script_name: '测试网络下载速度小组件 '
+- name: 机场订阅
+  script_name: 机场订阅小组件
+- name: 虚拟货币
+  script_name: 虚拟货币小组件
+- name: 油价查询
+  script_name: 油价查询小组件
+- name: 彩票开奖
+  script_name: 彩票开奖小组件
+- name: 节日倒计时
+  script_name: 节日倒计时小组件
+- name: 万年历
+  script_name: 万年历小组件
+- name: 聚合热搜
+  script_name: 聚合热搜小组件
+- name: 每日限免
+  script_name: 每日限免小组件
+- name: IP数据中心
+  script_name: ip数据中心小组件
+- name: 网络诊断雷达
+  script_name: 网络诊断雷达小组件
+modules:
+- url: https://raw.githubusercontent.com/thNylHx/Tools/refs/heads/main/Surge/Module/Blockads.sgmodule
+  enabled: true
+- url: https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx
+  enabled: true
+- url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/Telegram.yaml
+  env:
+    CLIENT: Telegram
+  enabled: true
+- url: https://raw.githubusercontent.com/Maasea/sgmodule/master/YouTube.Enhance.sgmodule
+  enabled: true
+- url: https://github.com/DualSubs/YouTube/releases/latest/download/DualSubs.YouTube.yaml
+  compat_arguments:
+    Type: Translate
+  enabled: true
+- url: https://reven.lovebabyforever.workers.dev/reven/iTunes.sgmodule
+  enabled: true
+- name: Revenuecat-系列解锁合集
+  url: http://script.hub/file/_start_/https://raw.githubusercontent.com/chxm1023/Rewrite/main/Reheji.js/_end_/Reheji.sgmodule?type=qx-rewrite&target=surge-module&del=true&jqEnabled=true
+  enabled: true
+- url: https://raw.githubusercontent.com/Proxy/module/refs/heads/main/surge-loon-to-egern.yaml
+  enabled: true
+- url: https://ddgksf2013.top/module/ScriptHub.Egern.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Official/%E2%AD%90%EF%B8%8F%20BoxJs.official.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Official/%E2%AD%90%EF%B8%8F%20Sub-Store.official.sgmodule
+  enabled: true
+- url: https://raw.githubusercontent.com/Script-Hub-Org/Script-Hub/refs/heads/main/modules/script-hub.beta.surge.sgmodule
+  enabled: true
