@@ -10,7 +10,7 @@
       font-family: 'HarmonyOS Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
       background: #f3f3f3;
       color: #191919;
-      padding: 0 0 60px;
+      padding: 0 0 100px;
     }
     .topbar {
       position: sticky;
@@ -19,36 +19,12 @@
       background: #fff;
       border-bottom: 1px solid #eaeaea;
       padding: 10px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .search-wrap { position: relative; }
-    .search-wrap input {
-      width: 100%;
-      padding: 8px 12px 8px 34px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 13px;
-      background: #f8f8f8;
-      color: #191919;
-      outline: none;
-    }
-    .search-wrap input:focus { border-color: #aaa; }
-    .search-icon {
-      position: absolute;
-      left: 10px; top: 50%;
-      transform: translateY(-50%);
-      font-size: 15px;
-      color: #aaa;
-      pointer-events: none;
     }
     .nav-tabs {
       display: flex;
       gap: 6px;
       overflow-x: auto;
       scrollbar-width: none;
-      padding-bottom: 2px;
     }
     .nav-tabs::-webkit-scrollbar { display: none; }
     .nav-tab {
@@ -64,8 +40,55 @@
     }
     .nav-tab:hover { background: #f3f3f3; color: #191919; }
     .nav-tab.active { background: #191919; color: #fff; border-color: transparent; }
+
+    /* 悬浮搜索胶囊 */
+    .fab {
+      position: fixed;
+      bottom: 28px;
+      right: 24px;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      height: 42px;
+      border-radius: 21px;
+      background: #191919;
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      width: 42px;
+      transition: width 0.3s cubic-bezier(.4,0,.2,1), box-shadow 0.2s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .fab:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.22); }
+    .fab.open { width: 220px; }
+    .fab-icon {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #fff;
+    }
+    .fab input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #fff;
+      font-size: 13px;
+      padding: 0 14px 0 0;
+      width: 0;
+      opacity: 0;
+      transition: opacity 0.2s 0.1s;
+      caret-color: #fff;
+    }
+    .fab.open input { width: auto; opacity: 1; }
+    .fab input::placeholder { color: rgba(255,255,255,0.4); }
+
     .page { padding: 20px 20px 0; max-width: 960px; margin: 0 auto; }
-    .section { margin-bottom: 2rem; scroll-margin-top: 95px; }
+    .section { margin-bottom: 2rem; scroll-margin-top: 60px; }
     .section-title {
       font-size: 12px;
       font-weight: 500;
@@ -110,15 +133,17 @@
 <body>
 
 <div class="topbar">
-  <div class="search-wrap">
-    <span class="search-icon">⌕</span>
-    <input type="text" id="search" placeholder="搜索书签…" autocomplete="off" />
-  </div>
   <div class="nav-tabs" id="nav-tabs"></div>
 </div>
 
 <div class="page" id="app"></div>
 <div class="no-result" id="no-result">没有找到匹配的书签</div>
+
+<!-- 悬浮搜索胶囊 -->
+<div class="fab" id="fab">
+  <div class="fab-icon" id="fab-icon">⌕</div>
+  <input type="text" id="search" placeholder="搜索书签…" autocomplete="off" />
+</div>
 
 <script>
 // ============================================================
@@ -202,6 +227,8 @@ const app = document.getElementById('app');
 const navTabs = document.getElementById('nav-tabs');
 const searchInput = document.getElementById('search');
 const noResult = document.getElementById('no-result');
+const fab = document.getElementById('fab');
+const fabIcon = document.getElementById('fab-icon');
 const sectionEls = [];
 
 BOOKMARKS.forEach(({ category, color, items }, si) => {
@@ -212,8 +239,7 @@ BOOKMARKS.forEach(({ category, color, items }, si) => {
   tab.textContent = category;
   tab.dataset.target = id;
   tab.addEventListener('click', () => {
-    searchInput.value = '';
-    filterCards('');
+    closeFab();
     setTimeout(() => {
       document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 10);
@@ -277,7 +303,30 @@ function filterCards(kw) {
   noResult.style.display = totalVisible === 0 ? 'block' : 'none';
 }
 
+let isOpen = false;
+
+function openFab() {
+  isOpen = true;
+  fab.classList.add('open');
+  setTimeout(() => searchInput.focus(), 200);
+}
+
+function closeFab() {
+  isOpen = false;
+  fab.classList.remove('open');
+  searchInput.value = '';
+  filterCards('');
+  searchInput.blur();
+}
+
+fabIcon.addEventListener('click', e => {
+  e.stopPropagation();
+  isOpen ? closeFab() : openFab();
+});
+
 searchInput.addEventListener('input', e => filterCards(e.target.value));
+searchInput.addEventListener('keydown', e => { if (e.key === 'Escape') closeFab(); });
+document.addEventListener('click', e => { if (isOpen && !fab.contains(e.target)) closeFab(); });
 
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
