@@ -10,24 +10,73 @@
       font-family: 'HarmonyOS Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
       background: #f3f3f3;
       color: #191919;
-      padding: 40px 20px;
-      display: flex;
-      justify-content: center;
+      padding: 0 0 60px;
     }
-    .page { width: 100%; max-width: 960px; }
-    .section { margin-bottom: 2rem; }
-    .section-title {
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #fff;
+      border-bottom: 1px solid #eaeaea;
+      padding: 10px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .search-wrap { position: relative; }
+    .search-wrap input {
+      width: 100%;
+      padding: 8px 12px 8px 34px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
       font-size: 13px;
+      background: #f8f8f8;
+      color: #191919;
+      outline: none;
+    }
+    .search-wrap input:focus { border-color: #aaa; }
+    .search-icon {
+      position: absolute;
+      left: 10px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      color: #aaa;
+      pointer-events: none;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+    .nav-tab {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid #eaeaea;
+      background: transparent;
+      color: #888;
+      transition: all 0.15s;
+    }
+    .nav-tab:hover { background: #f3f3f3; color: #191919; }
+    .nav-tab.active { background: #191919; color: #fff; border-color: transparent; }
+    .page { padding: 20px 20px 0; max-width: 960px; margin: 0 auto; }
+    .section { margin-bottom: 2rem; scroll-margin-top: 95px; }
+    .section-title {
+      font-size: 12px;
       font-weight: 500;
       color: #888;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       margin-bottom: 10px;
-      padding-left: 2px;
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 8px;
     }
     .card {
@@ -35,7 +84,7 @@
       flex-direction: column;
       gap: 4px;
       padding: 10px 12px;
-      background: #ffffff;
+      background: #fff;
       border: 1px solid #eaeaea;
       border-radius: 10px;
       text-decoration: none;
@@ -43,95 +92,205 @@
       transition: border-color 0.15s, transform 0.15s;
     }
     .card:hover { border-color: #ccc; transform: translateY(-2px); }
+    .card.hidden { display: none; }
     .card-name { font-size: 13px; font-weight: 500; }
     .card-desc { font-size: 11px; color: #b2b2b2; line-height: 1.4; }
-    .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      flex-shrink: 0; margin-bottom: 6px;
+    .dot { width: 8px; height: 8px; border-radius: 50%; margin-bottom: 6px; }
+    .section.empty { display: none; }
+    .no-result {
+      text-align: center;
+      color: #aaa;
+      font-size: 13px;
+      padding: 40px 0;
+      display: none;
     }
+    mark { background: #ffe066; color: inherit; border-radius: 2px; padding: 0 1px; }
   </style>
 </head>
 <body>
-<div class="page">
 
-  <div class="section">
-    <div class="section-title">远程控制</div>
-    <div class="grid">
-      <a class="card" href="https://anydesk.com" target="_blank"><div class="dot" style="background:#7F77DD"></div><span class="card-name">AnyDesk</span><span class="card-desc">远程控制与设备管理</span></a>
-      <a class="card" href="https://sunlogin.oray.com" target="_blank"><div class="dot" style="background:#7F77DD"></div><span class="card-name">向日葵远程</span><span class="card-desc">远程控制与设备管理</span></a>
-      <a class="card" href="https://www.todesk.com/" target="_blank"><div class="dot" style="background:#7F77DD"></div><span class="card-name">ToDesk</span><span class="card-desc">远程控制与设备管理</span></a>
-    </div>
+<div class="topbar">
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search" placeholder="搜索书签…" autocomplete="off" />
   </div>
-
-  <div class="section">
-    <div class="section-title">即时通讯</div>
-    <div class="grid">
-      <a class="card" href="https://telegram.org" target="_blank"><div class="dot" style="background:#378ADD"></div><span class="card-name">Telegram</span><span class="card-desc">纸飞机</span></a>
-      <a class="card" href="https://weixin.qq.com" target="_blank"><div class="dot" style="background:#378ADD"></div><span class="card-name">微信</span><span class="card-desc">国民聊天</span></a>
-      <a class="card" href="https://im.qq.com" target="_blank"><div class="dot" style="background:#378ADD"></div><span class="card-name">QQ</span><span class="card-desc">你的企鹅还在吗</span></a>
-      <a class="card" href="https://line.me" target="_blank"><div class="dot" style="background:#378ADD"></div><span class="card-name">LINE</span><span class="card-desc">跨国通讯</span></a>
-      <a class="card" href="https://www.whatsapp.com/" target="_blank"><div class="dot" style="background:#378ADD"></div><span class="card-name">WhatsApp</span><span class="card-desc">跨国通讯</span></a>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">浏览器 &amp; 扩展</div>
-    <div class="grid">
-      <a class="card" href="https://www.google.cn/chrome/" target="_blank"><div class="dot" style="background:#639922"></div><span class="card-name">谷歌浏览器</span><span class="card-desc">Chrome</span></a>
-      <a class="card" href="https://crxdl.com/" target="_blank"><div class="dot" style="background:#639922"></div><span class="card-name">Chrome 扩展下载</span><span class="card-desc">先去广告</span></a>
-      <a class="card" href="https://chromewebstore.google.com/detail/ublock/epcnnfbjfcgphgdmggkamkmgojdagdnn" target="_blank"><div class="dot" style="background:#639922"></div><span class="card-name">uBlock</span><span class="card-desc">Chrome 去广告</span></a>
-      <a class="card" href="https://chromewebstore.google.com/detail/proxy-switchyomega-3-zero/pfnededegaaopdmhkdmcofjmoldfiped" target="_blank"><div class="dot" style="background:#639922"></div><span class="card-name">SwitchyOmega 3</span><span class="card-desc">代理切换</span></a>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">梯子 &amp; 代理</div>
-    <div class="grid">
-      <a class="card" href="https://guatizi.com/" target="_blank"><div class="dot" style="background:#BA7517"></div><span class="card-name">挂梯子</span><span class="card-desc">梯子推荐</span></a>
-      <a class="card" href="https://www.quickq.io/" target="_blank"><div class="dot" style="background:#BA7517"></div><span class="card-name">快客 VPN</span><span class="card-desc">垃圾</span></a>
-      <a class="card" href="https://良心云.com" target="_blank"><div class="dot" style="background:#BA7517"></div><span class="card-name">良心云</span><span class="card-desc">真良心</span></a>
-      <a class="card" href="https://ikuuu.org" target="_blank"><div class="dot" style="background:#BA7517"></div><span class="card-name">爱坤</span><span class="card-desc">稳</span></a>
-      <a class="card" href="https://karing.app/" target="_blank"><div class="dot" style="background:#BA7517"></div><span class="card-name">Karing</span><span class="card-desc">代理客户端</span></a>
-      <a class="card" href="https://appark.ai/cn/us-appleid-shared" target="_blank"><div class="dot" style="background:#BA7517"></div><span class="card-name">美区 Apple ID</span><span class="card-desc">苹果共享账号</span></a>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">系统工具 &amp; 装机</div>
-    <div class="grid">
-      <a class="card" href="https://msdn.sjjzm.com/" target="_blank"><div class="dot" style="background:#1D9E75"></div><span class="card-name">山己子木</span><span class="card-desc">系统镜像</span></a>
-      <a class="card" href="https://www.wepe.com.cn/" target="_blank"><div class="dot" style="background:#1D9E75"></div><span class="card-name">微 PE</span><span class="card-desc">PE 工具箱</span></a>
-      <a class="card" href="https://github.com/NORMAL-EX/LetRecovery" target="_blank"><div class="dot" style="background:#1D9E75"></div><span class="card-name">LetRecovery</span><span class="card-desc">免费开源重装工具</span></a>
-      <a class="card" href="https://kms.cangshui.net/" target="_blank"><div class="dot" style="background:#1D9E75"></div><span class="card-name">KMS 服务</span><span class="card-desc">Windows 激活</span></a>
-      <a class="card" href="https://otp.landian.vip/zh-cn/" target="_blank"><div class="dot" style="background:#1D9E75"></div><span class="card-name">Office Tools Plus</span><span class="card-desc">一键部署 Office</span></a>
-      <a class="card" href="https://winhance.net/" target="_blank"><div class="dot" style="background:#1D9E75"></div><span class="card-name">Winhance</span><span class="card-desc">Windows 优化工具</span></a>
-      <a class="card" href="https://img.hant.me/file/1753526098238_WinRAR_5.61_x64_SC.exe" target="_blank"><div class="dot" style="background:#1D9E75"></div><span class="card-name">WinRAR</span><span class="card-desc">解压软件</span></a>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">软件下载</div>
-    <div class="grid">
-      <a class="card" href="https://pc.qq.com/" target="_blank"><div class="dot" style="background:#D4537E"></div><span class="card-name">腾讯软件中心</span><span class="card-desc">软件商店</span></a>
-      <a class="card" href="https://apkcombo.com/downloader/" target="_blank"><div class="dot" style="background:#D4537E"></div><span class="card-name">APK Downloader</span><span class="card-desc">APK 下载器</span></a>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">开发 &amp; 编程</div>
-    <div class="grid">
-      <a class="card" href="https://cursor.com/" target="_blank"><div class="dot" style="background:#534AB7"></div><span class="card-name">Cursor</span><span class="card-desc">AI 编程</span></a>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">账号 &amp; 娱乐</div>
-    <div class="grid">
-      <a class="card" href="https://zhanghaoya.com/" target="_blank"><div class="dot" style="background:#888780"></div><span class="card-name">账号鸭</span><span class="card-desc">海外账号买卖</span></a>
-      <a class="card" href="https://moovie.c2v2.com/" target="_blank"><div class="dot" style="background:#888780"></div><span class="card-name">影牛</span><span class="card-desc">免费在线电影</span></a>
-    </div>
-  </div>
-
+  <div class="nav-tabs" id="nav-tabs"></div>
 </div>
+
+<div class="page" id="app"></div>
+<div class="no-result" id="no-result">没有找到匹配的书签</div>
+
+<script>
+// ============================================================
+//  ✏️  在这里管理所有书签
+// ============================================================
+const BOOKMARKS = [
+  {
+    category: '远程控制', color: '#7F77DD',
+    items: [
+      { name: 'AnyDesk',   url: 'https://anydesk.com',       desc: '远程控制与设备管理' },
+      { name: '向日葵远程', url: 'https://sunlogin.oray.com', desc: '远程控制与设备管理' },
+      { name: 'ToDesk',    url: 'https://www.todesk.com/',    desc: '远程控制与设备管理' },
+    ]
+  },
+  {
+    category: '即时通讯', color: '#378ADD',
+    items: [
+      { name: 'Telegram', url: 'https://telegram.org',     desc: '纸飞机' },
+      { name: '微信',     url: 'https://weixin.qq.com',     desc: '国民聊天' },
+      { name: 'QQ',       url: 'https://im.qq.com',         desc: '你的企鹅还在吗' },
+      { name: 'LINE',     url: 'https://line.me',           desc: '跨国通讯' },
+      { name: 'WhatsApp', url: 'https://www.whatsapp.com/', desc: '跨国通讯' },
+    ]
+  },
+  {
+    category: '浏览器 & 扩展', color: '#639922',
+    items: [
+      { name: '谷歌浏览器',      url: 'https://www.google.cn/chrome/',    desc: 'Chrome' },
+      { name: 'Chrome 扩展下载', url: 'https://crxdl.com/',               desc: '先去广告' },
+      { name: 'uBlock',          url: 'https://chromewebstore.google.com/detail/ublock/epcnnfbjfcgphgdmggkamkmgojdagdnn', desc: 'Chrome 去广告' },
+      { name: 'SwitchyOmega 3',  url: 'https://chromewebstore.google.com/detail/proxy-switchyomega-3-zero/pfnededegaaopdmhkdmcofjmoldfiped', desc: '代理切换' },
+    ]
+  },
+  {
+    category: '梯子 & 代理', color: '#BA7517',
+    items: [
+      { name: '挂梯子',        url: 'https://guatizi.com/',                    desc: '梯子推荐' },
+      { name: '快客 VPN',     url: 'https://www.quickq.io/',                  desc: '垃圾' },
+      { name: '良心云',        url: 'https://良心云.com',                      desc: '真良心' },
+      { name: '爱坤',          url: 'https://ikuuu.org',                       desc: '稳' },
+      { name: 'Karing',        url: 'https://karing.app/',                     desc: '代理客户端' },
+      { name: '美区 Apple ID', url: 'https://appark.ai/cn/us-appleid-shared', desc: '苹果共享账号' },
+    ]
+  },
+  {
+    category: '系统工具 & 装机', color: '#1D9E75',
+    items: [
+      { name: '山己子木',          url: 'https://msdn.sjjzm.com/',          desc: '系统镜像' },
+      { name: '微 PE',             url: 'https://www.wepe.com.cn/',         desc: 'PE 工具箱' },
+      { name: 'LetRecovery',       url: 'https://github.com/NORMAL-EX/LetRecovery', desc: '免费开源重装工具' },
+      { name: 'KMS 服务',          url: 'https://kms.cangshui.net/',        desc: 'Windows 激活' },
+      { name: 'Office Tools Plus', url: 'https://otp.landian.vip/zh-cn/',   desc: '一键部署 Office' },
+      { name: 'Winhance',          url: 'https://winhance.net/',            desc: 'Windows 优化工具' },
+      { name: 'WinRAR',            url: 'https://img.hant.me/file/1753526098238_WinRAR_5.61_x64_SC.exe', desc: '解压软件' },
+    ]
+  },
+  {
+    category: '软件下载', color: '#D4537E',
+    items: [
+      { name: '腾讯软件中心',   url: 'https://pc.qq.com/',               desc: '软件商店' },
+      { name: 'APK Downloader', url: 'https://apkcombo.com/downloader/', desc: 'APK 下载器' },
+    ]
+  },
+  {
+    category: '开发 & 编程', color: '#534AB7',
+    items: [
+      { name: 'Cursor', url: 'https://cursor.com/', desc: 'AI 编程' },
+    ]
+  },
+  {
+    category: '账号 & 娱乐', color: '#888780',
+    items: [
+      { name: '账号鸭', url: 'https://zhanghaoya.com/',  desc: '海外账号买卖' },
+      { name: '影牛',   url: 'https://moovie.c2v2.com/', desc: '免费在线电影' },
+    ]
+  },
+];
+// ============================================================
+
+const app = document.getElementById('app');
+const navTabs = document.getElementById('nav-tabs');
+const searchInput = document.getElementById('search');
+const noResult = document.getElementById('no-result');
+const sectionEls = [];
+
+BOOKMARKS.forEach(({ category, color, items }, si) => {
+  const id = 'sec-' + si;
+
+  const tab = document.createElement('button');
+  tab.className = 'nav-tab';
+  tab.textContent = category;
+  tab.dataset.target = id;
+  tab.addEventListener('click', () => {
+    searchInput.value = '';
+    filterCards('');
+    setTimeout(() => {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 10);
+  });
+  navTabs.appendChild(tab);
+
+  const section = document.createElement('div');
+  section.className = 'section';
+  section.id = id;
+
+  const title = document.createElement('div');
+  title.className = 'section-title';
+  title.textContent = category;
+  section.appendChild(title);
+
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+
+  items.forEach(({ name, url, desc }) => {
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = url;
+    a.target = '_blank';
+    a.dataset.name = name.toLowerCase();
+    a.dataset.desc = desc.toLowerCase();
+    a.dataset.nameOrig = name;
+    a.dataset.descOrig = desc;
+    a.innerHTML = `<div class="dot" style="background:${color}"></div><span class="card-name">${name}</span><span class="card-desc">${desc}</span>`;
+    grid.appendChild(a);
+  });
+
+  section.appendChild(grid);
+  app.appendChild(section);
+  sectionEls.push(section);
+});
+
+function highlight(text, kw) {
+  if (!kw) return text;
+  const re = new RegExp(`(${kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return text.replace(re, '<mark>$1</mark>');
+}
+
+function filterCards(kw) {
+  const q = kw.trim().toLowerCase();
+  let totalVisible = 0;
+  sectionEls.forEach(section => {
+    const cards = section.querySelectorAll('.card');
+    let visible = 0;
+    cards.forEach(card => {
+      const match = !q || card.dataset.name.includes(q) || card.dataset.desc.includes(q);
+      card.classList.toggle('hidden', !match);
+      if (match) {
+        visible++;
+        card.querySelector('.card-name').innerHTML = highlight(card.dataset.nameOrig, q);
+        card.querySelector('.card-desc').innerHTML = highlight(card.dataset.descOrig, q);
+      }
+    });
+    section.classList.toggle('empty', visible === 0);
+    totalVisible += visible;
+  });
+  noResult.style.display = totalVisible === 0 ? 'block' : 'none';
+}
+
+searchInput.addEventListener('input', e => filterCards(e.target.value));
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      document.querySelectorAll('.nav-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.target === id);
+      });
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+
+sectionEls.forEach(s => observer.observe(s));
+</script>
 </body>
 </html>
