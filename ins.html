@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>激活码测试工具</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f5f5f5; padding: 30px; color: #333; max-width: 700px; }
+    h1 { font-size: 20px; margin-bottom: 24px; color: #111; }
+    .card { background: #fff; border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    h2 { font-size: 13px; font-weight: 600; margin-bottom: 16px; color: #888; text-transform: uppercase; letter-spacing: .5px; }
+    label { display: block; font-size: 13px; color: #555; margin-bottom: 4px; }
+    input { width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 12px; outline: none; }
+    input:focus { border-color: #4f46e5; }
+    .row { display: flex; gap: 12px; }
+    .row input { flex: 1; }
+    button { background: #4f46e5; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin-top: 2px; }
+    button:hover { background: #4338ca; }
+    button.danger { background: #dc2626; }
+    button.danger:hover { background: #b91c1c; }
+    button.secondary { background: #6b7280; }
+    button.secondary:hover { background: #4b5563; }
+    .result { margin-top: 14px; background: #f8f8f8; border-radius: 6px; padding: 12px; font-size: 13px; font-family: monospace; white-space: pre-wrap; word-break: break-all; min-height: 40px; border: 1px solid #eee; }
+    .success { color: #16a34a; }
+    .error   { color: #dc2626; }
+    .info    { color: #2563eb; }
+    .codes   { margin-top: 12px; }
+    .code-item { display: inline-block; background: #eef2ff; color: #4f46e5; border-radius: 4px; padding: 4px 10px; margin: 4px; font-family: monospace; font-size: 14px; cursor: pointer; }
+    .code-item:hover { background: #e0e7ff; }
+    small { display: block; margin-top: 8px; color: #aaa; font-size: 12px; }
+    hr { border: none; border-top: 1px solid #eee; margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <h1>🔑 激活码测试工具</h1>
+
+  <!-- 生成 -->
+  <div class="card">
+    <h2>生成激活码</h2>
+    <label>管理员密钥</label>
+    <input type="password" id="secret" placeholder="ADMIN_SECRET">
+    <div class="row">
+      <div style="flex:1">
+        <label>生成数量</label>
+        <input type="number" id="count" value="3" min="1" max="100">
+      </div>
+      <div style="flex:1">
+        <label>每码最多激活设备数</label>
+        <input type="number" id="maxActivations" value="1" min="1" max="999">
+      </div>
+    </div>
+    <button onclick="generate()">生成</button>
+    <div class="result" id="gen-result">—</div>
+    <div class="codes" id="codes-list"></div>
+    <small>点击激活码可复制</small>
+  </div>
+
+  <!-- 验证 -->
+  <div class="card">
+    <h2>验证 / 激活</h2>
+    <label>激活码</label>
+    <input type="text" id="code" placeholder="XXXX-XXXX-XXXX-XXXX">
+    <label>设备 ID（可选）</label>
+    <input type="text" id="deviceId" placeholder="my-device-001">
+    <button onclick="verify()">验证</button>
+    <div class="result" id="verify-result">—</div>
+  </div>
+
+  <!-- 查状态 -->
+  <div class="card">
+    <h2>查询激活状态（管理员）</h2>
+    <label>管理员密钥</label>
+    <input type="password" id="secret2" placeholder="ADMIN_SECRET">
+    <label>激活码</label>
+    <input type="text" id="statusCode" placeholder="XXXX-XXXX-XXXX-XXXX">
+    <button class="secondary" onclick="checkStatus()">查询</button>
+    <div class="result" id="status-result">—</div>
+  </div>
+
+  <!-- 撤销 -->
+  <div class="card">
+    <h2>撤销激活码（管理员）</h2>
+    <label>管理员密钥</label>
+    <input type="password" id="secret3" placeholder="ADMIN_SECRET">
+    <label>激活码</label>
+    <input type="text" id="revokeCode" placeholder="XXXX-XXXX-XXXX-XXXX">
+    <button class="danger" onclick="revoke()">撤销</button>
+    <div class="result" id="revoke-result">—</div>
+  </div>
+
+  <script>
+    const BASE = 'https://activation-worker.44644141.workers.dev';
+
+    async function call(path, method, headers, body) {
+      const res = await fetch(`${BASE}${path}`, {
+        method,
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      return res.json();
+    }
+
+    function setResult(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = `result ${type}`;
+    }
+
+    async function generate() {
+      const secret = document.getElementById('secret').value.trim();
+      const count = parseInt(document.getElementById('count').value) || 1;
+      const maxActivations = parseInt(document.getElementById('maxActivations').value) || 1;
+      const codesEl = document.getElementById('codes-list');
+
+      if (!secret) { setResult('gen-result', '请填写管理员密钥', 'error'); return; }
+      setResult('gen-result', '请求中...', '');
+      codesEl.innerHTML = '';
+
+      try {
+        const data = await call('/generate', 'POST', { Authorization: `Bearer ${secret}` }, { count, maxActivations });
+        if (data.success) {
+          setResult('gen-result', `✅ 生成 ${data.codes.length} 个激活码，每码限 ${data.maxActivations} 台设备`, 'success');
+          data.codes.forEach(code => {
+            const span = document.createElement('span');
+            span.className = 'code-item';
+            span.textContent = code;
+            span.onclick = () => {
+              navigator.clipboard.writeText(code);
+              span.textContent = '已复制 ✓';
+              setTimeout(() => span.textContent = code, 1500);
+            };
+            codesEl.appendChild(span);
+          });
+        } else {
+          setResult('gen-result', `❌ ${data.message}`, 'error');
+        }
+      } catch (e) {
+        setResult('gen-result', `❌ 请求失败：${e.message}`, 'error');
+      }
+    }
+
+    async function verify() {
+      const code = document.getElementById('code').value.trim();
+      const deviceId = document.getElementById('deviceId').value.trim();
+      if (!code) { setResult('verify-result', '请填写激活码', 'error'); return; }
+      setResult('verify-result', '请求中...', '');
+
+      try {
+        const data = await call('/verify', 'POST', {}, { code, deviceId: deviceId || undefined });
+        if (data.success) {
+          const extra = data.remaining !== undefined ? `\n剩余可激活设备：${data.remaining}` : '';
+          setResult('verify-result', `✅ ${data.message}${extra}`, 'success');
+        } else {
+          setResult('verify-result', `❌ ${data.message}`, 'error');
+        }
+      } catch (e) {
+        setResult('verify-result', `❌ 请求失败：${e.message}`, 'error');
+      }
+    }
+
+    async function checkStatus() {
+      const secret = document.getElementById('secret2').value.trim();
+      const code = document.getElementById('statusCode').value.trim();
+      if (!secret || !code) { setResult('status-result', '请填写密钥和激活码', 'error'); return; }
+      setResult('status-result', '请求中...', '');
+
+      try {
+        const data = await call(`/status?code=${encodeURIComponent(code)}`, 'GET', { Authorization: `Bearer ${secret}` });
+        if (data.success) {
+          const lines = [
+            `状态：${data.status === 'active' ? '✅ 可用' : '🔴 已用完'}`,
+            `激活上限：${data.maxActivations}`,
+            `已用：${data.used}  剩余：${data.remaining}`,
+            `创建时间：${data.createdAt}`,
+            '',
+            '已激活设备：',
+            ...(data.activations.length
+              ? data.activations.map((a, i) => `  ${i + 1}. ${a.deviceId}  (${a.activatedAt})`)
+              : ['  暂无']),
+          ];
+          setResult('status-result', lines.join('\n'), 'info');
+        } else {
+          setResult('status-result', `❌ ${data.message}`, 'error');
+        }
+      } catch (e) {
+        setResult('status-result', `❌ 请求失败：${e.message}`, 'error');
+      }
+    }
+
+    async function revoke() {
+      const secret = document.getElementById('secret3').value.trim();
+      const code = document.getElementById('revokeCode').value.trim();
+      if (!secret || !code) { setResult('revoke-result', '请填写密钥和激活码', 'error'); return; }
+      setResult('revoke-result', '请求中...', '');
+
+      try {
+        const data = await call('/revoke', 'POST', { Authorization: `Bearer ${secret}` }, { code });
+        setResult('revoke-result', data.success ? `✅ ${data.message}` : `❌ ${data.message}`, data.success ? 'success' : 'error');
+      } catch (e) {
+        setResult('revoke-result', `❌ 请求失败：${e.message}`, 'error');
+      }
+    }
+  </script>
+</body>
+</html>
