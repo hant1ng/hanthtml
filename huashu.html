@@ -1,302 +1,599 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>施工水印相机</title>
+<style>
+  :root{
+    --bg:#14171C;
+    --panel:#1B1F26;
+    --panel-2:#20242C;
+    --border:#2A2F38;
+    --gold:#C6A15B;
+    --gold-dim:#8A7442;
+    --text-1:#F4F5F7;
+    --text-2:#9AA1AC;
+    --text-3:#666D78;
+    --danger:#D9776B;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text-1);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  body{padding-bottom:env(safe-area-inset-bottom);}
+  .wrap{max-width:520px;margin:0 auto;padding:0 16px 40px;}
 
-    body {
-      margin: 0;
-      padding: 16px;
-      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-      background: #f5f5f5;
-      color: #222;
-    }
+  header{padding:28px 16px 18px;text-align:center;}
+  header .eyebrow{font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+  header h1{font-size:22px;font-weight:600;margin:0;letter-spacing:1px;}
+  header .rule{width:36px;height:2px;background:var(--gold);margin:14px auto 0;border-radius:2px;}
 
-    .wrap {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;}
+  .card h2{font-size:12px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin:0 0 12px;font-weight:600;}
 
-    .topbar {
-      margin-bottom: 12px;
-    }
+  .upload-zone{display:block;border:1.5px dashed var(--border);border-radius:12px;padding:22px 12px;text-align:center;color:var(--text-2);cursor:pointer;transition:border-color .15s;}
+  .upload-zone:active{border-color:var(--gold);}
+  .upload-zone .icon{font-size:26px;margin-bottom:6px;color:var(--gold);}
+  .upload-zone .sub{font-size:12px;color:var(--text-3);margin-top:4px;}
+  input[type=file]{display:none;}
 
-    h1 {
-      margin: 0 0 6px;
-      font-size: 22px;
-    }
+  .thumbs{display:flex;gap:8px;overflow-x:auto;margin-top:12px;padding-bottom:2px;}
+  .thumbs::-webkit-scrollbar{display:none;}
+  .thumb{position:relative;flex:0 0 auto;width:56px;height:56px;border-radius:8px;overflow:hidden;border:2px solid transparent;}
+  .thumb.active{border-color:var(--gold);}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb .del{position:absolute;top:1px;right:1px;width:16px;height:16px;background:rgba(0,0,0,.65);color:#fff;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;line-height:1;}
+  .count-pill{font-size:11px;color:var(--text-3);margin-top:8px;}
 
-    .tip {
-      margin: 0;
-      color: #666;
-      font-size: 14px;
-    }
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;letter-spacing:.5px;}
+  .field input[type=text],
+  .field input[type=number],
+  .field input[type=date],
+  .field input[type=time]{
+    width:100%;min-width:0;background:var(--panel-2);border:1px solid var(--border);border-radius:10px;
+    color:var(--text-1);font-size:15px;padding:11px 8px;font-family:inherit;
+  }
+  .field input:focus{outline:none;border-color:var(--gold-dim);}
+  .row2{display:flex;gap:10px;min-width:0;}
+  .row2 .field{flex:1;min-width:0;}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 12px;
-    }
+  .weather-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+  .wopt{background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;color:var(--text-2);font-size:12px;cursor:pointer;}
+  .wopt.active{border-color:var(--gold);color:var(--gold);background:rgba(198,161,91,0.08);}
+  .wopt .wicon{font-size:18px;display:block;margin-bottom:4px;}
 
-    .item {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      background: #fff;
-      border: 1px solid #dcdcdc;
-      padding: 12px;
-    }
+  .preview-wrap{background:var(--panel-2);border-radius:12px;overflow:hidden;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;min-height:180px;}
+  .preview-wrap canvas{width:100%;height:auto;display:block;}
+  .placeholder-note{font-size:11px;color:var(--text-3);text-align:center;margin-top:8px;}
 
-    .item-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .label {
-      font-size: 14px;
-      font-weight: 700;
-      color: #333;
-    }
-
-    .copy-btn {
-      border: 1px solid #0b63d1;
-      background: #1677ff;
-      color: #fff;
-      padding: 6px 12px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .copy-btn:hover {
-      background: #0f67dd;
-    }
-
-    .note {
-      border: 1px solid #d8d8d8;
-      background: #f8f8f8;
-      padding: 8px 10px;
-      font-size: 13px;
-      line-height: 1.5;
-      color: #444;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 84px;
-      border: 1px solid #d0d0d0;
-      padding: 10px;
-      font-size: 14px;
-      line-height: 1.6;
-      resize: vertical;
-      font-family: inherit;
-      color: #222;
-      background: #fff;
-      cursor: default;
-    }
-
-    .status {
-      min-height: 20px;
-      font-size: 12px;
-      color: #666;
-    }
-
-    @media (max-width: 700px) {
-      body {
-        padding: 10px;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      textarea {
-        min-height: 72px;
-      }
-    }
-  </style>
+  .actions{display:flex;gap:10px;margin-top:4px;}
+  button{font-family:inherit;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;flex:1;}
+  .btn-primary{background:var(--gold);color:#1B1503;}
+  .btn-primary:active{background:var(--gold-dim);}
+  .btn-primary:disabled{background:#3a3a3a;color:#777;}
+  .btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text-2);}
+  .status{font-size:12px;color:var(--text-3);text-align:center;margin-top:10px;min-height:16px;}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <p class="tip">每个框里的内容只能看和复制，不能直接修改，避免误操作。</p>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">SITE RECORD</div>
+    <h1>施工水印相机</h1>
+    <div class="rule"></div>
+  </header>
+
+  <div class="card">
+    <h2>照片</h2>
+    <label class="upload-zone" for="fileInput">
+      <div class="icon">＋</div>
+      <div>点击选择照片</div>
+      <div class="sub">支持批量选择，水印将按每张照片尺寸自动缩放</div>
+    </label>
+    <input type="file" id="fileInput" accept="image/*" multiple>
+    <div class="thumbs" id="thumbs"></div>
+    <div class="count-pill" id="countPill"></div>
+  </div>
+
+  <div class="card">
+    <h2>施工信息</h2>
+    <div class="field">
+      <label>单位名称</label>
+      <input type="text" id="company" placeholder="例：湖北叶茂管道工程有限公司" maxlength="30" value="湖北叶茂管道工程有限公司">
     </div>
-
-    <div class="grid">
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 1｜首次回复客户</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">感谢您的关注和支持！我们免费分享有潜力股票、上涨股票以及交易技巧方面的信息。参与完全免费，没有任何附加条件。如果您想参与，请回复“是”。如果您不想参与，请回复“否”。谢谢！</div>
-        <textarea readonly>ご注目とご支援ありがとうございます！私たちは、注目株や上昇株情報、トレードスキルなどを無料で共有します。参加には一切の費用や条件はありません。参加希望の方は「はい」と返信してください。ご不要の場合は「いいえ」とお知らせください。よろしくお願いいたします。</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 2｜问年龄</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">在你加入我们之前，我可以问你几个问题吗？
-
-你今年几岁了？</div>
-        <textarea readonly>ご参加いただく前に、少しだけ質問してもよろしいですか？
-今年おいくつですか？</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 3｜让客户补充需求</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">您有多少年股票投资经验？或者您目前持有股票吗？
-
-如果没有，您是否愿意联系我们了解更多信息？</div>
-        <textarea readonly>あなたは何年の株式経験がありますか？それとも株を持っていますか？
-もしどちらもない場合には、あなたは接触して理解したいですか？</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 4｜注意老师名字要改</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">请点击链接添加我们为LINE好友。
-
-山崎博负责邀请您加入群组。
-
-感谢您的配合。</div>
-        <textarea readonly>リンクをクリックしてLINEを追加してください。
-山崎宏志さんがグループへの招待を担当しています。
-どうぞよろしくお願いいたします。</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 5｜是的</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">是的</div>
-        <textarea readonly>はい</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 6｜</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">如果您有空，请回复一下，我将不胜感激。</div>
-        <textarea readonly>お手すきの際にご返信いただけますと幸いです。</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 7｜</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">为了防止未成年人进行股票交易，
-恕我冒昧，请问您多大了？</div>
-        <textarea readonly>未成年の方による株取引を防ぐため、失礼で すがご年齢を伺ってもよろしいでしょうか?</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 8｜</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">您有多少年股票经验</div>
-        <textarea readonly>あなたは何年の株式経験がありますか？</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 9｜</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">您好，请回复</div>
-        <textarea readonly>こんにちは、ご返信ください。</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 10｜</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">如果链接无法访问，请保存二维码并使用LINE扫描添加我们。</div>
-        <textarea readonly>リンクが利用できない場合は、QRコードを保存し、LINEで読み取って追加してください。</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 11｜</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">添加完成后请通知我。</div>
-        <textarea readonly>追加したら教えてください。</textarea>
-        <div class="status"></div>
-      </div>
-
-      <div class="item">
-        <div class="item-head">
-          <span class="label">话术 12｜</span>
-          <button class="copy-btn" type="button">复制</button>
-        </div>
-        <div class="note">感谢您一直以来的支持与关注！为了表达我的谢意，我本月创建了一个新的LINE群组。如果您还没有加入，请回复“88”。
-我们将免费分享关于潜力股、上涨股、交易技巧等信息。加入群组没有任何费用或附加条件。</div>
-        <textarea readonly>お世話になっております。ご注目とご支援ありがとうございます!感謝の気持ちを込めて、
-今月から新しいLINEグループを聞設しました。まだ参加していない場合は「88」と返信してください。
-注目株、上昇株情報、トレードスキルなどを無料で共有します。参加費や条件は一切ありません</textarea>
-        <div class="status"></div>
-      </div>
+    <div class="field">
+      <label>施工内容</label>
+      <input type="text" id="content" placeholder="例：三层顶板钢筋绑扎" maxlength="40">
+    </div>
+    <div class="field">
+      <label>地点</label>
+      <input type="text" id="location" placeholder="例：XX项目 3号楼 3F" maxlength="30">
+    </div>
+    <div class="field">
+      <label>日期</label>
+      <input type="date" id="date">
+    </div>
+    <div class="field">
+      <label>时间</label>
+      <input type="time" id="time">
     </div>
   </div>
 
-  <script>
-    const items = document.querySelectorAll(".item");
+  <div class="card">
+    <h2>天气</h2>
+    <div class="weather-grid" id="weatherGrid"></div>
+    <div class="field" style="margin-top:14px;">
+      <label>温度 (℃)</label>
+      <input type="number" id="temp" placeholder="例：28" value="28">
+    </div>
+  </div>
 
-    async function copyText(textarea, button, status) {
-      try {
-        await navigator.clipboard.writeText(textarea.value);
-      } catch (error) {
-        textarea.select();
-        document.execCommand("copy");
-      }
+  <div class="card">
+    <h2>预览</h2>
+    <div class="preview-wrap"><canvas id="previewCanvas"></canvas></div>
+    <div class="placeholder-note">未选择照片时为示例底图，水印比例与真实照片一致</div>
+  </div>
 
-      button.textContent = "已复制";
-      status.textContent = "复制成功";
+  <div class="actions">
+    <button class="btn-primary" id="downloadBtn">下载水印照片</button>
+  </div>
+  <div class="status" id="status"></div>
 
-      setTimeout(() => {
-        button.textContent = "复制";
-        status.textContent = "";
-      }, 1200);
+</div>
+
+<script>
+(function(){
+  const GOLD = '#C6A15B';
+  const WHITE = '#F4F5F7';
+  const SUB = '#C7CCD3';
+
+  const weatherTypes = [
+    {key:'sunny',   label:'晴'},
+    {key:'cloudy',  label:'多云'},
+    {key:'overcast',label:'阴'},
+    {key:'rain',    label:'雨'},
+    {key:'snow',    label:'雪'},
+  ];
+  let activeWeather = 'sunny';
+
+  const photos = []; // {img, name}
+  let activeIndex = -1;
+
+  const el = id => document.getElementById(id);
+  const fileInput = el('fileInput');
+  const uploadZone = el('uploadZone');
+  const thumbsEl = el('thumbs');
+  const countPill = el('countPill');
+  const canvas = el('previewCanvas');
+  const ctx = canvas.getContext('2d');
+  const statusEl = el('status');
+
+  // ---------- weather icon rendering ----------
+  function drawCloud(c, cx, cy, r, color){
+    c.fillStyle = color;
+    c.beginPath(); c.ellipse(cx, cy + r*0.15, r*0.95, r*0.55, 0, 0, Math.PI*2); c.fill();
+    c.beginPath(); c.arc(cx - r*0.35, cy - r*0.05, r*0.5, 0, Math.PI*2); c.fill();
+    c.beginPath(); c.arc(cx + r*0.25, cy - r*0.15, r*0.6, 0, Math.PI*2); c.fill();
+  }
+  function drawSun(c, cx, cy, r, color){
+    c.fillStyle = color;
+    c.beginPath(); c.arc(cx, cy, r*0.42, 0, Math.PI*2); c.fill();
+    c.strokeStyle = color; c.lineWidth = Math.max(1, r*0.09); c.lineCap = 'round';
+    for(let i=0;i<8;i++){
+      const a = i*Math.PI/4;
+      c.beginPath();
+      c.moveTo(cx+Math.cos(a)*r*0.62, cy+Math.sin(a)*r*0.62);
+      c.lineTo(cx+Math.cos(a)*r*0.92, cy+Math.sin(a)*r*0.92);
+      c.stroke();
     }
+  }
+  function drawRain(c, cx, cy, r, color){
+    c.strokeStyle = color; c.lineWidth = Math.max(1, r*0.09); c.lineCap = 'round';
+    for(let i=-1;i<=1;i++){
+      const x = cx + i*r*0.42;
+      c.beginPath();
+      c.moveTo(x, cy + r*0.55);
+      c.lineTo(x - r*0.15, cy + r*0.95);
+      c.stroke();
+    }
+  }
+  function drawSnow(c, cx, cy, r, color){
+    c.fillStyle = color;
+    for(let i=-1;i<=1;i++){
+      c.beginPath();
+      c.arc(cx + i*r*0.42, cy + r*0.78, Math.max(1,r*0.09), 0, Math.PI*2);
+      c.fill();
+    }
+  }
+  function drawWeatherIcon(c, type, cx, cy, r, color){
+    switch(type){
+      case 'sunny':
+        drawSun(c, cx, cy, r, color);
+        break;
+      case 'cloudy':
+        drawSun(c, cx - r*0.28, cy - r*0.22, r*0.62, color);
+        drawCloud(c, cx + r*0.08, cy + r*0.12, r*0.82, color);
+        break;
+      case 'overcast':
+        c.globalAlpha = 0.6;
+        drawCloud(c, cx - r*0.22, cy + r*0.02, r*0.6, color);
+        c.globalAlpha = 1;
+        drawCloud(c, cx + r*0.15, cy + r*0.15, r*0.75, color);
+        break;
+      case 'rain':
+        drawCloud(c, cx, cy - r*0.08, r*0.78, color);
+        drawRain(c, cx, cy, r, color);
+        break;
+      case 'snow':
+        drawCloud(c, cx, cy - r*0.08, r*0.78, color);
+        drawSnow(c, cx, cy, r, color);
+        break;
+    }
+  }
 
-    items.forEach((item) => {
-      const button = item.querySelector(".copy-btn");
-      const textarea = item.querySelector("textarea");
-      const status = item.querySelector(".status");
-
-      button.addEventListener("click", () => {
-        copyText(textarea, button, status);
-      });
+  // small UI icons for weather picker (canvas-based, drawn once to data URLs is overkill; use tiny inline svg-like unicode fallback)
+  function buildWeatherGrid(){
+    const grid = el('weatherGrid');
+    grid.innerHTML = '';
+    weatherTypes.forEach(w=>{
+      const d = document.createElement('div');
+      d.className = 'wopt' + (w.key===activeWeather ? ' active':'');
+      d.dataset.key = w.key;
+      const cvs = document.createElement('canvas');
+      cvs.width = 32; cvs.height = 32;
+      const c2 = cvs.getContext('2d');
+      drawWeatherIcon(c2, w.key, 16, 16, 13, w.key===activeWeather ? GOLD : '#9AA1AC');
+      cvs.style.width='20px'; cvs.style.height='20px';
+      const span = document.createElement('span');
+      span.className='wicon';
+      span.appendChild(cvs);
+      d.appendChild(span);
+      const lbl = document.createElement('div');
+      lbl.textContent = w.label;
+      d.appendChild(lbl);
+      d.onclick = ()=>{ activeWeather = w.key; buildWeatherGrid(); renderPreview(); };
+      grid.appendChild(d);
     });
-  </script>
+  }
+
+  function drawPin(c, x, y, size, color){
+    c.save();
+    c.translate(x - size/2, y - size/2);
+    c.scale(size/24, size/24);
+    c.beginPath();
+    c.moveTo(12,2);
+    c.bezierCurveTo(7.58,2,4,5.58,4,10);
+    c.bezierCurveTo(4,15.25,12,22,12,22);
+    c.bezierCurveTo(12,22,20,15.25,20,10);
+    c.bezierCurveTo(20,5.58,16.42,2,12,2);
+    c.closePath();
+    c.fillStyle = color;
+    c.fill();
+    c.beginPath();
+    c.arc(12,10,3.1,0,Math.PI*2);
+    c.fillStyle = 'rgba(0,0,0,0.35)';
+    c.fill();
+    c.restore();
+  }
+
+  function wrapLines(c, text, maxWidth, maxLines){
+    if(!text) return [];
+    const chars = Array.from(text);
+    const lines = [];
+    let cur = '';
+    for(let i=0;i<chars.length;i++){
+      const test = cur + chars[i];
+      if(c.measureText(test).width > maxWidth && cur.length>0){
+        lines.push(cur);
+        cur = chars[i];
+        if(lines.length === maxLines){ cur=''; break; }
+      } else {
+        cur = test;
+      }
+    }
+    if(cur && lines.length < maxLines) lines.push(cur);
+    if(lines.length === maxLines){
+      let last = lines[maxLines-1];
+      while(c.measureText(last+'…').width > maxWidth && last.length>0){
+        last = last.slice(0,-1);
+      }
+      const consumed = lines.slice(0,maxLines-1).join('').length + last.length;
+      if(consumed < chars.length){ lines[maxLines-1] = last + '…'; }
+    }
+    return lines;
+  }
+
+  function weekdayCN(d){
+    return ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+  }
+  function pad(n){ return n<10 ? '0'+n : ''+n; }
+
+  function getFormData(){
+    const dateVal = el('date').value;
+    const timeVal = el('time').value;
+    const dt = (dateVal && timeVal) ? new Date(`${dateVal}T${timeVal}`) : new Date();
+    return {
+      company: el('company').value.trim(),
+      content: el('content').value.trim() || '施工内容待填写',
+      location: el('location').value.trim() || '地点待填写',
+      temp: el('temp').value,
+      weather: activeWeather,
+      dateStr: `${dt.getFullYear()}年${pad(dt.getMonth()+1)}月${pad(dt.getDate())}日 ${weekdayCN(dt)}`,
+      timeStr: `${pad(dt.getHours())}:${pad(dt.getMinutes())}`,
+    };
+  }
+
+  function drawWatermark(targetCtx, img, W, H, data){
+    targetCtx.drawImage(img, 0, 0, W, H);
+
+    // Every metric is derived from W (not H), so wide/landscape and tall/portrait
+    // photos both scale the same way and nothing overflows or overlaps.
+    const pad = W * 0.032;
+    const bottomPad = W * 0.026;
+    const leftX = pad;
+    const maxW = W - pad*2;
+    targetCtx.textBaseline = 'alphabetic';
+    targetCtx.textAlign = 'left';
+
+    const companySize = W * 0.0175;
+    const contentSize = W * 0.034;
+    const markerW = W * 0.007;
+    const markerGap = W * 0.014;
+    const textLeftX = leftX + markerW + markerGap;
+    const locSize = W * 0.02;
+    const pinSize = W * 0.022;
+    const metaSize = W * 0.0165;
+
+    // Measure first (font must be set before wrapLines, but this doesn't draw
+    // anything) so the panel height can be sized to the actual text — not a
+    // fixed guess that leaves empty space when the text is short.
+    targetCtx.font = `700 ${contentSize}px -apple-system, "PingFang SC", sans-serif`;
+    const contentLines = wrapLines(targetCtx, data.content, maxW - markerW - markerGap, 2);
+    targetCtx.font = `600 ${locSize}px -apple-system, "PingFang SC", sans-serif`;
+    const locLines = wrapLines(targetCtx, data.location, maxW - pinSize*1.4, 1);
+
+    let neededH = pad;
+    if(data.company) neededH += companySize*1.3 + W*0.012;
+    else neededH += W*0.006;
+    neededH += contentLines.length * (contentSize * 1.22);
+    neededH += W*0.014;
+    neededH += locSize * 1.15;
+    neededH += W*0.016;
+    neededH += W*0.012; // divider row
+    neededH += W*0.016;
+    neededH += metaSize * 1.15;
+    neededH += bottomPad;
+
+    const panelH = Math.min(neededH, H * 0.55);
+    const blend = panelH * 0.35;
+    const top = H - panelH;
+
+    // scrim: solid panel starts exactly at `top`, fades out above it
+    const grad = targetCtx.createLinearGradient(0, top - blend, 0, top);
+    grad.addColorStop(0, 'rgba(10,11,13,0)');
+    grad.addColorStop(1, 'rgba(10,11,13,0.87)');
+    targetCtx.fillStyle = grad;
+    targetCtx.fillRect(0, top - blend, W, blend);
+    targetCtx.fillStyle = 'rgba(10,11,13,0.87)';
+    targetCtx.fillRect(0, top, W, panelH);
+
+    // gold hairline sits right at the top edge of the solid panel
+    targetCtx.fillStyle = GOLD;
+    targetCtx.fillRect(0, top - Math.max(1, W*0.0018)/2, W, Math.max(1, W*0.0018));
+
+    // Information hierarchy, top to bottom: 单位(细) -> 施工内容(全图最大最粗,一眼看懂在干嘛)
+    // -> 地点(次一级) -> 细分隔线 -> 日期/时间/天气(小字footer,退为辅助信息)
+    let y = top + pad;
+
+    // ---- 单位名称: small overline ----
+    if(data.company){
+      targetCtx.fillStyle = GOLD;
+      targetCtx.font = `600 ${companySize}px -apple-system, "PingFang SC", sans-serif`;
+      y += companySize * 0.85;
+      targetCtx.fillText(data.company, leftX, y);
+      y += companySize * 0.55;
+    }
+    y += W * 0.012;
+
+    // ---- 施工内容: the hero line, largest + boldest text in the panel ----
+    targetCtx.font = `700 ${contentSize}px -apple-system, "PingFang SC", sans-serif`;
+    const contentBlockTop = y;
+    targetCtx.fillStyle = WHITE;
+    contentLines.forEach(line=>{
+      y += contentSize * 0.92;
+      targetCtx.fillText(line, textLeftX, y);
+      y += contentSize * 0.3;
+    });
+    const contentBlockBottom = y - contentSize*0.3;
+    // signature accent: a single gold bar beside the hero line — the one deliberate ornament
+    targetCtx.fillStyle = GOLD;
+    targetCtx.fillRect(leftX, contentBlockTop - contentSize*0.15, markerW, contentBlockBottom - contentBlockTop + contentSize*0.15);
+
+    y += W * 0.014;
+
+    // ---- 地点: secondary line, with pin icon ----
+    targetCtx.font = `600 ${locSize}px -apple-system, "PingFang SC", sans-serif`;
+    y += locSize * 0.8;
+    drawPin(targetCtx, textLeftX + pinSize/2, y - locSize*0.3, pinSize, GOLD);
+    targetCtx.fillStyle = SUB;
+    targetCtx.fillText(locLines[0] || '', textLeftX + pinSize*1.3, y);
+
+    y += W * 0.016;
+
+    // ---- thin divider between the "what/where" and the "when/conditions" footer ----
+    targetCtx.strokeStyle = 'rgba(198,161,91,0.32)';
+    targetCtx.lineWidth = Math.max(1, W*0.001);
+    targetCtx.beginPath();
+    targetCtx.moveTo(leftX, y);
+    targetCtx.lineTo(W - pad, y);
+    targetCtx.stroke();
+
+    y += W * 0.018;
+
+    // ---- footer: date · time on the left, weather + temp right-aligned, same row ----
+    targetCtx.font = `400 ${metaSize}px -apple-system, "PingFang SC", sans-serif`;
+    targetCtx.fillStyle = SUB;
+    const metaY = y + metaSize * 0.82;
+    targetCtx.fillText(`${data.dateStr}  ·  ${data.timeStr}`, leftX, metaY);
+
+    const wLabel = (weatherTypes.find(w=>w.key===data.weather)||{}).label || '';
+    const tempTxt = data.temp !== '' ? `${wLabel} ${data.temp}℃` : wLabel;
+    const iconR = W * 0.013;
+    targetCtx.font = `400 ${metaSize}px -apple-system, "PingFang SC", sans-serif`;
+    const tempW = targetCtx.measureText(tempTxt).width;
+    const tempX = W - pad - tempW;
+    drawWeatherIcon(targetCtx, data.weather, tempX - iconR*1.6, metaY - metaSize*0.32, iconR, GOLD);
+    targetCtx.fillStyle = SUB;
+    targetCtx.fillText(tempTxt, tempX, metaY);
+  }
+
+  // ---------- placeholder base image ----------
+  function drawPlaceholder(c, W, H){
+    const g = c.createLinearGradient(0,0,W,H);
+    g.addColorStop(0, '#3a4048');
+    g.addColorStop(1, '#181b20');
+    c.fillStyle = g;
+    c.fillRect(0,0,W,H);
+    c.fillStyle = 'rgba(255,255,255,0.06)';
+    for(let i=0;i<6;i++){
+      c.beginPath();
+      c.arc(W*(0.15+i*0.15), H*0.35, W*0.05, 0, Math.PI*2);
+      c.fill();
+    }
+  }
+
+  function renderPreview(){
+    const data = getFormData();
+    let W, H, drawFn;
+    if(activeIndex >= 0 && photos[activeIndex]){
+      const img = photos[activeIndex].img;
+      W = img.naturalWidth; H = img.naturalHeight;
+      canvas.width = W; canvas.height = H;
+      drawWatermark(ctx, img, W, H, data);
+    } else {
+      W = 1200; H = 900;
+      canvas.width = W; canvas.height = H;
+      const tmp = document.createElement('canvas');
+      tmp.width = W; tmp.height = H;
+      const tctx = tmp.getContext('2d');
+      drawPlaceholder(tctx, W, H);
+      drawWatermark(ctx, tmp, W, H, data);
+    }
+  }
+
+  // ---------- upload handling ----------
+  fileInput.onchange = (e)=>{
+    const files = Array.from(e.target.files || []);
+    let loaded = 0;
+    files.forEach(f=>{
+      const reader = new FileReader();
+      reader.onload = ev=>{
+        const img = new Image();
+        img.onload = ()=>{
+          photos.push({img, name:f.name});
+          if(activeIndex === -1) activeIndex = photos.length - 1;
+          loaded++;
+          renderThumbs();
+          renderPreview();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(f);
+    });
+    fileInput.value = '';
+  };
+
+  function renderThumbs(){
+    thumbsEl.innerHTML = '';
+    photos.forEach((p, i)=>{
+      const d = document.createElement('div');
+      d.className = 'thumb' + (i===activeIndex ? ' active':'');
+      const img = document.createElement('img');
+      img.src = p.img.src;
+      d.appendChild(img);
+      const del = document.createElement('div');
+      del.className = 'del';
+      del.textContent = '×';
+      del.onclick = (ev)=>{
+        ev.stopPropagation();
+        photos.splice(i,1);
+        if(activeIndex >= photos.length) activeIndex = photos.length - 1;
+        renderThumbs();
+        renderPreview();
+      };
+      d.appendChild(del);
+      d.onclick = ()=>{ activeIndex = i; renderThumbs(); renderPreview(); };
+      thumbsEl.appendChild(d);
+    });
+    countPill.textContent = photos.length ? `已选择 ${photos.length} 张照片` : '';
+  }
+
+  // ---------- form bindings ----------
+  ['company','content','location','temp','date','time'].forEach(id=>{
+    el(id).addEventListener('input', renderPreview);
+  });
+
+  function setNow(){
+    const d = new Date();
+    el('date').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    el('time').value = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  // ---------- download ----------
+  el('downloadBtn').onclick = async ()=>{
+    if(photos.length === 0){
+      statusEl.textContent = '请先选择至少一张照片';
+      return;
+    }
+    const data = getFormData();
+    const btn = el('downloadBtn');
+    btn.disabled = true;
+
+    if(photos.length === 1){
+      statusEl.textContent = '正在生成…';
+      const img = photos[0].img;
+      const off = document.createElement('canvas');
+      off.width = img.naturalWidth; off.height = img.naturalHeight;
+      drawWatermark(off.getContext('2d'), img, off.width, off.height, data);
+      off.toBlob(blob=>{
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `水印_${data.dateStr.replace(/[年月日 ]/g,'')}_${data.timeStr.replace(':','')}.jpg`;
+        a.click();
+        statusEl.textContent = '已下载';
+        btn.disabled = false;
+      }, 'image/jpeg', 0.92);
+    } else {
+      for(let i=0;i<photos.length;i++){
+        statusEl.textContent = `正在下载 ${i+1}/${photos.length}…`;
+        const img = photos[i].img;
+        const off = document.createElement('canvas');
+        off.width = img.naturalWidth; off.height = img.naturalHeight;
+        drawWatermark(off.getContext('2d'), img, off.width, off.height, data);
+        const blob = await new Promise(res=> off.toBlob(res,'image/jpeg',0.92));
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `水印_${i+1}_${data.timeStr.replace(':','')}.jpg`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        await new Promise(res=> setTimeout(res, 350));
+      }
+      statusEl.textContent = `已下载全部 ${photos.length} 张照片`;
+      btn.disabled = false;
+    }
+  };
+
+  // ---------- init ----------
+  buildWeatherGrid();
+  setNow();
+  renderPreview();
+})();
+</script>
 </body>
 </html>
