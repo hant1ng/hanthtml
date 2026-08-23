@@ -6,594 +6,2808 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>施工水印相机</title>
+
 <style>
-  :root{
-    --bg:#14171C;
-    --panel:#1B1F26;
-    --panel-2:#20242C;
-    --border:#2A2F38;
-    --gold:#C6A15B;
-    --gold-dim:#8A7442;
-    --text-1:#F4F5F7;
-    --text-2:#9AA1AC;
-    --text-3:#666D78;
-    --danger:#D9776B;
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text-1);
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
-    -webkit-font-smoothing:antialiased;}
-  body{padding-bottom:env(safe-area-inset-bottom);}
-  .wrap{max-width:520px;margin:0 auto;padding:0 16px 40px;}
+:root{
+  --bg:#12161b;
+  --panel:#191e25;
+  --panel2:#1e242c;
+  --border:#2b323b;
+  --accent:#e7b84b;
+  --accent2:#65a9d8;
+  --text:#f3f5f7;
+  --sub:#b4bbc4;
+  --muted:#747d88;
+}
 
-  header{padding:28px 16px 18px;text-align:center;}
-  header .eyebrow{font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
-  header h1{font-size:22px;font-weight:600;margin:0;letter-spacing:1px;}
-  header .rule{width:36px;height:2px;background:var(--gold);margin:14px auto 0;border-radius:2px;}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
-  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;}
-  .card h2{font-size:12px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin:0 0 12px;font-weight:600;}
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei",
+    "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
 
-  .upload-zone{display:block;border:1.5px dashed var(--border);border-radius:12px;padding:22px 12px;text-align:center;color:var(--text-2);cursor:pointer;transition:border-color .15s;}
-  .upload-zone:active{border-color:var(--gold);}
-  .upload-zone .icon{font-size:26px;margin-bottom:6px;color:var(--gold);}
-  .upload-zone .sub{font-size:12px;color:var(--text-3);margin-top:4px;}
-  input[type=file]{display:none;}
+body{
+  padding-bottom:env(safe-area-inset-bottom);
+}
 
-  .thumbs{display:flex;gap:8px;overflow-x:auto;margin-top:12px;padding-bottom:2px;}
-  .thumbs::-webkit-scrollbar{display:none;}
-  .thumb{position:relative;flex:0 0 auto;width:56px;height:56px;border-radius:8px;overflow:hidden;border:2px solid transparent;}
-  .thumb.active{border-color:var(--gold);}
-  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
-  .thumb .del{position:absolute;top:1px;right:1px;width:16px;height:16px;background:rgba(0,0,0,.65);color:#fff;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;line-height:1;}
-  .count-pill{font-size:11px;color:var(--text-3);margin-top:8px;}
+.wrap{
+  max-width:520px;
+  margin:auto;
+  padding:0 16px 40px;
+}
 
-  .field{margin-bottom:14px;}
-  .field:last-child{margin-bottom:0;}
-  .field label{display:block;font-size:12px;color:var(--text-2);margin-bottom:6px;letter-spacing:.5px;}
-  .field input[type=text],
-  .field input[type=number],
-  .field input[type=date],
-  .field input[type=time]{
-    width:100%;min-width:0;background:var(--panel-2);border:1px solid var(--border);border-radius:10px;
-    color:var(--text-1);font-size:15px;padding:11px 8px;font-family:inherit;
-  }
-  .field input:focus{outline:none;border-color:var(--gold-dim);}
-  .row2{display:flex;gap:10px;min-width:0;}
-  .row2 .field{flex:1;min-width:0;}
+header{
+  text-align:center;
+  padding:28px 16px 18px;
+}
 
-  .weather-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
-  .wopt{background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:10px 4px;text-align:center;color:var(--text-2);font-size:12px;cursor:pointer;}
-  .wopt.active{border-color:var(--gold);color:var(--gold);background:rgba(198,161,91,0.08);}
-  .wopt .wicon{font-size:18px;display:block;margin-bottom:4px;}
+header .eyebrow{
+  font-size:10px;
+  letter-spacing:3px;
+  color:var(--accent);
+  margin-bottom:7px;
+}
 
-  .preview-wrap{background:var(--panel-2);border-radius:12px;overflow:hidden;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;min-height:180px;}
-  .preview-wrap canvas{width:100%;height:auto;display:block;}
-  .placeholder-note{font-size:11px;color:var(--text-3);text-align:center;margin-top:8px;}
+header h1{
+  font-size:22px;
+  font-weight:600;
+  margin:0;
+  letter-spacing:1px;
+}
 
-  .actions{display:flex;gap:10px;margin-top:4px;}
-  button{font-family:inherit;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;flex:1;}
-  .btn-primary{background:var(--gold);color:#1B1503;}
-  .btn-primary:active{background:var(--gold-dim);}
-  .btn-primary:disabled{background:#3a3a3a;color:#777;}
-  .btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text-2);}
-  .status{font-size:12px;color:var(--text-3);text-align:center;margin-top:10px;min-height:16px;}
+header .rule{
+  width:32px;
+  height:2px;
+  background:var(--accent);
+  margin:13px auto 0;
+  border-radius:2px;
+}
+
+.card{
+  background:rgba(25,30,37,.96);
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.card h2{
+  margin:0 0 13px;
+  font-size:12px;
+  letter-spacing:2px;
+  color:var(--accent);
+  font-weight:600;
+}
+
+.upload-zone{
+  display:block;
+  border:1px dashed #38414c;
+  border-radius:12px;
+  padding:21px 12px;
+  text-align:center;
+  color:var(--sub);
+  cursor:pointer;
+}
+
+.upload-zone:active{
+  border-color:var(--accent);
+}
+
+.upload-zone .icon{
+  font-size:25px;
+  color:var(--accent);
+  margin-bottom:5px;
+}
+
+.upload-zone .sub{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+input[type=file]{
+  display:none;
+}
+
+.thumbs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin-top:12px;
+}
+
+.thumbs::-webkit-scrollbar{
+  display:none;
+}
+
+.thumb{
+  position:relative;
+  flex:0 0 auto;
+  width:56px;
+  height:56px;
+  border-radius:8px;
+  overflow:hidden;
+  border:2px solid transparent;
+}
+
+.thumb.active{
+  border-color:var(--accent);
+}
+
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.thumb .del{
+  position:absolute;
+  top:1px;
+  right:1px;
+  width:16px;
+  height:16px;
+  background:rgba(0,0,0,.65);
+  color:#fff;
+  border-radius:50%;
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.count-pill{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:8px;
+}
+
+.field{
+  margin-bottom:13px;
+}
+
+.field:last-child{
+  margin-bottom:0;
+}
+
+.field label{
+  display:block;
+  font-size:12px;
+  color:var(--sub);
+  margin-bottom:6px;
+}
+
+.field input{
+  width:100%;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--text);
+  font-size:15px;
+  padding:11px 10px;
+  font-family:inherit;
+  min-width:0;
+}
+
+.field input:focus{
+  outline:none;
+  border-color:#8e7540;
+}
+
+.row2{
+  display:flex;
+  gap:10px;
+}
+
+.row2 .field{
+  flex:1;
+  min-width:0;
+}
+
+.weather-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+
+.wopt{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:9px 4px;
+  text-align:center;
+  color:var(--sub);
+  font-size:12px;
+  cursor:pointer;
+}
+
+.wopt.active{
+  border-color:var(--accent);
+  color:var(--accent);
+  background:rgba(231,184,75,.07);
+}
+
+.wopt .wicon{
+  height:25px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-bottom:3px;
+}
+
+.wopt canvas{
+  width:21px;
+  height:21px;
+}
+
+.preview-wrap{
+  background:#101419;
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:180px;
+}
+
+.preview-wrap canvas{
+  width:100%;
+  height:auto;
+  display:block;
+}
+
+.placeholder-note{
+  font-size:11px;
+  color:var(--muted);
+  text-align:center;
+  margin-top:8px;
+}
+
+.actions{
+  margin-top:4px;
+}
+
+button{
+  width:100%;
+  font-family:inherit;
+  border:none;
+  border-radius:12px;
+  padding:14px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.btn-primary{
+  background:var(--accent);
+  color:#211a08;
+}
+
+.btn-primary:active{
+  background:#c99d32;
+}
+
+.btn-primary:disabled{
+  background:#3a3d3f;
+  color:#777;
+}
+
+.status{
+  font-size:12px;
+  color:var(--muted);
+  text-align:center;
+  margin-top:10px;
+  min-height:16px;
+}
 </style>
 </head>
+
 <body>
+
 <div class="wrap">
 
-  <header>
-    <div class="eyebrow">SITE RECORD</div>
-    <h1>施工水印相机</h1>
-    <div class="rule"></div>
-  </header>
+<header>
+  <div class="eyebrow">SITE RECORD</div>
+  <h1>施工水印相机</h1>
+  <div class="rule"></div>
+</header>
 
-  <div class="card">
-    <h2>照片</h2>
-    <label class="upload-zone" for="fileInput">
-      <div class="icon">＋</div>
-      <div>点击选择照片</div>
-      <div class="sub">支持批量选择，水印将按每张照片尺寸自动缩放</div>
-    </label>
-    <input type="file" id="fileInput" accept="image/*" multiple>
-    <div class="thumbs" id="thumbs"></div>
-    <div class="count-pill" id="countPill"></div>
+
+<!-- ==================== 照片 ==================== -->
+
+<div class="card">
+
+  <h2>照片</h2>
+
+  <label class="upload-zone" for="fileInput">
+    <div class="icon">＋</div>
+    <div>点击选择照片</div>
+    <div class="sub">
+      支持批量选择，水印会根据原照片尺寸自动缩放
+    </div>
+  </label>
+
+  <input
+    type="file"
+    id="fileInput"
+    accept="image/*"
+    multiple
+  >
+
+  <div class="thumbs" id="thumbs"></div>
+
+  <div class="count-pill" id="countPill"></div>
+
+</div>
+
+
+<!-- ==================== 施工信息 ==================== -->
+
+<div class="card">
+
+  <h2>施工信息</h2>
+
+  <div class="field">
+    <label>单位名称</label>
+
+    <input
+      type="text"
+      id="company"
+      maxlength="30"
+      placeholder="例：湖北叶茂管道工程有限公司"
+      value="湖北叶茂管道工程有限公司"
+    >
   </div>
 
-  <div class="card">
-    <h2>施工信息</h2>
-    <div class="field">
-      <label>单位名称</label>
-      <input type="text" id="company" placeholder="例：湖北叶茂管道工程有限公司" maxlength="30" value="湖北叶茂管道工程有限公司">
-    </div>
-    <div class="field">
-      <label>施工内容</label>
-      <input type="text" id="content" placeholder="例：三层顶板钢筋绑扎" maxlength="40">
-    </div>
-    <div class="field">
-      <label>地点</label>
-      <input type="text" id="location" placeholder="例：XX项目 3号楼 3F" maxlength="30">
-    </div>
+
+  <div class="field">
+    <label>施工内容</label>
+
+    <input
+      type="text"
+      id="content"
+      maxlength="50"
+      placeholder="例：三层顶板钢筋绑扎"
+    >
+  </div>
+
+
+  <div class="field">
+    <label>施工地点</label>
+
+    <input
+      type="text"
+      id="location"
+      maxlength="40"
+      placeholder="例：XX项目 3号楼 3F"
+    >
+  </div>
+
+
+  <div class="field">
+    <label>施工人数</label>
+
+    <input
+      type="number"
+      id="workers"
+      min="0"
+      max="999"
+      placeholder="例：12"
+      value="12"
+    >
+  </div>
+
+
+  <div class="field">
+    <label>经纬度</label>
+
+    <input
+      type="text"
+      id="coordinates"
+      maxlength="50"
+      placeholder="例：30.572547°N, 114.305356°E"
+    >
+  </div>
+
+
+  <div class="row2">
+
     <div class="field">
       <label>日期</label>
       <input type="date" id="date">
     </div>
+
     <div class="field">
       <label>时间</label>
       <input type="time" id="time">
     </div>
-  </div>
 
-  <div class="card">
-    <h2>天气</h2>
-    <div class="weather-grid" id="weatherGrid"></div>
-    <div class="field" style="margin-top:14px;">
-      <label>温度 (℃)</label>
-      <input type="number" id="temp" placeholder="例：28" value="28">
-    </div>
   </div>
-
-  <div class="card">
-    <h2>预览</h2>
-    <div class="preview-wrap"><canvas id="previewCanvas"></canvas></div>
-    <div class="placeholder-note">未选择照片时为示例底图，水印比例与真实照片一致</div>
-  </div>
-
-  <div class="actions">
-    <button class="btn-primary" id="downloadBtn">下载水印照片</button>
-  </div>
-  <div class="status" id="status"></div>
 
 </div>
 
+
+<!-- ==================== 天气 ==================== -->
+
+<div class="card">
+
+  <h2>天气</h2>
+
+  <div
+    class="weather-grid"
+    id="weatherGrid"
+  ></div>
+
+  <div
+    class="field"
+    style="margin-top:14px;"
+  >
+
+    <label>温度（℃）</label>
+
+    <input
+      type="number"
+      id="temp"
+      placeholder="例：28"
+      value="28"
+    >
+
+  </div>
+
+</div>
+
+
+<!-- ==================== 预览 ==================== -->
+
+<div class="card">
+
+  <h2>预览</h2>
+
+  <div class="preview-wrap">
+    <canvas id="previewCanvas"></canvas>
+  </div>
+
+  <div class="placeholder-note">
+    水印采用轻量日系施工记录风格，照片越大水印越细
+  </div>
+
+</div>
+
+
+<div class="actions">
+
+  <button
+    class="btn-primary"
+    id="downloadBtn"
+  >
+    下载水印照片
+  </button>
+
+</div>
+
+<div
+  class="status"
+  id="status"
+></div>
+
+</div>
+
+
 <script>
+
 (function(){
-  const GOLD = '#C6A15B';
-  const WHITE = '#F4F5F7';
-  const SUB = '#C7CCD3';
+
+  /* ==================== 基础颜色 ==================== */
+
+  const ACCENT = '#E7B84B';
+
+  const BLUE = '#65A9D8';
+
+  const WHITE = '#F3F5F7';
+
+  const SUB = '#B4BBC4';
+
+
+  /* ==================== 天气 ==================== */
 
   const weatherTypes = [
-    {key:'sunny',   label:'晴'},
-    {key:'cloudy',  label:'多云'},
-    {key:'overcast',label:'阴'},
-    {key:'rain',    label:'雨'},
-    {key:'snow',    label:'雪'},
+
+    {
+      key:'sunny',
+      label:'晴'
+    },
+
+    {
+      key:'cloudy',
+      label:'多云'
+    },
+
+    {
+      key:'overcast',
+      label:'阴'
+    },
+
+    {
+      key:'rain',
+      label:'雨'
+    },
+
+    {
+      key:'snow',
+      label:'雪'
+    }
+
   ];
+
+
   let activeWeather = 'sunny';
 
-  const photos = []; // {img, name}
+
+  /* ==================== 图片 ==================== */
+
+  const photos = [];
+
   let activeIndex = -1;
 
-  const el = id => document.getElementById(id);
-  const fileInput = el('fileInput');
-  const uploadZone = el('uploadZone');
-  const thumbsEl = el('thumbs');
-  const countPill = el('countPill');
-  const canvas = el('previewCanvas');
-  const ctx = canvas.getContext('2d');
-  const statusEl = el('status');
 
-  // ---------- weather icon rendering ----------
-  function drawCloud(c, cx, cy, r, color){
+  /* ==================== DOM ==================== */
+
+  const $ = id =>
+    document.getElementById(id);
+
+
+  const fileInput =
+    $('fileInput');
+
+  const thumbsEl =
+    $('thumbs');
+
+  const countPill =
+    $('countPill');
+
+  const canvas =
+    $('previewCanvas');
+
+  const ctx =
+    canvas.getContext('2d');
+
+  const statusEl =
+    $('status');
+
+
+  /* ============================================================
+     天气图标
+  ============================================================ */
+
+  function drawCloud(
+    c,
+    cx,
+    cy,
+    r,
+    color
+  ){
+
     c.fillStyle = color;
-    c.beginPath(); c.ellipse(cx, cy + r*0.15, r*0.95, r*0.55, 0, 0, Math.PI*2); c.fill();
-    c.beginPath(); c.arc(cx - r*0.35, cy - r*0.05, r*0.5, 0, Math.PI*2); c.fill();
-    c.beginPath(); c.arc(cx + r*0.25, cy - r*0.15, r*0.6, 0, Math.PI*2); c.fill();
+
+    c.beginPath();
+
+    c.ellipse(
+      cx,
+      cy + r*.15,
+      r*.95,
+      r*.55,
+      0,
+      0,
+      Math.PI*2
+    );
+
+    c.fill();
+
+
+    c.beginPath();
+
+    c.arc(
+      cx-r*.35,
+      cy-r*.05,
+      r*.5,
+      0,
+      Math.PI*2
+    );
+
+    c.fill();
+
+
+    c.beginPath();
+
+    c.arc(
+      cx+r*.25,
+      cy-r*.15,
+      r*.6,
+      0,
+      Math.PI*2
+    );
+
+    c.fill();
+
   }
-  function drawSun(c, cx, cy, r, color){
+
+
+  function drawSun(
+    c,
+    cx,
+    cy,
+    r,
+    color
+  ){
+
     c.fillStyle = color;
-    c.beginPath(); c.arc(cx, cy, r*0.42, 0, Math.PI*2); c.fill();
-    c.strokeStyle = color; c.lineWidth = Math.max(1, r*0.09); c.lineCap = 'round';
-    for(let i=0;i<8;i++){
-      const a = i*Math.PI/4;
+
+    c.beginPath();
+
+    c.arc(
+      cx,
+      cy,
+      r*.42,
+      0,
+      Math.PI*2
+    );
+
+    c.fill();
+
+
+    c.strokeStyle = color;
+
+    c.lineWidth =
+      Math.max(
+        1,
+        r*.09
+      );
+
+    c.lineCap = 'round';
+
+
+    for(
+      let i=0;
+      i<8;
+      i++
+    ){
+
+      const a =
+        i*Math.PI/4;
+
       c.beginPath();
-      c.moveTo(cx+Math.cos(a)*r*0.62, cy+Math.sin(a)*r*0.62);
-      c.lineTo(cx+Math.cos(a)*r*0.92, cy+Math.sin(a)*r*0.92);
+
+      c.moveTo(
+        cx+Math.cos(a)*r*.62,
+        cy+Math.sin(a)*r*.62
+      );
+
+      c.lineTo(
+        cx+Math.cos(a)*r*.92,
+        cy+Math.sin(a)*r*.92
+      );
+
       c.stroke();
+
     }
+
   }
-  function drawRain(c, cx, cy, r, color){
-    c.strokeStyle = color; c.lineWidth = Math.max(1, r*0.09); c.lineCap = 'round';
-    for(let i=-1;i<=1;i++){
-      const x = cx + i*r*0.42;
+
+
+  function drawRain(
+    c,
+    cx,
+    cy,
+    r,
+    color
+  ){
+
+    c.strokeStyle = color;
+
+    c.lineWidth =
+      Math.max(
+        1,
+        r*.09
+      );
+
+    c.lineCap = 'round';
+
+
+    for(
+      let i=-1;
+      i<=1;
+      i++
+    ){
+
+      const x =
+        cx+i*r*.42;
+
       c.beginPath();
-      c.moveTo(x, cy + r*0.55);
-      c.lineTo(x - r*0.15, cy + r*0.95);
+
+      c.moveTo(
+        x,
+        cy+r*.55
+      );
+
+      c.lineTo(
+        x-r*.15,
+        cy+r*.95
+      );
+
       c.stroke();
+
     }
+
   }
-  function drawSnow(c, cx, cy, r, color){
+
+
+  function drawSnow(
+    c,
+    cx,
+    cy,
+    r,
+    color
+  ){
+
     c.fillStyle = color;
-    for(let i=-1;i<=1;i++){
+
+
+    for(
+      let i=-1;
+      i<=1;
+      i++
+    ){
+
       c.beginPath();
-      c.arc(cx + i*r*0.42, cy + r*0.78, Math.max(1,r*0.09), 0, Math.PI*2);
+
+      c.arc(
+        cx+i*r*.42,
+        cy+r*.78,
+        Math.max(1,r*.09),
+        0,
+        Math.PI*2
+      );
+
       c.fill();
+
     }
-  }
-  function drawWeatherIcon(c, type, cx, cy, r, color){
-    switch(type){
-      case 'sunny':
-        drawSun(c, cx, cy, r, color);
-        break;
-      case 'cloudy':
-        drawSun(c, cx - r*0.28, cy - r*0.22, r*0.62, color);
-        drawCloud(c, cx + r*0.08, cy + r*0.12, r*0.82, color);
-        break;
-      case 'overcast':
-        c.globalAlpha = 0.6;
-        drawCloud(c, cx - r*0.22, cy + r*0.02, r*0.6, color);
-        c.globalAlpha = 1;
-        drawCloud(c, cx + r*0.15, cy + r*0.15, r*0.75, color);
-        break;
-      case 'rain':
-        drawCloud(c, cx, cy - r*0.08, r*0.78, color);
-        drawRain(c, cx, cy, r, color);
-        break;
-      case 'snow':
-        drawCloud(c, cx, cy - r*0.08, r*0.78, color);
-        drawSnow(c, cx, cy, r, color);
-        break;
-    }
+
   }
 
-  // small UI icons for weather picker (canvas-based, drawn once to data URLs is overkill; use tiny inline svg-like unicode fallback)
+
+  function drawWeatherIcon(
+    c,
+    type,
+    cx,
+    cy,
+    r,
+    color
+  ){
+
+    if(type === 'sunny'){
+
+      drawSun(
+        c,
+        cx,
+        cy,
+        r,
+        color
+      );
+
+    }
+
+
+    if(type === 'cloudy'){
+
+      drawSun(
+        c,
+        cx-r*.28,
+        cy-r*.22,
+        r*.62,
+        color
+      );
+
+      drawCloud(
+        c,
+        cx+r*.08,
+        cy+r*.12,
+        r*.82,
+        color
+      );
+
+    }
+
+
+    if(type === 'overcast'){
+
+      c.globalAlpha=.6;
+
+      drawCloud(
+        c,
+        cx-r*.22,
+        cy+r*.02,
+        r*.6,
+        color
+      );
+
+      c.globalAlpha=1;
+
+      drawCloud(
+        c,
+        cx+r*.15,
+        cy+r*.15,
+        r*.75,
+        color
+      );
+
+    }
+
+
+    if(type === 'rain'){
+
+      drawCloud(
+        c,
+        cx,
+        cy-r*.08,
+        r*.78,
+        color
+      );
+
+      drawRain(
+        c,
+        cx,
+        cy,
+        r,
+        color
+      );
+
+    }
+
+
+    if(type === 'snow'){
+
+      drawCloud(
+        c,
+        cx,
+        cy-r*.08,
+        r*.78,
+        color
+      );
+
+      drawSnow(
+        c,
+        cx,
+        cy,
+        r,
+        color
+      );
+
+    }
+
+  }
+
+
+  /* ============================================================
+     天气选择器
+  ============================================================ */
+
   function buildWeatherGrid(){
-    const grid = el('weatherGrid');
-    grid.innerHTML = '';
-    weatherTypes.forEach(w=>{
-      const d = document.createElement('div');
-      d.className = 'wopt' + (w.key===activeWeather ? ' active':'');
-      d.dataset.key = w.key;
-      const cvs = document.createElement('canvas');
-      cvs.width = 32; cvs.height = 32;
-      const c2 = cvs.getContext('2d');
-      drawWeatherIcon(c2, w.key, 16, 16, 13, w.key===activeWeather ? GOLD : '#9AA1AC');
-      cvs.style.width='20px'; cvs.style.height='20px';
-      const span = document.createElement('span');
-      span.className='wicon';
-      span.appendChild(cvs);
-      d.appendChild(span);
-      const lbl = document.createElement('div');
-      lbl.textContent = w.label;
-      d.appendChild(lbl);
-      d.onclick = ()=>{ activeWeather = w.key; buildWeatherGrid(); renderPreview(); };
-      grid.appendChild(d);
-    });
+
+    const grid =
+      $('weatherGrid');
+
+    grid.innerHTML='';
+
+
+    weatherTypes.forEach(
+      w=>{
+
+        const d =
+          document.createElement(
+            'div'
+          );
+
+        d.className =
+          'wopt' +
+          (
+            w.key===activeWeather
+              ? ' active'
+              : ''
+          );
+
+
+        const cvs =
+          document.createElement(
+            'canvas'
+          );
+
+        cvs.width=32;
+        cvs.height=32;
+
+
+        drawWeatherIcon(
+          cvs.getContext('2d'),
+          w.key,
+          16,
+          16,
+          13,
+          w.key===activeWeather
+            ? ACCENT
+            : '#9AA1AC'
+        );
+
+
+        cvs.style.width='20px';
+        cvs.style.height='20px';
+
+
+        const icon =
+          document.createElement(
+            'span'
+          );
+
+        icon.className='wicon';
+
+        icon.appendChild(cvs);
+
+        d.appendChild(icon);
+
+
+        const label =
+          document.createElement(
+            'div'
+          );
+
+        label.textContent =
+          w.label;
+
+        d.appendChild(label);
+
+
+        d.onclick=()=>{
+
+          activeWeather =
+            w.key;
+
+          buildWeatherGrid();
+
+          renderPreview();
+
+        };
+
+
+        grid.appendChild(d);
+
+      }
+    );
+
   }
 
-  function drawPin(c, x, y, size, color){
+
+  /* ============================================================
+     定位图标
+  ============================================================ */
+
+  function drawPin(
+    c,
+    x,
+    y,
+    size,
+    color
+  ){
+
     c.save();
-    c.translate(x - size/2, y - size/2);
-    c.scale(size/24, size/24);
+
+
+    c.translate(
+      x-size/2,
+      y-size/2
+    );
+
+
+    c.scale(
+      size/24,
+      size/24
+    );
+
+
     c.beginPath();
+
     c.moveTo(12,2);
-    c.bezierCurveTo(7.58,2,4,5.58,4,10);
-    c.bezierCurveTo(4,15.25,12,22,12,22);
-    c.bezierCurveTo(12,22,20,15.25,20,10);
-    c.bezierCurveTo(20,5.58,16.42,2,12,2);
+
+    c.bezierCurveTo(
+      7.58,
+      2,
+      4,
+      5.58,
+      4,
+      10
+    );
+
+    c.bezierCurveTo(
+      4,
+      15.25,
+      12,
+      22,
+      12,
+      22
+    );
+
+    c.bezierCurveTo(
+      12,
+      22,
+      20,
+      15.25,
+      20,
+      10
+    );
+
+    c.bezierCurveTo(
+      20,
+      5.58,
+      16.42,
+      2,
+      12,
+      2
+    );
+
     c.closePath();
-    c.fillStyle = color;
+
+
+    c.fillStyle=color;
+
     c.fill();
+
+
     c.beginPath();
-    c.arc(12,10,3.1,0,Math.PI*2);
-    c.fillStyle = 'rgba(0,0,0,0.35)';
+
+    c.arc(
+      12,
+      10,
+      3.1,
+      0,
+      Math.PI*2
+    );
+
+    c.fillStyle =
+      'rgba(0,0,0,.30)';
+
     c.fill();
+
+
     c.restore();
+
   }
 
-  function wrapLines(c, text, maxWidth, maxLines){
-    if(!text) return [];
-    const chars = Array.from(text);
-    const lines = [];
-    let cur = '';
-    for(let i=0;i<chars.length;i++){
-      const test = cur + chars[i];
-      if(c.measureText(test).width > maxWidth && cur.length>0){
-        lines.push(cur);
-        cur = chars[i];
-        if(lines.length === maxLines){ cur=''; break; }
-      } else {
-        cur = test;
-      }
-    }
-    if(cur && lines.length < maxLines) lines.push(cur);
-    if(lines.length === maxLines){
-      let last = lines[maxLines-1];
-      while(c.measureText(last+'…').width > maxWidth && last.length>0){
-        last = last.slice(0,-1);
-      }
-      const consumed = lines.slice(0,maxLines-1).join('').length + last.length;
-      if(consumed < chars.length){ lines[maxLines-1] = last + '…'; }
-    }
-    return lines;
+
+  /* ============================================================
+     施工内容图标
+  ============================================================ */
+
+  function drawClipboard(
+    c,
+    x,
+    y,
+    size,
+    color
+  ){
+
+    c.save();
+
+    c.translate(x,y);
+
+    c.strokeStyle=color;
+
+    c.lineWidth =
+      Math.max(
+        1,
+        size*.075
+      );
+
+    c.lineJoin='round';
+
+
+    c.strokeRect(
+      0,
+      size*.1,
+      size*.82,
+      size
+    );
+
+
+    c.strokeRect(
+      size*.22,
+      0,
+      size*.38,
+      size*.24
+    );
+
+
+    c.beginPath();
+
+    c.moveTo(
+      size*.18,
+      size*.45
+    );
+
+    c.lineTo(
+      size*.64,
+      size*.45
+    );
+
+    c.stroke();
+
+
+    c.beginPath();
+
+    c.moveTo(
+      size*.18,
+      size*.68
+    );
+
+    c.lineTo(
+      size*.64,
+      size*.68
+    );
+
+    c.stroke();
+
+
+    c.restore();
+
   }
+
+
+  /* ============================================================
+     人数图标
+  ============================================================ */
+
+  function drawPeople(
+    c,
+    x,
+    y,
+    size,
+    color
+  ){
+
+    c.save();
+
+    c.strokeStyle=color;
+
+    c.fillStyle=color;
+
+    c.lineWidth =
+      Math.max(
+        1,
+        size*.07
+      );
+
+
+    c.beginPath();
+
+    c.arc(
+      x+size*.27,
+      y+size*.22,
+      size*.16,
+      0,
+      Math.PI*2
+    );
+
+    c.stroke();
+
+
+    c.beginPath();
+
+    c.arc(
+      x+size*.67,
+      y+size*.22,
+      size*.16,
+      0,
+      Math.PI*2
+    );
+
+    c.stroke();
+
+
+    c.beginPath();
+
+    c.arc(
+      x+size*.47,
+      y+size*.08,
+      size*.16,
+      0,
+      Math.PI*2
+    );
+
+    c.stroke();
+
+
+    c.beginPath();
+
+    c.moveTo(
+      x,
+      y+size*.95
+    );
+
+    c.quadraticCurveTo(
+      x+size*.27,
+      y+size*.55,
+      x+size*.47,
+      y+size*.95
+    );
+
+    c.stroke();
+
+
+    c.beginPath();
+
+    c.moveTo(
+      x+size*.47,
+      y+size*.95
+    );
+
+    c.quadraticCurveTo(
+      x+size*.67,
+      y+size*.55,
+      x+size*.94,
+      y+size*.95
+    );
+
+    c.stroke();
+
+
+    c.restore();
+
+  }
+
+
+  /* ============================================================
+     自动换行
+  ============================================================ */
+
+  function wrapLines(
+    c,
+    text,
+    maxWidth,
+    maxLines
+  ){
+
+    if(!text)
+      return [];
+
+
+    const chars =
+      Array.from(text);
+
+    const lines=[];
+
+    let cur='';
+
+
+    for(
+      let i=0;
+      i<chars.length;
+      i++
+    ){
+
+      const test =
+        cur+chars[i];
+
+
+      if(
+        c.measureText(test).width >
+        maxWidth &&
+        cur
+      ){
+
+        lines.push(cur);
+
+        cur=chars[i];
+
+
+        if(
+          lines.length ===
+          maxLines
+        ){
+
+          cur='';
+
+          break;
+
+        }
+
+      }else{
+
+        cur=test;
+
+      }
+
+    }
+
+
+    if(
+      cur &&
+      lines.length<maxLines
+    ){
+
+      lines.push(cur);
+
+    }
+
+
+    if(
+      lines.length ===
+      maxLines
+    ){
+
+      let last =
+        lines[maxLines-1];
+
+
+      while(
+        c.measureText(
+          last+'…'
+        ).width >
+        maxWidth &&
+        last.length
+      ){
+
+        last =
+          last.slice(0,-1);
+
+      }
+
+
+      const consumed =
+        lines
+        .slice(0,maxLines-1)
+        .join('')
+        .length +
+        last.length;
+
+
+      if(
+        consumed <
+        chars.length
+      ){
+
+        lines[maxLines-1] =
+          last+'…';
+
+      }
+
+    }
+
+
+    return lines;
+
+  }
+
+
+  /* ============================================================
+     日期
+  ============================================================ */
 
   function weekdayCN(d){
-    return ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+
+    return [
+      '周日',
+      '周一',
+      '周二',
+      '周三',
+      '周四',
+      '周五',
+      '周六'
+    ][d.getDay()];
+
   }
-  function pad(n){ return n<10 ? '0'+n : ''+n; }
+
+
+  function pad(n){
+
+    return n<10
+      ? '0'+n
+      : ''+n;
+
+  }
+
+
+  /* ============================================================
+     获取表单数据
+  ============================================================ */
 
   function getFormData(){
-    const dateVal = el('date').value;
-    const timeVal = el('time').value;
-    const dt = (dateVal && timeVal) ? new Date(`${dateVal}T${timeVal}`) : new Date();
+
+    const dateVal =
+      $('date').value;
+
+    const timeVal =
+      $('time').value;
+
+
+    const dt =
+      (
+        dateVal &&
+        timeVal
+      )
+      ?
+      new Date(
+        `${dateVal}T${timeVal}`
+      )
+      :
+      new Date();
+
+
     return {
-      company: el('company').value.trim(),
-      content: el('content').value.trim() || '施工内容待填写',
-      location: el('location').value.trim() || '地点待填写',
-      temp: el('temp').value,
-      weather: activeWeather,
-      dateStr: `${dt.getFullYear()}年${pad(dt.getMonth()+1)}月${pad(dt.getDate())}日 ${weekdayCN(dt)}`,
-      timeStr: `${pad(dt.getHours())}:${pad(dt.getMinutes())}`,
+
+      company:
+        $('company')
+        .value
+        .trim(),
+
+      content:
+        $('content')
+        .value
+        .trim()
+        ||
+        '施工内容待填写',
+
+      location:
+        $('location')
+        .value
+        .trim()
+        ||
+        '施工地点待填写',
+
+      workers:
+        $('workers')
+        .value
+        .trim()
+        ||
+        '待填写',
+
+      coordinates:
+        $('coordinates')
+        .value
+        .trim()
+        ||
+        '待定位',
+
+      temp:
+        $('temp')
+        .value
+        .trim(),
+
+      weather:
+        activeWeather,
+
+      dateStr:
+        `${dt.getFullYear()}年`+
+        `${pad(dt.getMonth()+1)}月`+
+        `${pad(dt.getDate())}日 `+
+        `${weekdayCN(dt)}`,
+
+      timeStr:
+        `${pad(dt.getHours())}:`+
+        `${pad(dt.getMinutes())}`
+
     };
+
   }
 
-  function drawWatermark(targetCtx, img, W, H, data){
-    targetCtx.drawImage(img, 0, 0, W, H);
 
-    // Every metric is derived from W (not H), so wide/landscape and tall/portrait
-    // photos both scale the same way and nothing overflows or overlaps.
-    const pad = W * 0.032;
-    const bottomPad = W * 0.026;
-    const leftX = pad;
-    const maxW = W - pad*2;
-    targetCtx.textBaseline = 'alphabetic';
-    targetCtx.textAlign = 'left';
+  /* ============================================================
+     核心水印绘制
+  ============================================================ */
 
-    const companySize = W * 0.0175;
-    const contentSize = W * 0.034;
-    const markerW = W * 0.007;
-    const markerGap = W * 0.014;
-    const textLeftX = leftX + markerW + markerGap;
-    const locSize = W * 0.02;
-    const pinSize = W * 0.022;
-    const metaSize = W * 0.0165;
+  function drawWatermark(
+    t,
+    img,
+    W,
+    H,
+    data
+  ){
 
-    // Measure first (font must be set before wrapLines, but this doesn't draw
-    // anything) so the panel height can be sized to the actual text — not a
-    // fixed guess that leaves empty space when the text is short.
-    targetCtx.font = `700 ${contentSize}px -apple-system, "PingFang SC", sans-serif`;
-    const contentLines = wrapLines(targetCtx, data.content, maxW - markerW - markerGap, 2);
-    targetCtx.font = `600 ${locSize}px -apple-system, "PingFang SC", sans-serif`;
-    const locLines = wrapLines(targetCtx, data.location, maxW - pinSize*1.4, 1);
+    /* 原图 */
 
-    let neededH = pad;
-    if(data.company) neededH += companySize*1.3 + W*0.012;
-    else neededH += W*0.006;
-    neededH += contentLines.length * (contentSize * 1.22);
-    neededH += W*0.014;
-    neededH += locSize * 1.15;
-    neededH += W*0.016;
-    neededH += W*0.012; // divider row
-    neededH += W*0.016;
-    neededH += metaSize * 1.15;
-    neededH += bottomPad;
+    t.drawImage(
+      img,
+      0,
+      0,
+      W,
+      H
+    );
 
-    const panelH = Math.min(neededH, H * 0.55);
-    const blend = panelH * 0.35;
-    const top = H - panelH;
 
-    // scrim: solid panel starts exactly at `top`, fades out above it
-    const grad = targetCtx.createLinearGradient(0, top - blend, 0, top);
-    grad.addColorStop(0, 'rgba(10,11,13,0)');
-    grad.addColorStop(1, 'rgba(10,11,13,0.87)');
-    targetCtx.fillStyle = grad;
-    targetCtx.fillRect(0, top - blend, W, blend);
-    targetCtx.fillStyle = 'rgba(10,11,13,0.87)';
-    targetCtx.fillRect(0, top, W, panelH);
+    /*
+      所有尺寸都按照照片宽度计算。
 
-    // gold hairline sits right at the top edge of the solid panel
-    targetCtx.fillStyle = GOLD;
-    targetCtx.fillRect(0, top - Math.max(1, W*0.0018)/2, W, Math.max(1, W*0.0018));
+      这样可以保证：
+      4000px照片
+      3000px照片
+      2000px照片
+      1200px照片
 
-    // Information hierarchy, top to bottom: 单位(细) -> 施工内容(全图最大最粗,一眼看懂在干嘛)
-    // -> 地点(次一级) -> 细分隔线 -> 日期/时间/天气(小字footer,退为辅助信息)
-    let y = top + pad;
+      水印比例保持一致。
+    */
 
-    // ---- 单位名称: small overline ----
+    const pad =
+      W*.028;
+
+    const bottom =
+      W*.023;
+
+
+    const maxW =
+      W-pad*2;
+
+
+    /* 字体尺寸 */
+
+    const titleSize =
+      Math.max(
+        14,
+        W*.017
+      );
+
+
+    const labelSize =
+      Math.max(
+        11,
+        W*.0105
+      );
+
+
+    const valueSize =
+      Math.max(
+        13,
+        W*.014
+      );
+
+
+    const smallSize =
+      Math.max(
+        10,
+        W*.009
+      );
+
+
+    const lineGap =
+      W*.010;
+
+
+    const iconSize =
+      Math.max(
+        14,
+        W*.014
+      );
+
+
+    /* 内容换行 */
+
+    t.font =
+      `600 ${valueSize}px "PingFang SC","Microsoft YaHei",sans-serif`;
+
+
+    const contentLines =
+      wrapLines(
+        t,
+        data.content,
+        maxW-iconSize*2,
+        2
+      );
+
+
+    const locationLines =
+      wrapLines(
+        t,
+        data.location,
+        maxW-iconSize*2,
+        2
+      );
+
+
+    const coordLines =
+      wrapLines(
+        t,
+        data.coordinates,
+        maxW-iconSize*2,
+        1
+      );
+
+
+    const rowH =
+      Math.max(
+        valueSize*1.5,
+        W*.020
+      );
+
+
+    const headerH =
+      titleSize*1.35;
+
+
+    const contentH =
+      contentLines.length*
+      rowH;
+
+
+    const locationH =
+      locationLines.length*
+      rowH;
+
+
+    const coordH =
+      coordLines.length*
+      rowH;
+
+
+    const peopleH =
+      rowH;
+
+
+    const footerH =
+      Math.max(
+        smallSize*1.8,
+        W*.018
+      );
+
+
+    /*
+      自动计算水印高度
+    */
+
+    const panelH =
+      pad+
+      headerH+
+      lineGap+
+      contentH+
+      lineGap+
+      locationH+
+      lineGap+
+      peopleH+
+      lineGap+
+      coordH+
+      lineGap+
+      footerH+
+      bottom;
+
+
+    /*
+      防止水印在特别矮的照片上过高
+    */
+
+    const actualH =
+      Math.min(
+        panelH,
+        H*.42
+      );
+
+
+    const top =
+      H-actualH;
+
+
+    /*
+      上方渐变
+
+      透明度刻意降低，
+      让照片主体保持清晰。
+    */
+
+    const fade =
+      actualH*.48;
+
+
+    const grad =
+      t.createLinearGradient(
+        0,
+        top-fade,
+        0,
+        top+actualH*.15
+      );
+
+
+    grad.addColorStop(
+      0,
+      'rgba(8,12,16,0)'
+    );
+
+
+    grad.addColorStop(
+      .55,
+      'rgba(8,12,16,.25)'
+    );
+
+
+    grad.addColorStop(
+      1,
+      'rgba(8,12,16,.48)'
+    );
+
+
+    t.fillStyle=grad;
+
+
+    t.fillRect(
+      0,
+      top-fade,
+      W,
+      actualH+fade
+    );
+
+
+    /*
+      左侧细金色竖线
+    */
+
+    t.fillStyle =
+      'rgba(231,184,75,.82)';
+
+
+    t.fillRect(
+      pad,
+      top,
+      Math.max(
+        2,
+        W*.0012
+      ),
+      actualH
+    );
+
+
+    let y =
+      top+pad;
+
+
+    /* ============================================================
+       标题
+    ============================================================ */
+
+    t.fillStyle =
+      'rgba(231,184,75,.95)';
+
+
+    t.font =
+      `600 ${titleSize}px "PingFang SC","Microsoft YaHei",sans-serif`;
+
+
+    y += titleSize;
+
+
+    t.fillText(
+      '施工现场记录',
+      pad+W*.008,
+      y
+    );
+
+
+    /*
+      分隔线
+    */
+
+    y += W*.010;
+
+
+    t.strokeStyle =
+      'rgba(255,255,255,.18)';
+
+
+    t.lineWidth =
+      Math.max(
+        1,
+        W*.0006
+      );
+
+
+    t.beginPath();
+
+    t.moveTo(
+      pad,
+      y
+    );
+
+    t.lineTo(
+      W-pad,
+      y
+    );
+
+    t.stroke();
+
+
+    y += W*.014;
+
+
+    /* ============================================================
+       通用信息行
+    ============================================================ */
+
+    function drawRow(
+      label,
+      value,
+      iconType,
+      lines
+    ){
+
+      const iconX =
+        pad+W*.008;
+
+
+      const textX =
+        pad+iconSize*1.9;
+
+
+      if(
+        iconType ===
+        'pin'
+      ){
+
+        drawPin(
+          t,
+          iconX+iconSize/2,
+          y-valueSize*.35,
+          iconSize,
+          'rgba(231,184,75,.88)'
+        );
+
+      }
+
+
+      if(
+        iconType ===
+        'clipboard'
+      ){
+
+        drawClipboard(
+          t,
+          iconX,
+          y-valueSize*.98,
+          iconSize,
+          'rgba(231,184,75,.88)'
+        );
+
+      }
+
+
+      if(
+        iconType ===
+        'people'
+      ){
+
+        drawPeople(
+          t,
+          iconX,
+          y-valueSize*.98,
+          iconSize,
+          'rgba(231,184,75,.88)'
+        );
+
+      }
+
+
+      if(
+        iconType ===
+        'coord'
+      ){
+
+        drawPin(
+          t,
+          iconX+iconSize/2,
+          y-valueSize*.35,
+          iconSize,
+          'rgba(101,169,216,.88)'
+        );
+
+      }
+
+
+      /*
+        标签
+      */
+
+      t.font =
+        `600 ${labelSize}px "PingFang SC","Microsoft YaHei",sans-serif`;
+
+
+      t.fillStyle =
+        iconType==='coord'
+        ?
+        'rgba(101,169,216,.95)'
+        :
+        'rgba(231,184,75,.95)';
+
+
+      t.fillText(
+        label,
+        textX,
+        y
+      );
+
+
+      const labelPixel =
+        t.measureText(label).width;
+
+
+      const valueX =
+        textX+
+        Math.max(
+          W*.074,
+          labelPixel+
+          W*.012
+        );
+
+
+      /*
+        内容
+      */
+
+      t.font =
+        `500 ${valueSize}px "PingFang SC","Microsoft YaHei",sans-serif`;
+
+
+      t.fillStyle =
+        'rgba(245,247,249,.86)';
+
+
+      lines.forEach(
+        (line,idx)=>{
+
+          t.fillText(
+            line,
+            valueX,
+            y+idx*rowH
+          );
+
+        }
+      );
+
+
+      y +=
+        Math.max(
+          rowH,
+          lines.length*rowH
+        );
+
+
+      y += lineGap;
+
+    }
+
+
+    /* 施工内容 */
+
+    drawRow(
+      '施工内容：',
+      data.content,
+      'clipboard',
+      contentLines
+    );
+
+
+    /* 施工地点 */
+
+    drawRow(
+      '施工地点：',
+      data.location,
+      'pin',
+      locationLines
+    );
+
+
+    /* 施工人数 */
+
+    drawRow(
+      '施工人数：',
+      `${data.workers} 人`,
+      'people',
+      [`${data.workers} 人`]
+    );
+
+
+    /* 经纬度 */
+
+    drawRow(
+      '经纬度：',
+      data.coordinates,
+      'coord',
+      coordLines
+    );
+
+
+    /* ============================================================
+       底部信息栏
+    ============================================================ */
+
+    const footerTop =
+      y-W*.002;
+
+
+    const footerH2 =
+      Math.max(
+        smallSize*2,
+        W*.023
+      );
+
+
+    /*
+      半透明蓝色条
+    */
+
+    t.fillStyle =
+      'rgba(47,119,169,.34)';
+
+
+    t.fillRect(
+      pad,
+      footerTop,
+      W-pad*2,
+      footerH2
+    );
+
+
+    /*
+      日期时间
+    */
+
+    t.font =
+      `500 ${smallSize}px "PingFang SC","Microsoft YaHei",sans-serif`;
+
+
+    t.fillStyle =
+      'rgba(242,245,247,.78)';
+
+
+    const dateText =
+      `${data.dateStr}  ·  ${data.timeStr}`;
+
+
+    t.fillText(
+      dateText,
+      pad+W*.008,
+      footerTop+footerH2*.68
+    );
+
+
+    /*
+      天气
+    */
+
+    const wLabel =
+      (
+        weatherTypes.find(
+          w=>w.key===data.weather
+        ) || {}
+      ).label || '';
+
+
+    const tempText =
+      data.temp
+      ?
+      `${wLabel} ${data.temp}℃`
+      :
+      wLabel;
+
+
+    const iconR =
+      Math.max(
+        7,
+        W*.0085
+      );
+
+
+    t.font =
+      `500 ${smallSize}px "PingFang SC","Microsoft YaHei",sans-serif`;
+
+
+    const tw =
+      t.measureText(
+        tempText
+      ).width;
+
+
+    const tx =
+      W-pad-W*.008-tw;
+
+
+    drawWeatherIcon(
+      t,
+      data.weather,
+      tx-iconR*1.65,
+      footerTop+footerH2*.48,
+      iconR,
+      'rgba(231,184,75,.92)'
+    );
+
+
+    t.fillStyle =
+      'rgba(242,245,247,.78)';
+
+
+    t.fillText(
+      tempText,
+      tx,
+      footerTop+footerH2*.68
+    );
+
+
+    /*
+      公司名称放在最底部。
+
+      使用低透明度，避免公司名称
+      抢走照片主体注意力。
+    */
+
     if(data.company){
-      targetCtx.fillStyle = GOLD;
-      targetCtx.font = `600 ${companySize}px -apple-system, "PingFang SC", sans-serif`;
-      y += companySize * 0.85;
-      targetCtx.fillText(data.company, leftX, y);
-      y += companySize * 0.55;
+
+      t.font =
+        `500 ${smallSize}px "PingFang SC","Microsoft YaHei",sans-serif`;
+
+
+      t.fillStyle =
+        'rgba(255,255,255,.48)';
+
+
+      t.textAlign='right';
+
+
+      t.fillText(
+        data.company,
+        W-pad,
+        H-bottom
+      );
+
+
+      t.textAlign='left';
+
     }
-    y += W * 0.012;
 
-    // ---- 施工内容: the hero line, largest + boldest text in the panel ----
-    targetCtx.font = `700 ${contentSize}px -apple-system, "PingFang SC", sans-serif`;
-    const contentBlockTop = y;
-    targetCtx.fillStyle = WHITE;
-    contentLines.forEach(line=>{
-      y += contentSize * 0.92;
-      targetCtx.fillText(line, textLeftX, y);
-      y += contentSize * 0.3;
-    });
-    const contentBlockBottom = y - contentSize*0.3;
-    // signature accent: a single gold bar beside the hero line — the one deliberate ornament
-    targetCtx.fillStyle = GOLD;
-    targetCtx.fillRect(leftX, contentBlockTop - contentSize*0.15, markerW, contentBlockBottom - contentBlockTop + contentSize*0.15);
-
-    y += W * 0.014;
-
-    // ---- 地点: secondary line, with pin icon ----
-    targetCtx.font = `600 ${locSize}px -apple-system, "PingFang SC", sans-serif`;
-    y += locSize * 0.8;
-    drawPin(targetCtx, textLeftX + pinSize/2, y - locSize*0.3, pinSize, GOLD);
-    targetCtx.fillStyle = SUB;
-    targetCtx.fillText(locLines[0] || '', textLeftX + pinSize*1.3, y);
-
-    y += W * 0.016;
-
-    // ---- thin divider between the "what/where" and the "when/conditions" footer ----
-    targetCtx.strokeStyle = 'rgba(198,161,91,0.32)';
-    targetCtx.lineWidth = Math.max(1, W*0.001);
-    targetCtx.beginPath();
-    targetCtx.moveTo(leftX, y);
-    targetCtx.lineTo(W - pad, y);
-    targetCtx.stroke();
-
-    y += W * 0.018;
-
-    // ---- footer: date · time on the left, weather + temp right-aligned, same row ----
-    targetCtx.font = `400 ${metaSize}px -apple-system, "PingFang SC", sans-serif`;
-    targetCtx.fillStyle = SUB;
-    const metaY = y + metaSize * 0.82;
-    targetCtx.fillText(`${data.dateStr}  ·  ${data.timeStr}`, leftX, metaY);
-
-    const wLabel = (weatherTypes.find(w=>w.key===data.weather)||{}).label || '';
-    const tempTxt = data.temp !== '' ? `${wLabel} ${data.temp}℃` : wLabel;
-    const iconR = W * 0.013;
-    targetCtx.font = `400 ${metaSize}px -apple-system, "PingFang SC", sans-serif`;
-    const tempW = targetCtx.measureText(tempTxt).width;
-    const tempX = W - pad - tempW;
-    drawWeatherIcon(targetCtx, data.weather, tempX - iconR*1.6, metaY - metaSize*0.32, iconR, GOLD);
-    targetCtx.fillStyle = SUB;
-    targetCtx.fillText(tempTxt, tempX, metaY);
   }
 
-  // ---------- placeholder base image ----------
-  function drawPlaceholder(c, W, H){
-    const g = c.createLinearGradient(0,0,W,H);
-    g.addColorStop(0, '#3a4048');
-    g.addColorStop(1, '#181b20');
-    c.fillStyle = g;
-    c.fillRect(0,0,W,H);
-    c.fillStyle = 'rgba(255,255,255,0.06)';
-    for(let i=0;i<6;i++){
+
+  /* ============================================================
+     示例底图
+  ============================================================ */
+
+  function drawPlaceholder(
+    c,
+    W,
+    H
+  ){
+
+    const g =
+      c.createLinearGradient(
+        0,
+        0,
+        W,
+        H
+      );
+
+
+    g.addColorStop(
+      0,
+      '#3b424a'
+    );
+
+
+    g.addColorStop(
+      1,
+      '#15191e'
+    );
+
+
+    c.fillStyle=g;
+
+
+    c.fillRect(
+      0,
+      0,
+      W,
+      H
+    );
+
+
+    c.fillStyle =
+      'rgba(255,255,255,.05)';
+
+
+    for(
+      let i=0;
+      i<7;
+      i++
+    ){
+
       c.beginPath();
-      c.arc(W*(0.15+i*0.15), H*0.35, W*0.05, 0, Math.PI*2);
+
+      c.arc(
+        W*(.12+i*.13),
+        H*.38,
+        W*.045,
+        0,
+        Math.PI*2
+      );
+
       c.fill();
+
     }
+
   }
+
+
+  /* ============================================================
+     预览
+  ============================================================ */
 
   function renderPreview(){
-    const data = getFormData();
-    let W, H, drawFn;
-    if(activeIndex >= 0 && photos[activeIndex]){
-      const img = photos[activeIndex].img;
-      W = img.naturalWidth; H = img.naturalHeight;
-      canvas.width = W; canvas.height = H;
-      drawWatermark(ctx, img, W, H, data);
-    } else {
-      W = 1200; H = 900;
-      canvas.width = W; canvas.height = H;
-      const tmp = document.createElement('canvas');
-      tmp.width = W; tmp.height = H;
-      const tctx = tmp.getContext('2d');
-      drawPlaceholder(tctx, W, H);
-      drawWatermark(ctx, tmp, W, H, data);
+
+    const data =
+      getFormData();
+
+
+    let W,H,img;
+
+
+    if(
+      activeIndex>=0 &&
+      photos[activeIndex]
+    ){
+
+      img =
+        photos[activeIndex].img;
+
+
+      W =
+        img.naturalWidth;
+
+
+      H =
+        img.naturalHeight;
+
+
+      canvas.width=W;
+
+      canvas.height=H;
+
+
+      drawWatermark(
+        ctx,
+        img,
+        W,
+        H,
+        data
+      );
+
     }
+
+    else{
+
+      W=1200;
+
+      H=900;
+
+
+      canvas.width=W;
+
+      canvas.height=H;
+
+
+      const tmp =
+        document.createElement(
+          'canvas'
+        );
+
+
+      tmp.width=W;
+
+      tmp.height=H;
+
+
+      drawPlaceholder(
+        tmp.getContext('2d'),
+        W,
+        H
+      );
+
+
+      drawWatermark(
+        ctx,
+        tmp,
+        W,
+        H,
+        data
+      );
+
+    }
+
   }
 
-  // ---------- upload handling ----------
-  fileInput.onchange = (e)=>{
-    const files = Array.from(e.target.files || []);
-    let loaded = 0;
-    files.forEach(f=>{
-      const reader = new FileReader();
-      reader.onload = ev=>{
-        const img = new Image();
-        img.onload = ()=>{
-          photos.push({img, name:f.name});
-          if(activeIndex === -1) activeIndex = photos.length - 1;
-          loaded++;
-          renderThumbs();
-          renderPreview();
-        };
-        img.src = ev.target.result;
-      };
-      reader.readAsDataURL(f);
-    });
-    fileInput.value = '';
-  };
+
+  /* ============================================================
+     图片选择
+  ============================================================ */
+
+  fileInput.onchange =
+    e=>{
+
+      const files =
+        Array.from(
+          e.target.files || []
+        );
+
+
+      files.forEach(
+        f=>{
+
+          const reader =
+            new FileReader();
+
+
+          reader.onload =
+            ev=>{
+
+              const img =
+                new Image();
+
+
+              img.onload =
+                ()=>{
+
+                  photos.push({
+                    img,
+                    name:f.name
+                  });
+
+
+                  if(
+                    activeIndex===-1
+                  ){
+
+                    activeIndex =
+                      photos.length-1;
+
+                  }
+
+
+                  renderThumbs();
+
+                  renderPreview();
+
+                };
+
+
+              img.src =
+                ev.target.result;
+
+            };
+
+
+          reader.readAsDataURL(f);
+
+        }
+      );
+
+
+      fileInput.value='';
+
+    };
+
+
+  /* ============================================================
+     缩略图
+  ============================================================ */
 
   function renderThumbs(){
-    thumbsEl.innerHTML = '';
-    photos.forEach((p, i)=>{
-      const d = document.createElement('div');
-      d.className = 'thumb' + (i===activeIndex ? ' active':'');
-      const img = document.createElement('img');
-      img.src = p.img.src;
-      d.appendChild(img);
-      const del = document.createElement('div');
-      del.className = 'del';
-      del.textContent = '×';
-      del.onclick = (ev)=>{
-        ev.stopPropagation();
-        photos.splice(i,1);
-        if(activeIndex >= photos.length) activeIndex = photos.length - 1;
-        renderThumbs();
-        renderPreview();
-      };
-      d.appendChild(del);
-      d.onclick = ()=>{ activeIndex = i; renderThumbs(); renderPreview(); };
-      thumbsEl.appendChild(d);
-    });
-    countPill.textContent = photos.length ? `已选择 ${photos.length} 张照片` : '';
+
+    thumbsEl.innerHTML='';
+
+
+    photos.forEach(
+      (p,i)=>{
+
+        const d =
+          document.createElement(
+            'div'
+          );
+
+
+        d.className =
+          'thumb'+
+          (
+            i===activeIndex
+            ?
+            ' active'
+            :
+            ''
+          );
+
+
+        const im =
+          document.createElement(
+            'img'
+          );
+
+
+        im.src =
+          p.img.src;
+
+
+        d.appendChild(im);
+
+
+        const del =
+          document.createElement(
+            'div'
+          );
+
+
+        del.className='del';
+
+        del.textContent='×';
+
+
+        del.onclick =
+          ev=>{
+
+            ev.stopPropagation();
+
+
+            photos.splice(
+              i,
+              1
+            );
+
+
+            if(
+              activeIndex>=photos.length
+            ){
+
+              activeIndex =
+                photos.length-1;
+
+            }
+
+
+            renderThumbs();
+
+            renderPreview();
+
+          };
+
+
+        d.appendChild(del);
+
+
+        d.onclick =
+          ()=>{
+
+            activeIndex=i;
+
+            renderThumbs();
+
+            renderPreview();
+
+          };
+
+
+        thumbsEl.appendChild(d);
+
+      }
+    );
+
+
+    countPill.textContent =
+      photos.length
+      ?
+      `已选择 ${photos.length} 张照片`
+      :
+      '';
+
   }
 
-  // ---------- form bindings ----------
-  ['company','content','location','temp','date','time'].forEach(id=>{
-    el(id).addEventListener('input', renderPreview);
-  });
+
+  /* ============================================================
+     表单监听
+  ============================================================ */
+
+  [
+    'company',
+    'content',
+    'location',
+    'workers',
+    'coordinates',
+    'temp',
+    'date',
+    'time'
+  ].forEach(
+    id=>{
+
+      $(id).addEventListener(
+        'input',
+        renderPreview
+      );
+
+    }
+  );
+
+
+  /* ============================================================
+     自动填写当前时间
+  ============================================================ */
 
   function setNow(){
-    const d = new Date();
-    el('date').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    el('time').value = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+    const d =
+      new Date();
+
+
+    $('date').value =
+      `${d.getFullYear()}-`+
+      `${pad(d.getMonth()+1)}-`+
+      `${pad(d.getDate())}`;
+
+
+    $('time').value =
+      `${pad(d.getHours())}:`+
+      `${pad(d.getMinutes())}`;
+
   }
 
-  // ---------- download ----------
-  el('downloadBtn').onclick = async ()=>{
-    if(photos.length === 0){
-      statusEl.textContent = '请先选择至少一张照片';
-      return;
-    }
-    const data = getFormData();
-    const btn = el('downloadBtn');
-    btn.disabled = true;
 
-    if(photos.length === 1){
-      statusEl.textContent = '正在生成…';
-      const img = photos[0].img;
-      const off = document.createElement('canvas');
-      off.width = img.naturalWidth; off.height = img.naturalHeight;
-      drawWatermark(off.getContext('2d'), img, off.width, off.height, data);
-      off.toBlob(blob=>{
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `水印_${data.dateStr.replace(/[年月日 ]/g,'')}_${data.timeStr.replace(':','')}.jpg`;
-        a.click();
-        statusEl.textContent = '已下载';
-        btn.disabled = false;
-      }, 'image/jpeg', 0.92);
-    } else {
-      for(let i=0;i<photos.length;i++){
-        statusEl.textContent = `正在下载 ${i+1}/${photos.length}…`;
-        const img = photos[i].img;
-        const off = document.createElement('canvas');
-        off.width = img.naturalWidth; off.height = img.naturalHeight;
-        drawWatermark(off.getContext('2d'), img, off.width, off.height, data);
-        const blob = await new Promise(res=> off.toBlob(res,'image/jpeg',0.92));
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `水印_${i+1}_${data.timeStr.replace(':','')}.jpg`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-        await new Promise(res=> setTimeout(res, 350));
+  /* ============================================================
+     下载
+  ============================================================ */
+
+  $('downloadBtn').onclick =
+    async()=>{
+
+      if(!photos.length){
+
+        statusEl.textContent =
+          '请先选择至少一张照片';
+
+        return;
+
       }
-      statusEl.textContent = `已下载全部 ${photos.length} 张照片`;
-      btn.disabled = false;
-    }
-  };
 
-  // ---------- init ----------
+
+      const data =
+        getFormData();
+
+
+      const btn =
+        $('downloadBtn');
+
+
+      btn.disabled=true;
+
+
+      /* 单张 */
+
+      if(
+        photos.length===1
+      ){
+
+        statusEl.textContent =
+          '正在生成…';
+
+
+        const img =
+          photos[0].img;
+
+
+        const off =
+          document.createElement(
+            'canvas'
+          );
+
+
+        off.width =
+          img.naturalWidth;
+
+
+        off.height =
+          img.naturalHeight;
+
+
+        drawWatermark(
+          off.getContext('2d'),
+          img,
+          off.width,
+          off.height,
+          data
+        );
+
+
+        off.toBlob(
+          blob=>{
+
+            const a =
+              document.createElement(
+                'a'
+              );
+
+
+            a.href =
+              URL.createObjectURL(
+                blob
+              );
+
+
+            a.download =
+              `施工记录_`+
+              `${data.dateStr.replace(
+                /[年月日 ]/g,
+                ''
+              )}_`+
+              `${data.timeStr.replace(
+                ':',
+                ''
+              )}.jpg`;
+
+
+            a.click();
+
+
+            setTimeout(
+              ()=>{
+                URL.revokeObjectURL(
+                  a.href
+                );
+              },
+              1000
+            );
+
+
+            statusEl.textContent =
+              '已下载';
+
+
+            btn.disabled=false;
+
+          },
+          'image/jpeg',
+          .94
+        );
+
+      }
+
+
+      /* 批量 */
+
+      else{
+
+        for(
+          let i=0;
+          i<photos.length;
+          i++
+        ){
+
+          statusEl.textContent =
+            `正在生成 ${i+1}/${photos.length}…`;
+
+
+          const img =
+            photos[i].img;
+
+
+          const off =
+            document.createElement(
+              'canvas'
+            );
+
+
+          off.width =
+            img.naturalWidth;
+
+
+          off.height =
+            img.naturalHeight;
+
+
+          drawWatermark(
+            off.getContext('2d'),
+            img,
+            off.width,
+            off.height,
+            data
+          );
+
+
+          const blob =
+            await new Promise(
+              resolve=>
+                off.toBlob(
+                  resolve,
+                  'image/jpeg',
+                  .94
+                )
+            );
+
+
+          const a =
+            document.createElement(
+              'a'
+            );
+
+
+          a.href =
+            URL.createObjectURL(
+              blob
+            );
+
+
+          a.download =
+            `施工记录_`+
+            `${i+1}_`+
+            `${data.timeStr.replace(
+              ':',
+              ''
+            )}.jpg`;
+
+
+          a.click();
+
+
+          setTimeout(
+            ()=>{
+              URL.revokeObjectURL(
+                a.href
+              );
+            },
+            1000
+          );
+
+
+          await new Promise(
+            res=>
+              setTimeout(
+                res,
+                350
+              )
+          );
+
+        }
+
+
+        statusEl.textContent =
+          `已下载全部 ${photos.length} 张照片`;
+
+
+        btn.disabled=false;
+
+      }
+
+    };
+
+
+  /* ============================================================
+     初始化
+  ============================================================ */
+
   buildWeatherGrid();
+
   setNow();
+
   renderPreview();
+
 })();
+
 </script>
+
 </body>
 </html>
