@@ -57,24 +57,46 @@ const appConfig = {
     ],
 }
 
-function isCloudflarePage(data) {
-    if (!data || typeof data !== 'string') return false
-    return data.includes('Just a moment...') ||
-        data.includes('cf-browser-verification') ||
-        data.includes('/cdn-cgi/challenge-platform/') ||
-        data.includes('Verify you are human')
+function getHeaderCI(headers, name) {
+    if (!headers) return ''
+    const lower = name.toLowerCase()
+    for (const key of Object.keys(headers)) {
+        if (key.toLowerCase() === lower) return headers[key]
+    }
+    return ''
+}
+
+function isCloudflarePage(data, status, respHeaders) {
+    const html = String(data || '')
+    const code = Number(status || 0)
+    const mitigated = String(getHeaderCI(respHeaders, 'cf-mitigated') || '').toLowerCase()
+
+    if (mitigated === 'challenge') return true
+    if (/<title[^>]*>\s*Just a moment(?:\.\.\.)?\s*<\/title>/i.test(html)) return true
+    if (/cf-browser-verification/i.test(html)) return true
+    if (/Verify you are human/i.test(html) && /Cloudflare/i.test(html)) return true
+    if ((code === 403 || code === 503) && /Cloudflare|challenge-platform|cf_chl/i.test(html)) return true
+
+    return false
 }
 
 async function fetchPage(url, extraHeaders = {}) {
-    let res = await $fetch.get(url, {
+    const res = await $fetch.get(url, {
         headers: {
             'User-Agent': UA,
             ...extraHeaders,
         },
     })
 
-    if (isCloudflarePage(res.data)) {
-        $utils.openSafari(url, UA)
+    if (isCloudflarePage(res.data, res.status, res.respHeaders || res.headers)) {
+        const key = 'missav_cf_prompt_' + appConfig.site
+        const last = Number($cache.get(key) || 0)
+        const now = Date.now()
+
+        if (!last || now - last > 10 * 60 * 1000) {
+            $cache.set(key, String(now))
+            $utils.openSafari(url, UA)
+        }
     }
 
     return res
