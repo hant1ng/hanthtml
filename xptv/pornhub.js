@@ -1,7 +1,7 @@
 async function getLocalInfo() {
     return jsonify({
         ver: 1,
-        name: 'Pornhub 中文',
+        name: '🕶️Pornhub 中文',
         api: 'csp_pornhub_cn',
     })
 }
@@ -16,14 +16,14 @@ const AGE_COOKIE = 'age_verified=1; accessAgeDisclaimerPH=1; has_access=1; il=v1
 
 const appConfig = {
     ver: 1,
-    title: 'Pornhub 中文',
+    title: '🕶️Pornhub 中文',
     site: HOME,
     tabs: [
-        { name: '中文', ui: 1, ext: { id: 'chinese' } },
-        { name: '最新', ui: 1, ext: { id: 'cm' } },
-        { name: '观看最多', ui: 1, ext: { id: 'mv' } },
-        { name: '热门', ui: 1, ext: { id: 'ht' } },
-        { name: '评分最高', ui: 1, ext: { id: 'tr' } },
+        { name: '🕶️中文', ui: 1, ext: { id: 'chinese' } },
+        { name: '🕶️最新', ui: 1, ext: { id: 'cm' } },
+        { name: '🕶️观看最多', ui: 1, ext: { id: 'mv' } },
+        { name: '🕶️热门', ui: 1, ext: { id: 'ht' } },
+        { name: '🕶️评分最高', ui: 1, ext: { id: 'tr' } },
     ],
 }
 
@@ -444,7 +444,7 @@ async function getTracks(ext) {
 
         if (!tracks.length) {
             tracks = [{
-                name: '自动解析',
+                name: '🕶️自动解析',
                 pan: '',
                 ext: {
                     url: pageUrl,
@@ -457,7 +457,7 @@ async function getTracks(ext) {
 
         return jsonify({
             list: [{
-                title: '播放',
+                title: '🕶️播放',
                 tracks,
             }],
         })
