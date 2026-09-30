@@ -1,13 +1,12 @@
 async function getLocalInfo() {
     return jsonify({
-        ver: 7,
+        ver: 8,
         name: '🕶️肉视频',
         api: 'csp_rouvideo',
     })
 }
 
 const cheerio = createCheerio()
-const CryptoJS = createCryptoJS()
 
 const ROOT = 'https://rou.video'
 const HOME = ROOT + '/home'
@@ -15,7 +14,7 @@ const API = ROOT + '/api'
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 
 const appConfig = {
-    ver: 7,
+    ver: 8,
     title: '🕶️肉视频',
     site: HOME,
     tabs: [
@@ -292,139 +291,108 @@ async function getCards(ext) {
 }
 
 
-function decodeEvPayload(ev) {
-    if (!ev || !ev.d || ev.k == null) return null
-
-    try {
-        const raw = CryptoJS.enc.Base64
-            .parse(String(ev.d))
-            .toString(CryptoJS.enc.Latin1)
-
-        const shift = Number(ev.k || 0)
-        let decoded = ''
-
-        for (let i = 0; i < raw.length; i++) {
-            decoded += String.fromCharCode((raw.charCodeAt(i) - shift + 256) & 255)
-        }
-
-        return JSON.parse(decoded)
-    } catch (e) {
-        $print('Rou decodeEv error: ' + e)
-        return null
-    }
-}
-
-async function resolveRouPlay(id) {
-    const detailUrl = ROOT + '/v/' + encodeURIComponent(id)
-
-    // Primary: same signed stream data used by the web detail page.
-    try {
-        const { data } = await $fetch.get(detailUrl, {
-            headers: {
-                'User-Agent': UA,
-                'Referer': HOME,
-            },
-        })
-
-        const $ = cheerio.load(String(data || ''))
-        const raw = $('#__NEXT_DATA__').html() || $('#__NEXT_DATA__').text() || ''
-
-        if (raw) {
-            const json = JSON.parse(raw)
-            const ev = json && json.props && json.props.pageProps && json.props.pageProps.ev
-            const decoded = decodeEvPayload(ev)
-
-            if (decoded && decoded.videoUrl) {
-                return {
-                    url: String(decoded.videoUrl),
-                    referer: detailUrl,
-                    source: 'ev',
-                }
-            }
-        }
-    } catch (e) {
-        $print('Rou detail play error: ' + e)
-    }
-
-    // Fallback: public video API.
-    try {
-        const { data } = await $fetch.get(API + '/v/' + encodeURIComponent(id), {
-            headers: {
-                'User-Agent': UA,
-                'Referer': ROOT + '/',
-            },
-        })
-
-        const json = argsify(data)
-        if (json && json.video && json.video.videoUrl) {
-            let url = String(json.video.videoUrl)
-            url = url
-                .replace(/\/index\.jpg(?=([?#]|$))/i, '/index.m3u8')
-                .replace(/\/index\.png(?=([?#]|$))/i, '/index.m3u8')
-
-            return {
-                url: url,
-                referer: detailUrl,
-                source: 'api',
-            }
-        }
-    } catch (e) {
-        $print('Rou API play error: ' + e)
-    }
-
-    return null
-}
-
 async function getTracks(ext) {
-    try {
-        ext = argsify(ext)
-        const id = String(ext.id || videoId(ext.url) || '')
-        if (!id) return jsonify({ list: [] })
+    ext = argsify(ext)
+    let tracks = []
+    const url = ext.url
 
-        return jsonify({
-            list: [{
-                title: '播放',
-                tracks: [{
-                    name: '播放',
-                    pan: '',
-                    ext: {
-                        id: id,
-                    },
-                }],
-            }],
-        })
-    } catch (e) {
-        $print('Rou getTracks error: ' + e)
-        return jsonify({ list: [] })
+    const { data } = await $fetch.get(url, {
+        headers: {
+            'User-Agent': UA,
+        },
+    })
+
+    const $ = cheerio.load(data)
+    const scriptContent = $('#__NEXT_DATA__').html()
+    const jsonData = JSON.parse(scriptContent)
+    const ev = jsonData.props.pageProps.ev
+    const decodedEv = decodeEv(ev)
+
+    const playurl = decodedEv.videoUrl
+
+    function decodeEv(ev) {
+        const decoded = _atob(ev.d)
+            .split('')
+            .map((c) => String.fromCharCode(c.charCodeAt(0) - ev.k))
+            .join('')
+        return JSON.parse(decoded)
     }
-}
-async function getPlayinfo(ext) {
-    try {
-        ext = argsify(ext)
-        const id = String(ext.id || videoId(ext.url) || '')
-        if (!id) return jsonify({ urls: [], headers: [] })
 
-        const resolved = await resolveRouPlay(id)
+    function _atob(b64) {
+        var chars = {
+            ascii: function () {
+                return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+            },
+            indices: function () {
+                if (!this.cache) {
+                    this.cache = {}
+                    var ascii = chars.ascii()
 
-        if (!resolved || !resolved.url) {
-            $utils.toastError('肉视频播放地址解析失败')
-            return jsonify({ urls: [], headers: [] })
+                    for (var c = 0; c < ascii.length; c++) {
+                        var chr = ascii[c]
+                        this.cache[chr] = c
+                    }
+                }
+                return this.cache
+            },
         }
 
-        $print('Rou play source=' + resolved.source + ' url=' + resolved.url)
+        var indices = chars.indices(),
+            pos = b64.indexOf('='),
+            padded = pos > -1,
+            len = padded ? pos : b64.length,
+            i = -1,
+            data = ''
 
-        // The signed m3u8 is minted by the detail page. Keep it unchanged.
-        return jsonify({
-            urls: [resolved.url],
-            headers: [{
-                'User-Agent': UA,
-                'Referer': resolved.referer,
-            }],
-        })
-    } catch (e) {
-        $print('Rou getPlayinfo error: ' + e)
-        return jsonify({ urls: [], headers: [] })
+        while (i < len) {
+            var code =
+                (indices[b64[++i]] << 18) |
+                (indices[b64[++i]] << 12) |
+                (indices[b64[++i]] << 6) |
+                indices[b64[++i]]
+
+            if (code !== 0) {
+                data += String.fromCharCode(
+                    (code >>> 16) & 255,
+                    (code >>> 8) & 255,
+                    code & 255
+                )
+            }
+        }
+
+        if (padded) {
+            data = data.slice(0, pos - b64.length)
+        }
+
+        return data
     }
+
+    tracks.push({
+        name: '播放',
+        pan: '',
+        ext: {
+            url: playurl,
+        },
+    })
+
+    return jsonify({
+        list: [
+            {
+                title: '默认分组',
+                tracks,
+            },
+        ],
+    })
+}
+
+async function getPlayinfo(ext) {
+    ext = argsify(ext)
+    const playurl = ext.url.replace('.jpg', '.m3u8')
+
+    return jsonify({
+        urls: [playurl],
+        headers: [{ 'User-Agent': UA }],
+    })
 }
 
 async function search(ext) {
