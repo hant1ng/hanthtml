@@ -1,7 +1,7 @@
 async function getLocalInfo() {
     return jsonify({
         ver: 1,
-        name: '91Porn',
+        name: '🕶️91Porn',
         api: 'csp_91Porn',
     })
 }
@@ -17,21 +17,21 @@ const COOKIE_KEY = '91porn_session_cookie'
 
 const appConfig = {
     ver: 1,
-    title: '91Porn',
+    title: '🕶️91Porn',
     site: HOME,
     tabs: [
-        { name: '首页', ui: 1, ext: { type: 'home' } },
-        { name: '最新', ui: 1, ext: { type: 'latest' } },
-        { name: '精选', ui: 1, ext: { type: 'category', id: 'rf' } },
-        { name: '当前最热', ui: 1, ext: { type: 'category', id: 'hot' } },
-        { name: '本月最热', ui: 1, ext: { type: 'category', id: 'top' } },
-        { name: '本月收藏', ui: 1, ext: { type: 'category', id: 'tf' } },
-        { name: '收藏最多', ui: 1, ext: { type: 'category', id: 'mf' } },
-        { name: '讨论最多', ui: 1, ext: { type: 'category', id: 'md' } },
-        { name: '原创', ui: 1, ext: { type: 'category', id: 'ori' } },
-        { name: '高清', ui: 1, ext: { type: 'category', id: 'hd' } },
-        { name: '10分钟以上', ui: 1, ext: { type: 'category', id: 'long' } },
-        { name: '20分钟以上', ui: 1, ext: { type: 'category', id: 'longer' } },
+        { name: '🕶️首页', ui: 1, ext: { type: 'home' } },
+        { name: '🕶️最新', ui: 1, ext: { type: 'latest' } },
+        { name: '🕶️精选', ui: 1, ext: { type: 'category', id: 'rf' } },
+        { name: '🕶️当前最热', ui: 1, ext: { type: 'category', id: 'hot' } },
+        { name: '🕶️本月最热', ui: 1, ext: { type: 'category', id: 'top' } },
+        { name: '🕶️本月收藏', ui: 1, ext: { type: 'category', id: 'tf' } },
+        { name: '🕶️收藏最多', ui: 1, ext: { type: 'category', id: 'mf' } },
+        { name: '🕶️讨论最多', ui: 1, ext: { type: 'category', id: 'md' } },
+        { name: '🕶️原创', ui: 1, ext: { type: 'category', id: 'ori' } },
+        { name: '🕶️高清', ui: 1, ext: { type: 'category', id: 'hd' } },
+        { name: '🕶️10分钟以上', ui: 1, ext: { type: 'category', id: 'long' } },
+        { name: '🕶️20分钟以上', ui: 1, ext: { type: 'category', id: 'longer' } },
     ],
 }
 
@@ -424,10 +424,10 @@ async function getTracks(ext) {
     return jsonify({
         list: [
             {
-                title: '播放',
+                title: '🕶️播放',
                 tracks: [
                     {
-                        name: '播放',
+                        name: '🕶️播放',
                         pan: '',
                         ext: {
                             url,
