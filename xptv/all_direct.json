@@ -1,25 +1,25 @@
 {
   "sites": [
     {
-      "name": "MissAV",
+      "name": "🕶️MissAV",
       "type": 3,
       "api": "csp_missav_fixed",
       "ext": "https://raw.githubusercontent.com/hant1ng/hanthtml/refs/heads/main/xptv/missav.js"
     },
     {
-      "name": "91Porn",
+      "name": "🕶️91Porn",
       "type": 3,
       "api": "csp_91Porn",
       "ext": "https://raw.githubusercontent.com/hant1ng/hanthtml/refs/heads/main/xptv/91porn.js"
     },
     {
-      "name": "Pornhub 中文",
+      "name": "🕶️Pornhub 中文",
       "type": 3,
       "api": "csp_pornhub_cn",
       "ext": "https://raw.githubusercontent.com/hant1ng/hanthtml/refs/heads/main/xptv/pornhub.js"
     },
     {
-      "name": "肉视频",
+      "name": "🕶️肉视频",
       "type": 3,
       "api": "csp_rouvideo",
       "ext": "https://raw.githubusercontent.com/hant1ng/hanthtml/refs/heads/main/xptv/rou.js"
