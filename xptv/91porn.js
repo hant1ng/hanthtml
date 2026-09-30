@@ -388,8 +388,7 @@ function extractStreams(data) {
     return found
 }
 
-async function getTracks(ext) {
-    ext = argsify(ext)
+async function resolveStreams(ext, retry = true) {
     const viewkey = ext.viewkey || viewKeyFromHref(ext.url || '')
     const url = ext.url
         ? normalizeUrl(ext.url)
@@ -397,23 +396,45 @@ async function getTracks(ext) {
 
     await ensureSession()
 
-    const { data } = await requestPage(url)
-    const sources = extractStreams(data)
+    let { data } = await requestPage(url)
+    let sources = extractStreams(data)
 
-    const tracks = sources.map(source => ({
-        name: source.name,
-        pan: '',
-        ext: {
-            url: source.url,
-            type: source.type,
-        },
-    }))
+    if (!sources.length && retry) {
+        $cache.del(COOKIE_KEY)
+        await ensureSession()
+        ;({ data } = await requestPage(url))
+        sources = extractStreams(data)
+    }
+
+    return {
+        url,
+        viewkey,
+        sources,
+    }
+}
+
+async function getTracks(ext) {
+    ext = argsify(ext)
+
+    const viewkey = ext.viewkey || viewKeyFromHref(ext.url || '')
+    const url = ext.url
+        ? normalizeUrl(ext.url)
+        : SITE + '/view_video.php?viewkey=' + encodeURIComponent(viewkey) + '&page=&viewtype=&category='
 
     return jsonify({
         list: [
             {
                 title: '播放',
-                tracks,
+                tracks: [
+                    {
+                        name: '播放',
+                        pan: '',
+                        ext: {
+                            url,
+                            viewkey,
+                        },
+                    },
+                ],
             },
         ],
     })
@@ -421,15 +442,25 @@ async function getTracks(ext) {
 
 async function getPlayinfo(ext) {
     ext = argsify(ext)
-    const url = ext.url || ''
+
+    const { sources } = await resolveStreams(ext, true)
+
+    if (!sources.length) {
+        $utils.toastError('91Porn 播放地址解析失败')
+        return jsonify({
+            urls: [],
+            headers: [],
+        })
+    }
+
+    const headers = sources.map(() => ({
+        'User-Agent': UA,
+        'Referer': SITE + '/',
+    }))
 
     return jsonify({
-        urls: [url],
-        type: ext.type || (/\.m3u8(?:\?|$)/i.test(url) ? 'm3u8' : 'mp4'),
-        headers: [{
-            'User-Agent': UA,
-            'Referer': SITE + '/',
-        }],
+        urls: sources.map(source => source.url),
+        headers,
     })
 }
 
