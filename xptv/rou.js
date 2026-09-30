@@ -1,6 +1,6 @@
 async function getLocalInfo() {
     return jsonify({
-        ver: 12,
+        ver: 13,
         name: '🕶️肉视频',
         api: 'csp_rouvideo',
     })
@@ -22,7 +22,7 @@ try {
 }
 
 const appConfig = {
-    ver: 12,
+    ver: 13,
     title: '🕶️肉视频',
     site: HOME,
     tabs: [
@@ -348,7 +348,7 @@ async function getPlayinfo(ext) {
         }
 
         const proxy = DEFAULT_ROU_PROXY.replace(/\/+$/, '')
-        const playurl = proxy + '/play?detail=' + encodeURIComponent(detailUrl)
+        const playurl = proxy + '/play.m3u8?detail=' + encodeURIComponent(detailUrl)
 
         $print('Rou proxy play=' + playurl)
 
