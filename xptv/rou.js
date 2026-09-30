@@ -1,6 +1,6 @@
 async function getLocalInfo() {
     return jsonify({
-        ver: 11,
+        ver: 12,
         name: '🕶️肉视频',
         api: 'csp_rouvideo',
     })
@@ -22,7 +22,7 @@ try {
 }
 
 const appConfig = {
-    ver: 11,
+    ver: 12,
     title: '🕶️肉视频',
     site: HOME,
     tabs: [
@@ -351,6 +351,35 @@ async function getPlayinfo(ext) {
         const playurl = proxy + '/play?detail=' + encodeURIComponent(detailUrl)
 
         $print('Rou proxy play=' + playurl)
+
+        // Preflight the proxy so failures do not appear as an endless player spinner.
+        try {
+            const { data } = await $fetch.get(playurl, {
+                headers: {
+                    'User-Agent': UA,
+                    'Accept': 'application/vnd.apple.mpegurl,application/x-mpegURL,*/*',
+                },
+            })
+
+            const probe = String(data || '')
+            if (!probe.trimStart().startsWith('#EXTM3U')) {
+                let message = '代理未返回 m3u8'
+                try {
+                    const err = JSON.parse(probe)
+                    if (err && err.stage) message += '：' + err.stage
+                    if (err && err.error) message += ' / ' + err.error
+                    if (err && err.status) message += ' / HTTP ' + err.status
+                } catch (e) {}
+
+                $print('Rou proxy probe failed: ' + probe.slice(0, 500))
+                $utils.toastError('肉视频：' + message)
+                return jsonify({ urls: [], headers: [] })
+            }
+        } catch (e) {
+            $print('Rou proxy probe error: ' + e)
+            $utils.toastError('肉视频：代理请求失败')
+            return jsonify({ urls: [], headers: [] })
+        }
 
         return jsonify({
             urls: [playurl],
