@@ -1,6 +1,6 @@
 async function getLocalInfo() {
     return jsonify({
-        ver: 3,
+        ver: 4,
         name: '🕶️肉视频',
         api: 'csp_rouvideo',
     })
@@ -14,7 +14,7 @@ const API = ROOT + '/api'
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 
 const appConfig = {
-    ver: 3,
+    ver: 4,
     title: '🕶️肉视频',
     site: HOME,
     tabs: [
@@ -70,53 +70,115 @@ function addCard(cards, seen, id, title, cover, remark) {
     })
 }
 
+function videoRemark(video) {
+    const parts = []
+
+    if (Array.isArray(video.sources) && video.sources.length) {
+        let best = 0
+        for (let i = 0; i < video.sources.length; i++) {
+            const n = Number(video.sources[i] && video.sources[i].resolution || 0)
+            if (n > best) best = n
+        }
+        if (best) parts.push(best + 'p')
+    }
+
+    if (video.viewCount != null) parts.push(String(video.viewCount) + '观看')
+    if (video.likeCount != null) parts.push(String(video.likeCount) + '赞')
+
+    return parts.join(' · ')
+}
+
+function addVideoObject(cards, seen, video) {
+    if (!video || !video.id) return
+
+    addCard(
+        cards,
+        seen,
+        String(video.id),
+        String(video.name || video.nameZh || video.vid || video.id),
+        String(video.coverImageUrl || ''),
+        videoRemark(video)
+    )
+}
+
 function parseNextData($, cards, seen) {
     const raw = $('#__NEXT_DATA__').html() || $('#__NEXT_DATA__').text() || ''
-    if (!raw) return
+    if (!raw) return false
 
     let json
     try {
         json = JSON.parse(raw)
     } catch (e) {
-        return
+        $print('Rou __NEXT_DATA__ JSON error: ' + e)
+        return false
     }
 
     const props = json && json.props && json.props.pageProps
-    if (!props) return
+    if (!props) return false
 
-    function walk(value) {
-        if (!value) return
-
-        if (Array.isArray(value)) {
-            for (let i = 0; i < value.length; i++) walk(value[i])
-            return
-        }
-
-        if (typeof value !== 'object') return
-
-        if (value.id && (value.name || value.nameZh) && value.coverImageUrl) {
-            let remark = ''
-            if (value.viewCount != null) remark = String(value.viewCount) + '观看'
-            addCard(
-                cards,
-                seen,
-                value.id,
-                value.nameZh || value.name,
-                value.coverImageUrl,
-                remark
-            )
-            return
-        }
-
-        const keys = Object.keys(value)
-        for (let i = 0; i < keys.length; i++) {
-            const k = keys[i]
-            if (k === 'ev') continue
-            walk(value[k])
+    // /v, /search and /t pages
+    if (Array.isArray(props.videos)) {
+        for (let i = 0; i < props.videos.length; i++) {
+            addVideoObject(cards, seen, props.videos[i])
         }
     }
 
-    walk(props)
+    // /home featured page
+    const groups = [
+        'latestVideos',
+        'dailyHotCNAV',
+        'dailyHotSelfie',
+        'dailyHot91',
+        'dailyOnlyFans',
+        'dailyJV',
+        'hotCNAV',
+        'hotSelfie',
+        'hot91',
+        'relatedVideos',
+    ]
+
+    for (let i = 0; i < groups.length; i++) {
+        const arr = props[groups[i]]
+        if (!Array.isArray(arr)) continue
+
+        for (let j = 0; j < arr.length; j++) {
+            addVideoObject(cards, seen, arr[j])
+        }
+    }
+
+    // Some deployments nest the same pageProps one level deeper.
+    if (!cards.length) {
+        function walk(value, depth) {
+            if (!value || depth > 5) return
+
+            if (Array.isArray(value)) {
+                for (let i = 0; i < value.length; i++) walk(value[i], depth + 1)
+                return
+            }
+
+            if (typeof value !== 'object') return
+
+            if (
+                value.id &&
+                (value.name || value.nameZh) &&
+                value.coverImageUrl &&
+                (value.createdAt || value.duration != null || value.viewCount != null)
+            ) {
+                addVideoObject(cards, seen, value)
+                return
+            }
+
+            const keys = Object.keys(value)
+            for (let i = 0; i < keys.length; i++) {
+                if (keys[i] === 'ev') continue
+                walk(value[keys[i]], depth + 1)
+            }
+        }
+
+        walk(props, 0)
+    }
+
+    return cards.length > 0
 }
 
 function parseCards(data) {
@@ -125,37 +187,35 @@ function parseCards(data) {
     const html = String(data || '')
     const $ = cheerio.load(html)
 
-    // Current ROU pages expose each video as an /v/<id> link.
-    // Parse links directly so layout/class changes do not make XPTV blank.
+    // ROU is a Next.js site. Structured page data gives the real title/cover
+    // and avoids accidentally using ad/placeholder content from surrounding DOM.
+    if (parseNextData($, cards, seen)) {
+        $print('Rou parseCards nextData html=' + html.length + ' cards=' + cards.length)
+        return cards
+    }
+
+    // Fallback for alternate/mirror layouts: only inspect the nearest card-like
+    // container instead of walking up through broad page sections.
     $('a[href*="/v/"]').each((_, element) => {
         const a = $(element)
         const href = a.attr('href') || ''
         const id = videoId(href)
         if (!id || seen[id]) return
 
-        let box = a
-        let parent = a.parent()
-        for (let i = 0; i < 4 && parent && parent.length; i++) {
-            if (parent.find('img').length || parent.text().trim().length > a.text().trim().length) {
-                box = parent
-            }
-            parent = parent.parent()
-        }
+        let box = a.closest('[data-slot="card"], .shadow, article, li')
+        if (!box || !box.length) box = a.parent()
 
-        const img = box.find('img').first().length
-            ? box.find('img').first()
-            : a.find('img').first()
+        const img = a.find('img').first().length
+            ? a.find('img').first()
+            : box.find('img').first()
 
-        let title =
+        const title = String(
             img.attr('alt') ||
             a.attr('title') ||
             a.attr('aria-label') ||
             box.find('h2,h3,h4,.title').first().text() ||
-            a.text() ||
-            box.text() ||
             id
-
-        title = String(title || id).replace(/\s+/g, ' ').trim()
+        ).replace(/\s+/g, ' ').trim()
 
         const cover =
             img.attr('src') ||
@@ -164,35 +224,10 @@ function parseCards(data) {
             img.attr('data-lazy-src') ||
             ''
 
-        const remark =
-            box.find('[class*="duration"]').first().text() ||
-            box.find('[class*="view"]').first().text() ||
-            ''
-
-        addCard(
-            cards,
-            seen,
-            id,
-            title,
-            cover,
-            String(remark || '').replace(/\s+/g, ' ').trim()
-        )
+        addCard(cards, seen, id, title, cover, '')
     })
 
-    // Older/alternate pages may still expose structured Next.js data.
-    if (!cards.length) parseNextData($, cards, seen)
-
-    // Last resort: raw href regex, independent of Cheerio selector behavior.
-    if (!cards.length) {
-        const re = /href=["']([^"']*\/v\/([^"'/?#]+)[^"']*)["']/gi
-        let m
-        while ((m = re.exec(html)) !== null) {
-            const id = decodeURIComponent(m[2])
-            addCard(cards, seen, id, id, '', '')
-        }
-    }
-
-    $print('Rou parseCards html=' + html.length + ' cards=' + cards.length)
+    $print('Rou parseCards fallback html=' + html.length + ' cards=' + cards.length)
     return cards
 }
 
