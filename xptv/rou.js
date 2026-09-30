@@ -1,6 +1,6 @@
 async function getLocalInfo() {
     return jsonify({
-        ver: 9,
+        ver: 10,
         name: '🕶️肉视频',
         api: 'csp_rouvideo',
     })
@@ -12,6 +12,7 @@ const ROOT = 'https://rou.video'
 const HOME = ROOT + '/home'
 const API = ROOT + '/api'
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+const DEFAULT_ROU_PROXY = 'https://xptv-rou-proxy.pages.dev'
 
 let $config = {}
 try {
@@ -21,7 +22,7 @@ try {
 }
 
 const appConfig = {
-    ver: 9,
+    ver: 10,
     title: '🕶️肉视频',
     site: HOME,
     tabs: [
@@ -380,7 +381,7 @@ async function resolveSignedVideo(detailUrl) {
 }
 
 function buildProxyUrl(playurl, detailUrl) {
-    const base = String($config.rouProxy || $config.rou_proxy || '').trim().replace(/\/+$/, '')
+    const base = String($config.rouProxy || $config.rou_proxy || DEFAULT_ROU_PROXY).trim().replace(/\/+$/, '')
     if (!base) return ''
 
     return base +
