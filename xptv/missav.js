@@ -1,7 +1,7 @@
 async function getLocalInfo() {
     const info = {
         ver: 2,
-        name: 'MissAV Fixed',
+        name: '🕶️MissAV Fixed',
         api: 'csp_missav_fixed',
     }
     return jsonify(info)
@@ -20,40 +20,40 @@ let $config = argsify($config_str) || {}
 
 const appConfig = {
     ver: 2,
-    title: 'missav',
+    title: '🕶️missav',
     site: 'https://missav.ai',
     tabs: [
-        { name: '中文字幕', ui: 1, ext: { id: 'cn/chinese-subtitle' } },
-        { name: '最近更新', ui: 1, ext: { id: 'cn/new' } },
-        { name: '新作上市', ui: 1, ext: { id: 'cn/release' } },
-        { name: '我的收藏', ui: 1, ext: { id: 'saved' } },
-        { name: '无码流出', ui: 1, ext: { id: 'cn/uncensored-leak' } },
-        { name: 'VR', ui: 1, ext: { id: 'cn/genres/VR' } },
-        { name: '今日热门', ui: 1, ext: { id: 'cn/today-hot' } },
-        { name: '本週热门', ui: 1, ext: { id: 'cn/weekly-hot' } },
-        { name: '本月热门', ui: 1, ext: { id: 'cn/monthly-hot' } },
-        { name: 'SIRO', ui: 1, ext: { id: 'cn/siro' } },
-        { name: 'LUXU', ui: 1, ext: { id: 'cn/luxu' } },
-        { name: 'GANA', ui: 1, ext: { id: 'cn/gana' } },
-        { name: 'PRESTIGE PREMIUM', ui: 1, ext: { id: 'cn/maan' } },
-        { name: 'S-CUTE', ui: 1, ext: { id: 'cn/scute' } },
-        { name: 'ARA', ui: 1, ext: { id: 'cn/ara' } },
-        { name: 'FC2', ui: 1, ext: { id: 'cn/fc2' } },
-        { name: 'HEYZO', ui: 1, ext: { id: 'cn/heyzo' } },
-        { name: '东京热', ui: 1, ext: { id: 'cn/tokyohot' } },
-        { name: '一本道', ui: 1, ext: { id: 'cn/1pondo' } },
-        { name: 'Caribbeancom', ui: 1, ext: { id: 'cn/caribbeancom' } },
-        { name: 'Caribbeancompr', ui: 1, ext: { id: 'cn/caribbeancompr' } },
-        { name: '10musume', ui: 1, ext: { id: 'cn/10musume' } },
-        { name: 'pacopacomama', ui: 1, ext: { id: 'cn/pacopacomama' } },
-        { name: 'Gachinco', ui: 1, ext: { id: 'cn/gachinco' } },
-        { name: 'XXX-AV', ui: 1, ext: { id: 'cn/xxxav' } },
-        { name: '人妻斩', ui: 1, ext: { id: 'cn/marriedslash' } },
-        { name: '顽皮 4610', ui: 1, ext: { id: 'cn/naughty4610' } },
-        { name: '顽皮 0930', ui: 1, ext: { id: 'cn/naughty0930' } },
-        { name: '麻豆传媒', ui: 1, ext: { id: 'cn/madou' } },
-        { name: 'TWAV AV', ui: 1, ext: { id: 'cn/twav' } },
-        { name: 'Furuke AV', ui: 1, ext: { id: 'cn/furuke' } },
+        { name: '🕶️中文字幕', ui: 1, ext: { id: 'cn/chinese-subtitle' } },
+        { name: '🕶️最近更新', ui: 1, ext: { id: 'cn/new' } },
+        { name: '🕶️新作上市', ui: 1, ext: { id: 'cn/release' } },
+        { name: '🕶️我的收藏', ui: 1, ext: { id: 'saved' } },
+        { name: '🕶️无码流出', ui: 1, ext: { id: 'cn/uncensored-leak' } },
+        { name: '🕶️VR', ui: 1, ext: { id: 'cn/genres/VR' } },
+        { name: '🕶️今日热门', ui: 1, ext: { id: 'cn/today-hot' } },
+        { name: '🕶️本週热门', ui: 1, ext: { id: 'cn/weekly-hot' } },
+        { name: '🕶️本月热门', ui: 1, ext: { id: 'cn/monthly-hot' } },
+        { name: '🕶️SIRO', ui: 1, ext: { id: 'cn/siro' } },
+        { name: '🕶️LUXU', ui: 1, ext: { id: 'cn/luxu' } },
+        { name: '🕶️GANA', ui: 1, ext: { id: 'cn/gana' } },
+        { name: '🕶️PRESTIGE PREMIUM', ui: 1, ext: { id: 'cn/maan' } },
+        { name: '🕶️S-CUTE', ui: 1, ext: { id: 'cn/scute' } },
+        { name: '🕶️ARA', ui: 1, ext: { id: 'cn/ara' } },
+        { name: '🕶️FC2', ui: 1, ext: { id: 'cn/fc2' } },
+        { name: '🕶️HEYZO', ui: 1, ext: { id: 'cn/heyzo' } },
+        { name: '🕶️东京热', ui: 1, ext: { id: 'cn/tokyohot' } },
+        { name: '🕶️一本道', ui: 1, ext: { id: 'cn/1pondo' } },
+        { name: '🕶️Caribbeancom', ui: 1, ext: { id: 'cn/caribbeancom' } },
+        { name: '🕶️Caribbeancompr', ui: 1, ext: { id: 'cn/caribbeancompr' } },
+        { name: '🕶️10musume', ui: 1, ext: { id: 'cn/10musume' } },
+        { name: '🕶️pacopacomama', ui: 1, ext: { id: 'cn/pacopacomama' } },
+        { name: '🕶️Gachinco', ui: 1, ext: { id: 'cn/gachinco' } },
+        { name: '🕶️XXX-AV', ui: 1, ext: { id: 'cn/xxxav' } },
+        { name: '🕶️人妻斩', ui: 1, ext: { id: 'cn/marriedslash' } },
+        { name: '🕶️顽皮 4610', ui: 1, ext: { id: 'cn/naughty4610' } },
+        { name: '🕶️顽皮 0930', ui: 1, ext: { id: 'cn/naughty0930' } },
+        { name: '🕶️麻豆传媒', ui: 1, ext: { id: 'cn/madou' } },
+        { name: '🕶️TWAV AV', ui: 1, ext: { id: 'cn/twav' } },
+        { name: '🕶️Furuke AV', ui: 1, ext: { id: 'cn/furuke' } },
     ],
 }
 
@@ -242,7 +242,7 @@ async function getCards(ext) {
         filter: [
             {
                 key: 'filters',
-                name: '过滤',
+                name: '🕶️过滤',
                 init: '',
                 value: [
                     { n: '所有', v: '' },
@@ -253,7 +253,7 @@ async function getCards(ext) {
             },
             {
                 key: 'sort',
-                name: '排序',
+                name: '🕶️排序',
                 init: 'released_at',
                 value: [
                     { n: '发行日期', v: 'released_at' },
@@ -310,7 +310,7 @@ async function getTracks(ext) {
         })
 
         tracks.push({
-            name: '自动',
+            name: '🕶️自动',
             pan: '',
             ext: {
                 url: playlistUrl,
@@ -321,7 +321,7 @@ async function getTracks(ext) {
     return jsonify({
         list: [
             {
-                title: '默认分组',
+                title: '🕶️默认分组',
                 tracks,
             },
         ],
