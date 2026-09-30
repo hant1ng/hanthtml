@@ -1,7 +1,7 @@
 async function getLocalInfo() {
     return jsonify({
         ver: 1,
-        name: '肉视频',
+        name: '🕶️肉视频',
         api: 'csp_rouvideo',
     })
 }
@@ -16,18 +16,18 @@ const UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) AppleWebKit/6
 
 const appConfig = {
     ver: 1,
-    title: '肉视频',
+    title: '🕶️肉视频',
     site: HOME,
     tabs: [
-        { name: '首页', ui: 1, ext: { mode: 'home', url: HOME } },
-        { name: '最新', ui: 1, ext: { mode: 'list', url: ROOT + '/v?order=createdAt' } },
-        { name: '热门', ui: 1, ext: { mode: 'list', url: ROOT + '/v?order=likeCount' } },
-        { name: '观看最多', ui: 1, ext: { mode: 'list', url: ROOT + '/v?order=viewCount' } },
-        { name: '國產AV', ui: 1, ext: { mode: 'list', url: ROOT + '/t/' + encodeURIComponent('國產AV') } },
-        { name: '探花', ui: 1, ext: { mode: 'list', url: ROOT + '/t/' + encodeURIComponent('探花') } },
-        { name: '自拍流出', ui: 1, ext: { mode: 'list', url: ROOT + '/t/' + encodeURIComponent('自拍流出') } },
-        { name: 'OnlyFans', ui: 1, ext: { mode: 'list', url: ROOT + '/t/OnlyFans' } },
-        { name: '日本', ui: 1, ext: { mode: 'list', url: ROOT + '/t/' + encodeURIComponent('日本') } },
+        { name: '🕶️首页', ui: 1, ext: { mode: 'home', url: HOME } },
+        { name: '🕶️最新', ui: 1, ext: { mode: 'list', url: ROOT + '/v?order=createdAt' } },
+        { name: '🕶️热门', ui: 1, ext: { mode: 'list', url: ROOT + '/v?order=likeCount' } },
+        { name: '🕶️观看最多', ui: 1, ext: { mode: 'list', url: ROOT + '/v?order=viewCount' } },
+        { name: '🕶️國產AV', ui: 1, ext: { mode: 'list', url: ROOT + '/t/' + encodeURIComponent('國產AV') } },
+        { name: '🕶️探花', ui: 1, ext: { mode: 'list', url: ROOT + '/t/' + encodeURIComponent('探花') } },
+        { name: '🕶️自拍流出', ui: 1, ext: { mode: 'list', url: ROOT + '/t/' + encodeURIComponent('自拍流出') } },
+        { name: '🕶️OnlyFans', ui: 1, ext: { mode: 'list', url: ROOT + '/t/OnlyFans' } },
+        { name: '🕶️日本', ui: 1, ext: { mode: 'list', url: ROOT + '/t/' + encodeURIComponent('日本') } },
     ],
 }
 
@@ -366,9 +366,9 @@ async function getTracks(ext) {
 
         return jsonify({
             list: [{
-                title: '播放',
+                title: '🕶️播放',
                 tracks: [{
-                    name: '播放',
+                    name: '🕶️播放',
                     pan: '',
                     ext: {
                         id,
