@@ -1,6 +1,6 @@
 async function getLocalInfo() {
     return jsonify({
-        ver: 2,
+        ver: 3,
         name: '🕶️肉视频',
         api: 'csp_rouvideo',
     })
@@ -14,7 +14,7 @@ const API = ROOT + '/api'
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 
 const appConfig = {
-    ver: 2,
+    ver: 3,
     title: '🕶️肉视频',
     site: HOME,
     tabs: [
@@ -122,34 +122,77 @@ function parseNextData($, cards, seen) {
 function parseCards(data) {
     const cards = []
     const seen = {}
-    const $ = cheerio.load(String(data || ''))
+    const html = String(data || '')
+    const $ = cheerio.load(html)
 
-    const selector = [
-        'div.grid.grid-cols-2.lg\\:grid-cols-3.gap-1.lg\\:gap-2.mb-6 .shadow',
-        '.grid.grid-cols-2.mb-6 > div',
-        '[data-slot="card"]'
-    ].join(',')
-
-    $(selector).each((_, element) => {
-        const el = $(element)
-        const a = el.find('a[href*="/v/"]').first()
+    // Current ROU pages expose each video as an /v/<id> link.
+    // Parse links directly so layout/class changes do not make XPTV blank.
+    $('a[href*="/v/"]').each((_, element) => {
+        const a = $(element)
         const href = a.attr('href') || ''
         const id = videoId(href)
-        if (!id) return
+        if (!id || seen[id]) return
 
-        const img = el.find('img').first()
-        const title = img.attr('alt') || a.attr('title') || id
-        const cover = img.attr('src') || img.attr('data-src') || ''
-        const remark =
-            el.find('.relative a > div:eq(1)').first().text() ||
-            el.find('.relative a > div:first').first().text() ||
+        let box = a
+        let parent = a.parent()
+        for (let i = 0; i < 4 && parent && parent.length; i++) {
+            if (parent.find('img').length || parent.text().trim().length > a.text().trim().length) {
+                box = parent
+            }
+            parent = parent.parent()
+        }
+
+        const img = box.find('img').first().length
+            ? box.find('img').first()
+            : a.find('img').first()
+
+        let title =
+            img.attr('alt') ||
+            a.attr('title') ||
+            a.attr('aria-label') ||
+            box.find('h2,h3,h4,.title').first().text() ||
+            a.text() ||
+            box.text() ||
+            id
+
+        title = String(title || id).replace(/\s+/g, ' ').trim()
+
+        const cover =
+            img.attr('src') ||
+            img.attr('data-src') ||
+            img.attr('data-original') ||
+            img.attr('data-lazy-src') ||
             ''
 
-        addCard(cards, seen, id, title, cover, remark.trim())
+        const remark =
+            box.find('[class*="duration"]').first().text() ||
+            box.find('[class*="view"]').first().text() ||
+            ''
+
+        addCard(
+            cards,
+            seen,
+            id,
+            title,
+            cover,
+            String(remark || '').replace(/\s+/g, ' ').trim()
+        )
     })
 
+    // Older/alternate pages may still expose structured Next.js data.
     if (!cards.length) parseNextData($, cards, seen)
 
+    // Last resort: raw href regex, independent of Cheerio selector behavior.
+    if (!cards.length) {
+        const re = /href=["']([^"']*\/v\/([^"'/?#]+)[^"']*)["']/gi
+        let m
+        while ((m = re.exec(html)) !== null) {
+            const id = decodeURIComponent(m[2])
+            addCard(cards, seen, id, id, '', '')
+        }
+    }
+
+    $print('Rou parseCards html=' + html.length + ' cards=' + cards.length)
     return cards
 }
 
@@ -167,13 +210,25 @@ async function getCards(ext) {
     try {
         ext = argsify(ext)
         const page = Number(ext.page || 1)
-        const url = pageUrl(ext.url || HOME, page)
+        const base = ext.url || HOME
 
-        const { data } = await $fetch.get(url, {
+        let url
+        if (base === HOME && page > 1) {
+            url = ROOT + '/v?order=createdAt&page=' + page
+        } else {
+            url = pageUrl(base, page)
+        }
+
+        const res = await $fetch.get(url, {
             headers: headers(false),
         })
-
+        const data = res.data
         const list = parseCards(data)
+
+        if (!list.length) {
+            $print('Rou getCards empty url=' + url + ' len=' + String(data || '').length)
+        }
+
         return jsonify({ list: list })
     } catch (e) {
         $print('Rou getCards error: ' + e)
