@@ -16,16 +16,16 @@ export default {
           ok: true,
           service: 'xptv-rou-proxy',
           mode: 'pages-advanced',
-          version: 2,
+          version: 3,
         }))
       }
 
-      if (url.pathname === '/play') {
+      if (url.pathname === '/play' || url.pathname === '/play.m3u8') {
         const detail = url.searchParams.get('detail') || ''
         return await handlePlay(detail, url.origin, request.method)
       }
 
-      if (url.pathname === '/proxy') {
+      if (url.pathname === '/proxy' || url.pathname === '/proxy.m3u8') {
         const upstream = url.searchParams.get('url') || ''
         const referer = url.searchParams.get('ref') || HOME
         const cookie = url.searchParams.get('cookie') || ''
@@ -223,7 +223,16 @@ function rewriteM3u8(text, baseUrl, referer, cookie, origin) {
 }
 
 function makeProxyUrl(upstream, referer, cookie, origin) {
-  const u = new URL('/proxy', origin)
+  let path = '/proxy'
+  try {
+    const parsed = new URL(upstream)
+    const pathname = parsed.pathname.toLowerCase()
+    if (pathname.endsWith('.m3u8') || pathname.endsWith('.m3u')) {
+      path = '/proxy.m3u8'
+    }
+  } catch (_) {}
+
+  const u = new URL(path, origin)
   u.searchParams.set('url', upstream)
   u.searchParams.set('ref', referer || HOME)
   if (cookie) u.searchParams.set('cookie', cookie)
