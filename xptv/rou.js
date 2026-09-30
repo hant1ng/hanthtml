@@ -1,6 +1,6 @@
 async function getLocalInfo() {
     return jsonify({
-        ver: 5,
+        ver: 6,
         name: '🕶️肉视频',
         api: 'csp_rouvideo',
     })
@@ -14,7 +14,7 @@ const API = ROOT + '/api'
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 
 const appConfig = {
-    ver: 5,
+    ver: 6,
     title: '🕶️肉视频',
     site: HOME,
     tabs: [
@@ -296,6 +296,8 @@ async function getTracks(ext) {
         const id = String(ext.id || videoId(ext.url) || '')
         if (!id) return jsonify({ list: [] })
 
+        const apiUrl = API + '/v/' + encodeURIComponent(id)
+
         return jsonify({
             list: [{
                 title: '播放',
@@ -303,7 +305,7 @@ async function getTracks(ext) {
                     name: '播放',
                     pan: '',
                     ext: {
-                        id: id,
+                        url: apiUrl,
                     },
                 }],
             }],
@@ -313,34 +315,32 @@ async function getTracks(ext) {
         return jsonify({ list: [] })
     }
 }
-
 async function getPlayinfo(ext) {
     try {
         ext = argsify(ext)
-        const id = String(ext.id || videoId(ext.url) || '')
-        if (!id) return jsonify({ urls: [], headers: [] })
+        const url = String(ext.url || '')
+        if (!url) return jsonify({ urls: [], headers: [] })
 
-        const { data } = await $fetch.get(API + '/v/' + encodeURIComponent(id), {
-            headers: headers(true),
+        const { data } = await $fetch.get(url, {
+            headers: {
+                'User-Agent': UA,
+            },
         })
 
-        const json = argsify(data)
-        let playurl = json && json.video && json.video.videoUrl
+        const result = argsify(data)
+        const playurl = result && result.video && result.video.videoUrl
+
         if (!playurl) {
             $utils.toastError('肉视频播放地址解析失败')
             return jsonify({ urls: [], headers: [] })
         }
 
-        playurl = normalizeUrl(playurl)
-            .replace(/index\.jpg(?=\?|$)/i, 'index.m3u8')
-            .replace(/index\.png(?=\?|$)/i, 'index.m3u8')
+        $print('Rou playurl=' + playurl)
 
         return jsonify({
             urls: [playurl],
             headers: [{
                 'User-Agent': UA,
-                'Referer': ROOT + '/',
-                'Origin': ROOT,
             }],
         })
     } catch (e) {
