@@ -1,6 +1,6 @@
 async function getLocalInfo() {
     return jsonify({
-        ver: 8,
+        ver: 9,
         name: '🕶️肉视频',
         api: 'csp_rouvideo',
     })
@@ -13,8 +13,15 @@ const HOME = ROOT + '/home'
 const API = ROOT + '/api'
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 
+let $config = {}
+try {
+    $config = argsify($config_str) || {}
+} catch (e) {
+    $config = {}
+}
+
 const appConfig = {
-    ver: 8,
+    ver: 9,
     title: '🕶️肉视频',
     site: HOME,
     tabs: [
@@ -59,7 +66,7 @@ function addCard(cards, seen, id, title, cover, remark) {
     seen[id] = true
 
     cards.push({
-        vod_id: id,
+        vod_id: '/v/' + id,
         vod_name: String(title || id),
         vod_pic: normalizeUrl(cover || ''),
         vod_remarks: String(remark || ''),
@@ -291,109 +298,177 @@ async function getCards(ext) {
 }
 
 
-async function getTracks(ext) {
-    ext = argsify(ext)
-    let tracks = []
-    const url = ext.url
+function base64ToBytes(input) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    const clean = String(input || '').replace(/[^A-Za-z0-9+/=]/g, '')
+    const bytes = []
+    let buffer = 0
+    let bits = 0
 
-    const { data } = await $fetch.get(url, {
+    for (let i = 0; i < clean.length; i++) {
+        const ch = clean[i]
+        if (ch === '=') break
+
+        const value = chars.indexOf(ch)
+        if (value < 0) continue
+
+        buffer = (buffer << 6) | value
+        bits += 6
+
+        if (bits >= 8) {
+            bits -= 8
+            bytes.push((buffer >> bits) & 255)
+        }
+    }
+
+    return bytes
+}
+
+function decodeEv(ev) {
+    if (!ev || !ev.d) return null
+
+    try {
+        const bytes = base64ToBytes(ev.d)
+        const key = Number(ev.k || 0)
+        let text = ''
+
+        for (let i = 0; i < bytes.length; i++) {
+            text += String.fromCharCode((bytes[i] - key + 256) & 255)
+        }
+
+        return JSON.parse(text)
+    } catch (e) {
+        $print('Rou decodeEv error: ' + e)
+        return null
+    }
+}
+
+async function resolveSignedVideo(detailUrl) {
+    const { data } = await $fetch.get(detailUrl, {
         headers: {
             'User-Agent': UA,
         },
     })
 
-    const $ = cheerio.load(data)
-    const scriptContent = $('#__NEXT_DATA__').html()
+    const html = String(data || '')
+    const $ = cheerio.load(html)
+    let scriptContent = $('#__NEXT_DATA__').html() || $('#__NEXT_DATA__').text() || ''
+
+    if (!scriptContent) {
+        const m = html.match(/<script[^>]+id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/i)
+        scriptContent = m ? m[1] : ''
+    }
+
+    if (!scriptContent) {
+        throw new Error('__NEXT_DATA__ not found')
+    }
+
     const jsonData = JSON.parse(scriptContent)
-    const ev = jsonData.props.pageProps.ev
-    const decodedEv = decodeEv(ev)
+    const ev = jsonData && jsonData.props && jsonData.props.pageProps && jsonData.props.pageProps.ev
+    const decoded = decodeEv(ev)
 
-    const playurl = decodedEv.videoUrl
-
-    function decodeEv(ev) {
-        const decoded = _atob(ev.d)
-            .split('')
-            .map((c) => String.fromCharCode(c.charCodeAt(0) - ev.k))
-            .join('')
-        return JSON.parse(decoded)
+    if (!decoded || !decoded.videoUrl) {
+        throw new Error('videoUrl not found')
     }
 
-    function _atob(b64) {
-        var chars = {
-            ascii: function () {
-                return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
-            },
-            indices: function () {
-                if (!this.cache) {
-                    this.cache = {}
-                    var ascii = chars.ascii()
+    let playurl = String(decoded.videoUrl)
+    playurl = playurl
+        .replace(/\/index\.jpg(?=([?#]|$))/i, '/index.m3u8')
+        .replace(/\/index\.png(?=([?#]|$))/i, '/index.m3u8')
 
-                    for (var c = 0; c < ascii.length; c++) {
-                        var chr = ascii[c]
-                        this.cache[chr] = c
-                    }
-                }
-                return this.cache
-            },
+    return playurl
+}
+
+function buildProxyUrl(playurl, detailUrl) {
+    const base = String($config.rouProxy || $config.rou_proxy || '').trim().replace(/\/+$/, '')
+    if (!base) return ''
+
+    return base +
+        '/proxy?url=' + encodeURIComponent(playurl) +
+        '&ref=' + encodeURIComponent(detailUrl)
+}
+
+async function getTracks(ext) {
+    try {
+        ext = argsify(ext)
+
+        let id = ''
+        let detailUrl = ''
+
+        if (ext && typeof ext === 'object') {
+            id = String(ext.id || videoId(ext.url || '') || '').trim()
+            detailUrl = String(ext.url || '').trim()
         }
 
-        var indices = chars.indices(),
-            pos = b64.indexOf('='),
-            padded = pos > -1,
-            len = padded ? pos : b64.length,
-            i = -1,
-            data = ''
+        if (!detailUrl && id) detailUrl = ROOT + '/v/' + encodeURIComponent(id)
 
-        while (i < len) {
-            var code =
-                (indices[b64[++i]] << 18) |
-                (indices[b64[++i]] << 12) |
-                (indices[b64[++i]] << 6) |
-                indices[b64[++i]]
-
-            if (code !== 0) {
-                data += String.fromCharCode(
-                    (code >>> 16) & 255,
-                    (code >>> 8) & 255,
-                    code & 255
-                )
-            }
+        if (!detailUrl) {
+            $utils.toastError('肉视频：缺少详情地址')
+            return jsonify({ list: [] })
         }
 
-        if (padded) {
-            data = data.slice(0, pos - b64.length)
-        }
-
-        return data
+        return jsonify({
+            list: [{
+                title: '播放',
+                tracks: [{
+                    name: '播放',
+                    pan: '',
+                    ext: {
+                        id,
+                        url: detailUrl,
+                    },
+                }],
+            }],
+        })
+    } catch (e) {
+        $print('Rou getTracks error: ' + e)
+        $utils.toastError('肉视频：播放集解析失败')
+        return jsonify({ list: [] })
     }
-
-    tracks.push({
-        name: '播放',
-        pan: '',
-        ext: {
-            url: playurl,
-        },
-    })
-
-    return jsonify({
-        list: [
-            {
-                title: '默认分组',
-                tracks,
-            },
-        ],
-    })
 }
 
 async function getPlayinfo(ext) {
-    ext = argsify(ext)
-    const playurl = ext.url.replace('.jpg', '.m3u8')
+    try {
+        ext = argsify(ext)
 
-    return jsonify({
-        urls: [playurl],
-        headers: [{ 'User-Agent': UA }],
-    })
+        const detailUrl = String(
+            (ext && ext.url) ||
+            ((ext && ext.id) ? ROOT + '/v/' + encodeURIComponent(ext.id) : '')
+        ).trim()
+
+        if (!detailUrl) {
+            $utils.toastError('肉视频：缺少播放页')
+            return jsonify({ urls: [], headers: [] })
+        }
+
+        const playurl = await resolveSignedVideo(detailUrl)
+        const proxyUrl = buildProxyUrl(playurl, detailUrl)
+
+        if (proxyUrl) {
+            return jsonify({
+                urls: [proxyUrl],
+                headers: [{ 'User-Agent': UA }],
+            })
+        }
+
+        // Direct playback is kept only as a fallback. Current ROU streams may
+        // use PNG-wrapped roUd payloads that XPTV cannot decode by itself.
+        return jsonify({
+            urls: [playurl],
+            headers: [{
+                'User-Agent': UA,
+                'Referer': detailUrl,
+                'Origin': ROOT,
+                'Accept': 'application/vnd.apple.mpegurl,application/x-mpegURL,video/*,*/*',
+            }],
+        })
+    } catch (e) {
+        $print('Rou getPlayinfo error: ' + e)
+        $utils.toastError('肉视频：真实播放地址解析失败')
+        return jsonify({ urls: [], headers: [] })
+    }
 }
+
 
 async function search(ext) {
     try {
