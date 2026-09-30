@@ -1,6 +1,6 @@
 async function getLocalInfo() {
     return jsonify({
-        ver: 4,
+        ver: 5,
         name: '🕶️肉视频',
         api: 'csp_rouvideo',
     })
@@ -14,7 +14,7 @@ const API = ROOT + '/api'
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
 
 const appConfig = {
-    ver: 4,
+    ver: 5,
     title: '🕶️肉视频',
     site: HOME,
     tabs: [
@@ -209,13 +209,32 @@ function parseCards(data) {
             ? a.find('img').first()
             : box.find('img').first()
 
-        const title = String(
-            img.attr('alt') ||
+        let title = String(
+            a.text() ||
             a.attr('title') ||
             a.attr('aria-label') ||
             box.find('h2,h3,h4,.title').first().text() ||
             id
         ).replace(/\s+/g, ' ').trim()
+
+        // ROU's card link text contains resolution/duration before the title
+        // and category/view metadata after it. Keep only the actual video title.
+        title = title
+            .replace(/^\s*\d{3,4}P\s*/i, '')
+            .replace(/^\s*(?:\d+小時)?\d+分\d+秒\s*/i, '')
+            .replace(/(?:國產AV|自拍流出|OnlyFans|日本|探花|麻豆傳媒)\s*[·•].*$/i, '')
+            .replace(/\s*[·•]\s*[\d.,萬Kk]+次觀看.*$/i, '')
+            .trim()
+
+        if (!title || title === id) {
+            title = String(
+                a.attr('title') ||
+                a.attr('aria-label') ||
+                box.find('h2,h3,h4,.title').first().text() ||
+                img.attr('alt') ||
+                id
+            ).replace(/\s+/g, ' ').trim()
+        }
 
         const cover =
             img.attr('src') ||
