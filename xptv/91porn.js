@@ -1,6 +1,6 @@
 async function getLocalInfo() {
     return jsonify({
-        ver: 1,
+        ver: 2,
         name: '🕶️91Porn',
         api: 'csp_91Porn',
     })
@@ -16,7 +16,7 @@ const XRW = 'im.xyz.browserx'
 const COOKIE_KEY = '91porn_session_cookie'
 
 const appConfig = {
-    ver: 1,
+    ver: 2,
     title: '🕶️91Porn',
     site: HOME,
     tabs: [
@@ -235,24 +235,42 @@ async function getCards(ext) {
 
     await ensureSession()
 
-    let url = HOME
+    let url
 
-    if (type === 'latest') {
+    // index.php is kept as the site's main entry/referer, but it is not
+    // the actual video-list endpoint. Use the verified Featured channel
+    // for XPTV's default Home tab.
+    if (type === 'home') {
+        url = SITE + '/v.php?category=rf&viewtype=basic&page=' + page
+    } else if (type === 'latest') {
         url = SITE + '/v.php?next=watch&page=' + page
     } else if (type === 'category') {
         url = SITE + '/v.php?category=' + encodeURIComponent(id) + '&viewtype=basic&page=' + page
-    } else if (page > 1) {
-        url = SITE + '/v.php?next=watch&page=' + page
+    } else {
+        url = SITE + '/v.php?category=rf&viewtype=basic&page=' + page
     }
 
-    const { data } = await requestPage(url)
-    const list = parseCards(data)
+    let { data } = await requestPage(url)
+    let list = parseCards(data)
+
+    // A stale ga/session can return non-list HTML without a network error.
+    // Re-warm once before giving XPTV an empty page.
+    if (!list.length) {
+        $print('91Porn empty list, resetting session: ' + url)
+        $cache.del(COOKIE_KEY)
+        await ensureSession()
+        ;({ data } = await requestPage(url))
+        list = parseCards(data)
+    }
+
+    $print('91Porn cards=' + list.length + ' url=' + url)
 
     return jsonify({
         list,
         page,
     })
 }
+
 
 function jsUnescape(input) {
     const s = String(input || '')
