@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - '.github/workflows/hstv-probe.yml'
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,7 +12,7 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract HSTV auth decrypt and API routes
+      - name: Pinpoint HSTV protocol
         shell: bash
         run: |
           set -euo pipefail
@@ -22,56 +21,53 @@ jobs:
           import re
           s=open('main.js','r',encoding='utf-8',errors='ignore').read()
 
-          def contexts(term, limit=30, before=1800, after=3500):
-              print(f'\n===== {term} =====')
-              hits=list(re.finditer(re.escape(term),s,re.I))
-              print('count',len(hits))
-              for i,m in enumerate(hits[:limit]):
-                  a=max(0,m.start()-before); b=min(len(s),m.end()+after)
-                  print(f'\n--- HIT {i+1} ---\n{s[a:b].replace(chr(10)," ")}')
+          print('=== ASSIGNMENTS ===')
+          patterns=[
+            r'\.auth\s*=\s*["\']([^"\']+)["\']',
+            r'auth\s*:\s*["\']([^"\']+)["\']',
+            r'\.version\s*=\s*["\']?([0-9A-Za-z._-]+)["\']?',
+            r'version\s*:\s*["\']?([0-9A-Za-z._-]+)["\']?',
+          ]
+          for p in patterns:
+              vals=[]
+              for m in re.finditer(p,s):
+                  v=m.group(1)
+                  if v not in vals: vals.append(v)
+              print(p, vals[:50])
 
-          for term in [
-              'decrypt(l)',
-              'decrypt(',
-              '.decrypt(',
-              'auth=',
-              'M.auth',
-              '.auth=',
-              'version=',
-              'M.version',
-              '.version=',
-              'videoDetails(',
-              'this.videoDetails',
-              'video(l)',
-              'this.video(',
-              'queryParams.videoType',
-              'videoType:',
-              'search_term_string',
-              'searchText',
-              'searchQuery',
-              'm3u8s'
-          ]:
-              contexts(term)
+          print('\n=== postHttpRequest CALLS ===')
+          for i,m in enumerate(re.finditer(r'postHttpRequest\(',s)):
+              if i>=200: break
+              a=m.end()
+              # capture first arg up to comma, tolerating simple expressions
+              frag=s[a:a+500]
+              depth=0; quote=None; esc=False; cut=None
+              for j,ch in enumerate(frag):
+                  if quote:
+                      if esc: esc=False
+                      elif ch=='\\\\': esc=True
+                      elif ch==quote: quote=None
+                  else:
+                      if ch in "'\"": quote=ch
+                      elif ch in '([{': depth+=1
+                      elif ch in ')]}': depth=max(0,depth-1)
+                      elif ch==',' and depth==0:
+                          cut=j; break
+              arg=(frag[:cut] if cut is not None else frag[:120]).strip()
+              ctx=s[max(0,m.start()-500):min(len(s),m.start()+1800)].replace('\n',' ')
+              print(f'CALL{i+1} ARG={arg}\nCTX={ctx}\n')
 
-          print('\n===== POST ROUTES =====')
-          routes=[]
-          for m in re.finditer(r'postHttpRequest\(\s*["\']([^"\']+)["\']',s):
-              x=m.group(1)
-              if x not in routes: routes.append(x)
-          for x in routes: print(x)
+          print('\n=== video() CALL CONTEXTS ===')
+          for pat in [r'\.video\(',r'\.videoDetails\(']:
+              print('PAT',pat)
+              for i,m in enumerate(re.finditer(pat,s)):
+                  if i>=40: break
+                  print(s[max(0,m.start()-2500):min(len(s),m.start()+2500)].replace('\n',' '))
+                  print('---')
 
-          print('\n===== GET ROUTES =====')
-          routes=[]
-          for m in re.finditer(r'getHttpRequest\(\s*["\']([^"\']+)["\']',s):
-              x=m.group(1)
-              if x not in routes: routes.append(x)
-          for x in routes: print(x)
-
-          print('\n===== STRING ROUTES VIDEO-ish =====')
-          vals=[]
-          for m in re.finditer(r'["\'](/[^"\']{1,120})["\']',s):
-              x=m.group(1)
-              if re.search(r'(video|mtv|search|list|home|latest|recommend|seven)',x,re.I) and x not in vals:
-                  vals.append(x)
-          for x in vals: print(x)
+          print('\n=== COMPONENT ROUTES AROUND m3u8s ===')
+          for i,m in enumerate(re.finditer('m3u8s',s)):
+              if i>=25: break
+              print(s[max(0,m.start()-2500):min(len(s),m.start()+2500)].replace('\n',' '))
+              print('---')
           PY
