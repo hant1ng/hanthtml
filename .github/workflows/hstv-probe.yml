@@ -12,61 +12,74 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect HSTV home detail chunks
+      - name: Test HSTV production API
         shell: bash
         run: |
           set -euo pipefail
-          BASE=https://hstv.life
-          files=(
-            "494.97cbaed039df589d.js"
-            "7152.dbae7da019bb9836.js"
-            "7735.7c01e01c7257da85.js"
-            "3527.8f8692928eae82cd.js"
-            "4970.8f00a4877ca1de42.js"
-            "8061.ece97808c556db99.js"
-          )
-          for f in "${files[@]}"; do
-            curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o "$f" "$BASE/$f"
+          cat > body.json <<'JSON'
+          {
+            "deviceInfo": {},
+            "app": "hstv.life",
+            "isStandalone": false,
+            "theLink": "novaluenull",
+            "uuid": "novalue",
+            "url": "/sevenVideos?page=1&type=home_hot",
+            "version": "260901"
+          }
+          JSON
+
+          for mode in noauth emptyauth; do
+            echo "===== MODE $mode ====="
+            if [ "$mode" = "emptyauth" ]; then
+              code=$(curl -sS -L --compressed --max-time 30 -o "resp-$mode.json" -w '%{http_code}'                 -H 'Content-Type: application/json'                 -H 'Authorization: Bearer '                 --data-binary @body.json                 https://v2.cdn199.com/js || true)
+            else
+              code=$(curl -sS -L --compressed --max-time 30 -o "resp-$mode.json" -w '%{http_code}'                 -H 'Content-Type: application/json'                 --data-binary @body.json                 https://v2.cdn199.com/js || true)
+            fi
+            echo "HTTP=$code"
+            echo "BODY:"
+            head -c 1000 "resp-$mode.json" || true
+            echo
           done
-          python3 - <<'PY'
-          import re, glob, os
-          for fn in glob.glob('*.js'):
-              s=open(fn,'r',encoding='utf-8',errors='ignore').read()
-              print('\n\n######## FILE',fn,'SIZE',len(s),'########')
 
-              calls=[]
-              for m in re.finditer(r'postHttpRequest\(',s):
-                  frag=s[m.end():m.end()+300]
-                  depth=0; quote=None; esc=False; cut=None
-                  for j,ch in enumerate(frag):
-                      if quote:
-                          if esc: esc=False
-                          elif ch=='\\\\': esc=True
-                          elif ch==quote: quote=None
-                      else:
-                          if ch in "'\"": quote=ch
-                          elif ch in '([{': depth+=1
-                          elif ch in ')]}': depth=max(0,depth-1)
-                          elif ch==',' and depth==0: cut=j; break
-                  arg=(frag[:cut] if cut is not None else frag[:120]).strip()
-                  ctx=s[max(0,m.start()-900):min(len(s),m.start()+2800)].replace('\n',' ')
-                  calls.append((arg,ctx))
-              print('POST_CALL_COUNT',len(calls))
-              for i,(arg,ctx) in enumerate(calls):
-                  print(f'POST{i+1} ARG={arg}')
-                  print('CTX='+ctx)
+          cat > decrypt.js <<'NODE'
+          const fs=require('fs');
+          const crypto=require('crypto');
 
-              paths=[]
-              for m in re.finditer(r'["\'](/[^"\']{1,160})["\']',s):
-                  x=m.group(1)
-                  if re.search(r'(video|search|list|detail|hot|recent|home|mtv|seven|fav|recommend)',x,re.I) and x not in paths:
-                      paths.append(x)
-              print('PATHS='+json.dumps(paths,ensure_ascii=False) if False else 'PATHS='+' | '.join(paths))
+          function evpBytesToKey(password, salt, keyLen, ivLen) {
+            let out=Buffer.alloc(0), prev=Buffer.alloc(0);
+            while (out.length < keyLen + ivLen) {
+              const md5=crypto.createHash('md5');
+              md5.update(prev);
+              md5.update(Buffer.from(password,'utf8'));
+              md5.update(salt);
+              prev=md5.digest();
+              out=Buffer.concat([out,prev]);
+            }
+            return {key:out.subarray(0,keyLen), iv:out.subarray(keyLen,keyLen+ivLen)};
+          }
 
-              for term in ['videoType','m3u8s','thumbnails','durationStr','views','title_en','queryParams','paramMap','snapshot.params','search','pageSize','limit','skip','sort']:
-                  hits=list(re.finditer(re.escape(term),s,re.I))
-                  if not hits: continue
-                  print('TERM',term,'COUNT',len(hits))
-                  for i,m in enumerate(hits[:15]):
-                      print('TCTX='+s[max(0,m.start()-700):min(len(s),m.end()+1700)].replace('\n',' '))
-          PY
+          function decryptOpenSSL(ciphertext, password) {
+            const raw=Buffer.from(ciphertext,'base64');
+            if (raw.subarray(0,8).toString() !== 'Salted__') throw new Error('not Salted__');
+            const salt=raw.subarray(8,16);
+            const {key,iv}=evpBytesToKey(password,salt,32,16);
+            const decipher=crypto.createDecipheriv('aes-256-cbc',key,iv);
+            const plain=Buffer.concat([decipher.update(raw.subarray(16)),decipher.final()]);
+            return plain.toString('utf8');
+          }
+
+          for (const mode of ['noauth','emptyauth']) {
+            try {
+              const body=JSON.parse(fs.readFileSync('resp-'+mode+'.json','utf8'));
+              console.log('\n===== DECRYPT '+mode+' =====');
+              if (!body.r) { console.log('NO r FIELD',body); continue; }
+              const text=decryptOpenSSL(body.r,'xxx');
+              console.log(text.slice(0,10000));
+            } catch(e) {
+              console.log('\n===== DECRYPT '+mode+' ERROR =====');
+              console.log(String(e));
+            }
+          }
+          NODE
+
+          node decrypt.js
