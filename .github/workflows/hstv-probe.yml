@@ -12,28 +12,61 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Discover HSTV lazy chunks
+      - name: Inspect HSTV home detail chunks
         shell: bash
         run: |
           set -euo pipefail
           BASE=https://hstv.life
-          curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o index.html "$BASE/"
-          runtime=$(grep -oE 'runtime\.[A-Za-z0-9]+\.js' index.html | head -1)
-          main=$(grep -oE 'main\.[A-Za-z0-9]+\.js' index.html | head -1)
-          echo "runtime=$runtime main=$main"
-          curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o runtime.js "$BASE/$runtime"
-          curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o main.js "$BASE/$main"
+          files=(
+            "494.97cbaed039df589d.js"
+            "7152.dbae7da019bb9836.js"
+            "7735.7c01e01c7257da85.js"
+            "3527.8f8692928eae82cd.js"
+            "4970.8f00a4877ca1de42.js"
+            "8061.ece97808c556db99.js"
+          )
+          for f in "${files[@]}"; do
+            curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o "$f" "$BASE/$f"
+          done
           python3 - <<'PY'
-          import re, json
-          r=open('runtime.js','r',encoding='utf-8',errors='ignore').read()
-          m=open('main.js','r',encoding='utf-8',errors='ignore').read()
-          print('=== RUNTIME ===')
-          print(r[:20000])
-          print('\n=== LAZY IMPORT CONTEXTS IN MAIN ===')
-          for term in ['loadChildren','import(','video','videos','embed','home']:
-              print('\nTERM',term)
-              for i,x in enumerate(re.finditer(re.escape(term),m,re.I)):
-                  if i>=40: break
-                  print(m[max(0,x.start()-1200):min(len(m),x.end()+1800)].replace('\n',' '))
-                  print('---')
+          import re, glob, os
+          for fn in glob.glob('*.js'):
+              s=open(fn,'r',encoding='utf-8',errors='ignore').read()
+              print('\n\n######## FILE',fn,'SIZE',len(s),'########')
+
+              calls=[]
+              for m in re.finditer(r'postHttpRequest\(',s):
+                  frag=s[m.end():m.end()+300]
+                  depth=0; quote=None; esc=False; cut=None
+                  for j,ch in enumerate(frag):
+                      if quote:
+                          if esc: esc=False
+                          elif ch=='\\\\': esc=True
+                          elif ch==quote: quote=None
+                      else:
+                          if ch in "'\"": quote=ch
+                          elif ch in '([{': depth+=1
+                          elif ch in ')]}': depth=max(0,depth-1)
+                          elif ch==',' and depth==0: cut=j; break
+                  arg=(frag[:cut] if cut is not None else frag[:120]).strip()
+                  ctx=s[max(0,m.start()-900):min(len(s),m.start()+2800)].replace('\n',' ')
+                  calls.append((arg,ctx))
+              print('POST_CALL_COUNT',len(calls))
+              for i,(arg,ctx) in enumerate(calls):
+                  print(f'POST{i+1} ARG={arg}')
+                  print('CTX='+ctx)
+
+              paths=[]
+              for m in re.finditer(r'["\'](/[^"\']{1,160})["\']',s):
+                  x=m.group(1)
+                  if re.search(r'(video|search|list|detail|hot|recent|home|mtv|seven|fav|recommend)',x,re.I) and x not in paths:
+                      paths.append(x)
+              print('PATHS='+json.dumps(paths,ensure_ascii=False) if False else 'PATHS='+' | '.join(paths))
+
+              for term in ['videoType','m3u8s','thumbnails','durationStr','views','title_en','queryParams','paramMap','snapshot.params','search','pageSize','limit','skip','sort']:
+                  hits=list(re.finditer(re.escape(term),s,re.I))
+                  if not hits: continue
+                  print('TERM',term,'COUNT',len(hits))
+                  for i,m in enumerate(hits[:15]):
+                      print('TCTX='+s[max(0,m.start()-700):min(len(s),m.end()+1700)].replace('\n',' '))
           PY
