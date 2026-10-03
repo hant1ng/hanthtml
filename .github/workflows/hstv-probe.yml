@@ -12,62 +12,28 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Pinpoint HSTV protocol
+      - name: Discover HSTV lazy chunks
         shell: bash
         run: |
           set -euo pipefail
-          curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o main.js https://hstv.life/main.531783010be35308.js
+          BASE=https://hstv.life
+          curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o index.html "$BASE/"
+          runtime=$(grep -oE 'runtime\.[A-Za-z0-9]+\.js' index.html | head -1)
+          main=$(grep -oE 'main\.[A-Za-z0-9]+\.js' index.html | head -1)
+          echo "runtime=$runtime main=$main"
+          curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o runtime.js "$BASE/$runtime"
+          curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o main.js "$BASE/$main"
           python3 - <<'PY'
-          import re
-          s=open('main.js','r',encoding='utf-8',errors='ignore').read()
-
-          print('=== ASSIGNMENTS ===')
-          patterns=[
-            r'\.auth\s*=\s*["\']([^"\']+)["\']',
-            r'auth\s*:\s*["\']([^"\']+)["\']',
-            r'\.version\s*=\s*["\']?([0-9A-Za-z._-]+)["\']?',
-            r'version\s*:\s*["\']?([0-9A-Za-z._-]+)["\']?',
-          ]
-          for p in patterns:
-              vals=[]
-              for m in re.finditer(p,s):
-                  v=m.group(1)
-                  if v not in vals: vals.append(v)
-              print(p, vals[:50])
-
-          print('\n=== postHttpRequest CALLS ===')
-          for i,m in enumerate(re.finditer(r'postHttpRequest\(',s)):
-              if i>=200: break
-              a=m.end()
-              # capture first arg up to comma, tolerating simple expressions
-              frag=s[a:a+500]
-              depth=0; quote=None; esc=False; cut=None
-              for j,ch in enumerate(frag):
-                  if quote:
-                      if esc: esc=False
-                      elif ch=='\\\\': esc=True
-                      elif ch==quote: quote=None
-                  else:
-                      if ch in "'\"": quote=ch
-                      elif ch in '([{': depth+=1
-                      elif ch in ')]}': depth=max(0,depth-1)
-                      elif ch==',' and depth==0:
-                          cut=j; break
-              arg=(frag[:cut] if cut is not None else frag[:120]).strip()
-              ctx=s[max(0,m.start()-500):min(len(s),m.start()+1800)].replace('\n',' ')
-              print(f'CALL{i+1} ARG={arg}\nCTX={ctx}\n')
-
-          print('\n=== video() CALL CONTEXTS ===')
-          for pat in [r'\.video\(',r'\.videoDetails\(']:
-              print('PAT',pat)
-              for i,m in enumerate(re.finditer(pat,s)):
+          import re, json
+          r=open('runtime.js','r',encoding='utf-8',errors='ignore').read()
+          m=open('main.js','r',encoding='utf-8',errors='ignore').read()
+          print('=== RUNTIME ===')
+          print(r[:20000])
+          print('\n=== LAZY IMPORT CONTEXTS IN MAIN ===')
+          for term in ['loadChildren','import(','video','videos','embed','home']:
+              print('\nTERM',term)
+              for i,x in enumerate(re.finditer(re.escape(term),m,re.I)):
                   if i>=40: break
-                  print(s[max(0,m.start()-2500):min(len(s),m.start()+2500)].replace('\n',' '))
+                  print(m[max(0,x.start()-1200):min(len(m),x.end()+1800)].replace('\n',' '))
                   print('---')
-
-          print('\n=== COMPONENT ROUTES AROUND m3u8s ===')
-          for i,m in enumerate(re.finditer('m3u8s',s)):
-              if i>=25: break
-              print(s[max(0,m.start()-2500):min(len(s),m.start()+2500)].replace('\n',' '))
-              print('---')
           PY
