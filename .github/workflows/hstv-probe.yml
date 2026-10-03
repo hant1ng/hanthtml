@@ -12,51 +12,41 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Isolate HSTV config module
+      - name: Test anonymous browser-equivalent HSTV API
         shell: bash
         run: |
           set -euo pipefail
-          curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o main.js https://hstv.life/main.531783010be35308.js
-          python3 - <<'PY'
-          import re
-          s=open('main.js','r',encoding='utf-8',errors='ignore').read()
-          marker='5722(en,ot,p){'
-          start=s.find(marker)
-          print('start',start)
-          if start<0: raise SystemExit(1)
-          brace=start+len(marker)-1
-          depth=0; quote=None; esc=False; end=None
-          for i in range(brace,len(s)):
-              ch=s[i]
-              if quote:
-                  if esc: esc=False
-                  elif ch=='\\': esc=True
-                  elif ch==quote: quote=None
-                  continue
-              if ch in ('"',"'","\x60"):
-                  quote=ch; continue
-              if ch=='{': depth+=1
-              elif ch=='}':
-                  depth-=1
-                  if depth==0:
-                      end=i+1; break
-          mod=s[start:end]
-          print('module_len',len(mod))
+          cat > body.json <<'JSON'
+          {
+            "deviceInfo": {},
+            "app": "hstv.life",
+            "isStandalone": false,
+            "theLink": "novaluenull",
+            "uuid": "novalue",
+            "url": "/sevenVideos?page=1&type=home_hot",
+            "version": "260901"
+          }
+          JSON
+          code=$(curl -sS -L --compressed --max-time 30 -o resp.json -w '%{http_code}'             -H 'Content-Type: application/json'             -H 'Authorization: Bearer undefined'             -H 'Origin: https://hstv.life'             -H 'Referer: https://hstv.life/'             --data-binary @body.json             https://v2.cdn199.com/js || true)
+          echo "HTTP=$code"
+          cat resp.json
+          echo
 
-          print('\n=== AUTH CONTEXTS INSIDE 5722 ===')
-          hits=list(re.finditer('auth',mod,re.I))
-          print('count',len(hits))
-          for j,m in enumerate(hits):
-              print('\nAUTH',j+1,mod[max(0,m.start()-800):min(len(mod),m.end()+1600)])
-
-          print('\n=== ASSIGNMENT-LIKE KEYS ===')
-          for key in ['auth','deviceInfo','language','app','version','httpName']:
-              print('\nKEY',key)
-              for m in re.finditer(r'(?:M\.)?'+re.escape(key)+r'\s*[:=]',mod):
-                  print(mod[max(0,m.start()-500):min(len(mod),m.end()+1600)])
-
-          print('\n=== IMPORT 5338 CONTEXT ===')
-          for m in re.finditer(r'5338',s):
-              print(s[max(0,m.start()-2500):min(len(s),m.end()+6000)])
-              break
-          PY
+          node <<'NODE'
+          const fs=require('fs'), crypto=require('crypto');
+          const obj=JSON.parse(fs.readFileSync('resp.json','utf8'));
+          console.log('keys=',Object.keys(obj));
+          if(!obj.r) process.exit(0);
+          const raw=Buffer.from(obj.r,'base64');
+          console.log('magic=',raw.subarray(0,8).toString());
+          const salt=raw.subarray(8,16);
+          let out=Buffer.alloc(0), prev=Buffer.alloc(0);
+          while(out.length<48){
+            const h=crypto.createHash('md5');
+            h.update(prev); h.update(Buffer.from('xxx')); h.update(salt);
+            prev=h.digest(); out=Buffer.concat([out,prev]);
+          }
+          const decipher=crypto.createDecipheriv('aes-256-cbc',out.subarray(0,32),out.subarray(32,48));
+          const plain=Buffer.concat([decipher.update(raw.subarray(16)),decipher.final()]).toString('utf8');
+          console.log('DECRYPTED='+plain.slice(0,20000));
+          NODE
