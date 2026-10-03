@@ -13,49 +13,34 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect HSTV bundle contexts
+      - name: Extract HSTV API call sites
         shell: bash
         run: |
           set -euo pipefail
-          UA='Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1'
-          curl -L --compressed --max-time 30 -A "$UA" -o main.js https://hstv.life/main.531783010be35308.js
+          curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o main.js https://hstv.life/main.531783010be35308.js
           python3 - <<'PY'
           import re
           s=open('main.js','r',encoding='utf-8',errors='ignore').read()
-          terms=[
-            'hstv.life',
-            'currentAppHost',
-            'videoType',
-            '"/videos"',
-            "'/videos'",
-            '/video/myfavs',
-            'v2.pinecdn.com',
-            'v2.xchina',
-            'v2.cdn199.com',
-            'v2.kekecdn.net',
-            '1024videos.io',
-            'getVideos',
-            'loadVideos',
-            'videoList',
-            'searchVideos',
-            'HttpClient'
-          ]
-          for term in terms:
-              print('\n===== TERM',term,'=====')
-              hits=list(re.finditer(re.escape(term),s,re.I))
-              print('count=',len(hits))
-              for n,m in enumerate(hits[:20]):
-                  a=max(0,m.start()-900)
-                  b=min(len(s),m.end()+1800)
-                  frag=s[a:b].replace('\n',' ')
-                  print('\n--- HIT',n+1,'---\n',frag)
-          print('\n===== STRING LITERALS WITH API WORDS =====')
-          lits=re.findall(r'["\']([^"\']{1,180})["\']',s)
-          seen=set()
-          for x in lits:
-              if x in seen: continue
-              if re.search(r'(videos?|search|category|tag|play|stream|api|host|domain)',x,re.I):
-                  seen.add(x)
-                  print(x)
-                  if len(seen)>=800: break
+
+          for term in ['getHttpRequest','postHttpRequest','http.get(','http.post(','increaseCount','m3u8s','thumbnails','createdTime','videoType','keyword','search_term_string']:
+              print('\n===== ',term,' =====')
+              for n,m in enumerate(re.finditer(re.escape(term),s,re.I)):
+                  if n>=80: break
+                  a=max(0,m.start()-1200)
+                  b=min(len(s),m.end()+2400)
+                  print('\n---',n+1,'---\n',s[a:b].replace('\n',' '))
+
+          print('\n===== PATH LITERALS =====')
+          vals=[]
+          for m in re.finditer(r'["\'](/[^"\']{1,120})["\']',s):
+              x=m.group(1)
+              if x not in vals:
+                  vals.append(x)
+          for x in vals:
+              print(x)
+
+          print('\n===== QUERY PARAM OBJECT KEYS AROUND videoType =====')
+          for m in list(re.finditer('videoType',s,re.I))[:60]:
+              a=max(0,m.start()-1600); b=min(len(s),m.end()+3200)
+              print('\nCTX\n',s[a:b].replace('\n',' '))
           PY
