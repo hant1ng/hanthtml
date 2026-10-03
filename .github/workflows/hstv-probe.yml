@@ -13,34 +13,49 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch HSTV app bundle
+      - name: Inspect HSTV bundle contexts
         shell: bash
         run: |
           set -euo pipefail
           UA='Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1'
           curl -L --compressed --max-time 30 -A "$UA" -o main.js https://hstv.life/main.531783010be35308.js
-          echo '=== JS SIZE ==='
-          wc -c main.js
-          echo '=== ABSOLUTE URLS ==='
-          grep -oE 'https?://[^"'"'"'[:space:]\\]+' main.js | sort -u | head -250 || true
-          echo '=== API-LIKE PATHS ==='
-          grep -oE '["'"'"']/[^"'"'"']*(api|video|vod|movie|search|category|tag|play|stream|home)[^"'"'"']*["'"'"']' main.js | sort -u | head -500 || true
-          echo '=== DOMAIN/HOST TOKENS ==='
-          grep -oE '[A-Za-z0-9.-]+\.(com|net|org|cc|xyz|top|tv|life|app|io|me|vip|site)' main.js | sort -u | head -300 || true
-          echo '=== INTERESTING STRING CONTEXT ==='
           python3 - <<'PY'
           import re
           s=open('main.js','r',encoding='utf-8',errors='ignore').read()
-          pats=['baseUrl','apiUrl','api','video','videos','search','playUrl','m3u8','mp4','category','home','graphql','axios','HttpClient']
-          seen=set()
-          for p in pats:
-              for m in re.finditer(p,s,re.I):
-                  a=max(0,m.start()-220); b=min(len(s),m.end()+350)
+          terms=[
+            'hstv.life',
+            'currentAppHost',
+            'videoType',
+            '"/videos"',
+            "'/videos'",
+            '/video/myfavs',
+            'v2.pinecdn.com',
+            'v2.xchina',
+            'v2.cdn199.com',
+            'v2.kekecdn.net',
+            '1024videos.io',
+            'getVideos',
+            'loadVideos',
+            'videoList',
+            'searchVideos',
+            'HttpClient'
+          ]
+          for term in terms:
+              print('\n===== TERM',term,'=====')
+              hits=list(re.finditer(re.escape(term),s,re.I))
+              print('count=',len(hits))
+              for n,m in enumerate(hits[:20]):
+                  a=max(0,m.start()-900)
+                  b=min(len(s),m.end()+1800)
                   frag=s[a:b].replace('\n',' ')
-                  key=frag[:180]
-                  if key in seen: continue
-                  seen.add(key)
-                  print('\n---',p,'---\n',frag)
-                  if len(seen)>=120:
-                      raise SystemExit
+                  print('\n--- HIT',n+1,'---\n',frag)
+          print('\n===== STRING LITERALS WITH API WORDS =====')
+          lits=re.findall(r'["\']([^"\']{1,180})["\']',s)
+          seen=set()
+          for x in lits:
+              if x in seen: continue
+              if re.search(r'(videos?|search|category|tag|play|stream|api|host|domain)',x,re.I):
+                  seen.add(x)
+                  print(x)
+                  if len(seen)>=800: break
           PY
