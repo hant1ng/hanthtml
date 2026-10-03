@@ -12,74 +12,46 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Test HSTV production API
+      - name: Extract HSTV config module
         shell: bash
         run: |
           set -euo pipefail
-          cat > body.json <<'JSON'
-          {
-            "deviceInfo": {},
-            "app": "hstv.life",
-            "isStandalone": false,
-            "theLink": "novaluenull",
-            "uuid": "novalue",
-            "url": "/sevenVideos?page=1&type=home_hot",
-            "version": "260901"
-          }
-          JSON
+          curl -L --compressed --max-time 30 -A 'Mozilla/5.0' -o main.js https://hstv.life/main.531783010be35308.js
+          python3 - <<'PY'
+          import re
+          s=open('main.js','r',encoding='utf-8',errors='ignore').read()
 
-          for mode in noauth emptyauth; do
-            echo "===== MODE $mode ====="
-            if [ "$mode" = "emptyauth" ]; then
-              code=$(curl -sS -L --compressed --max-time 30 -o "resp-$mode.json" -w '%{http_code}'                 -H 'Content-Type: application/json'                 -H 'Authorization: Bearer '                 --data-binary @body.json                 https://v2.cdn199.com/js || true)
-            else
-              code=$(curl -sS -L --compressed --max-time 30 -o "resp-$mode.json" -w '%{http_code}'                 -H 'Content-Type: application/json'                 --data-binary @body.json                 https://v2.cdn199.com/js || true)
-            fi
-            echo "HTTP=$code"
-            echo "BODY:"
-            head -c 1000 "resp-$mode.json" || true
-            echo
-          done
+          # Find webpack module 5722 and print until the next module boundary.
+          starts=[]
+          for pat in [r'5722\s*\(', r'5722\s*:', r'5722\s*\{']:
+              for m in re.finditer(pat,s):
+                  starts.append(m.start())
+          print('5722 starts',starts[:20])
 
-          cat > decrypt.js <<'NODE'
-          const fs=require('fs');
-          const crypto=require('crypto');
+          for idx,start in enumerate(sorted(set(starts))[:10]):
+              # generous extraction around config module
+              print('\n===== 5722 CANDIDATE',idx+1,'=====')
+              print(s[max(0,start-1000):min(len(s),start+30000)].replace('\n',' '))
 
-          function evpBytesToKey(password, salt, keyLen, ivLen) {
-            let out=Buffer.alloc(0), prev=Buffer.alloc(0);
-            while (out.length < keyLen + ivLen) {
-              const md5=crypto.createHash('md5');
-              md5.update(prev);
-              md5.update(Buffer.from(password,'utf8'));
-              md5.update(salt);
-              prev=md5.digest();
-              out=Buffer.concat([out,prev]);
-            }
-            return {key:out.subarray(0,keyLen), iv:out.subarray(keyLen,keyLen+ivLen)};
-          }
+          print('\n===== AUTH WORD CONTEXTS =====')
+          for i,m in enumerate(re.finditer(r'auth',s,re.I)):
+              if i>=100: break
+              frag=s[max(0,m.start()-1800):min(len(s),m.end()+2600)].replace('\n',' ')
+              print('\nAUTHCTX',i+1,frag)
 
-          function decryptOpenSSL(ciphertext, password) {
-            const raw=Buffer.from(ciphertext,'base64');
-            if (raw.subarray(0,8).toString() !== 'Salted__') throw new Error('not Salted__');
-            const salt=raw.subarray(8,16);
-            const {key,iv}=evpBytesToKey(password,salt,32,16);
-            const decipher=crypto.createDecipheriv('aes-256-cbc',key,iv);
-            const plain=Buffer.concat([decipher.update(raw.subarray(16)),decipher.final()]);
-            return plain.toString('utf8');
-          }
+          print('\n===== BEARER CONTEXTS =====')
+          for i,m in enumerate(re.finditer(r'Bearer',s)):
+              if i>=30: break
+              print(s[max(0,m.start()-2500):min(len(s),m.end()+3500)].replace('\n',' '))
 
-          for (const mode of ['noauth','emptyauth']) {
-            try {
-              const body=JSON.parse(fs.readFileSync('resp-'+mode+'.json','utf8'));
-              console.log('\n===== DECRYPT '+mode+' =====');
-              if (!body.r) { console.log('NO r FIELD',body); continue; }
-              const text=decryptOpenSSL(body.r,'xxx');
-              console.log(text.slice(0,10000));
-            } catch(e) {
-              console.log('\n===== DECRYPT '+mode+' ERROR =====');
-              console.log(String(e));
-            }
-          }
-          NODE
-
-          node decrypt.js
+          print('\n===== LONG STRING LITERALS NEAR CONFIG =====')
+          # Strings that look token-like.
+          vals=[]
+          for m in re.finditer(r'["\']([A-Za-z0-9._~+\-/=]{20,500})["\']',s):
+              x=m.group(1)
+              if x in vals: continue
+              if len(x)>=24:
+                  vals.append(x)
+          for x in vals[:300]:
+              print(len(x),x)
+          PY
