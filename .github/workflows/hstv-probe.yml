@@ -13,7 +13,7 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract HSTV API call sites
+      - name: Extract HSTV auth decrypt and API routes
         shell: bash
         run: |
           set -euo pipefail
@@ -22,25 +22,56 @@ jobs:
           import re
           s=open('main.js','r',encoding='utf-8',errors='ignore').read()
 
-          for term in ['getHttpRequest','postHttpRequest','http.get(','http.post(','increaseCount','m3u8s','thumbnails','createdTime','videoType','keyword','search_term_string']:
-              print('\n===== ',term,' =====')
-              for n,m in enumerate(re.finditer(re.escape(term),s,re.I)):
-                  if n>=80: break
-                  a=max(0,m.start()-1200)
-                  b=min(len(s),m.end()+2400)
-                  print('\n---',n+1,'---\n',s[a:b].replace('\n',' '))
+          def contexts(term, limit=30, before=1800, after=3500):
+              print(f'\n===== {term} =====')
+              hits=list(re.finditer(re.escape(term),s,re.I))
+              print('count',len(hits))
+              for i,m in enumerate(hits[:limit]):
+                  a=max(0,m.start()-before); b=min(len(s),m.end()+after)
+                  print(f'\n--- HIT {i+1} ---\n{s[a:b].replace(chr(10)," ")}')
 
-          print('\n===== PATH LITERALS =====')
+          for term in [
+              'decrypt(l)',
+              'decrypt(',
+              '.decrypt(',
+              'auth=',
+              'M.auth',
+              '.auth=',
+              'version=',
+              'M.version',
+              '.version=',
+              'videoDetails(',
+              'this.videoDetails',
+              'video(l)',
+              'this.video(',
+              'queryParams.videoType',
+              'videoType:',
+              'search_term_string',
+              'searchText',
+              'searchQuery',
+              'm3u8s'
+          ]:
+              contexts(term)
+
+          print('\n===== POST ROUTES =====')
+          routes=[]
+          for m in re.finditer(r'postHttpRequest\(\s*["\']([^"\']+)["\']',s):
+              x=m.group(1)
+              if x not in routes: routes.append(x)
+          for x in routes: print(x)
+
+          print('\n===== GET ROUTES =====')
+          routes=[]
+          for m in re.finditer(r'getHttpRequest\(\s*["\']([^"\']+)["\']',s):
+              x=m.group(1)
+              if x not in routes: routes.append(x)
+          for x in routes: print(x)
+
+          print('\n===== STRING ROUTES VIDEO-ish =====')
           vals=[]
           for m in re.finditer(r'["\'](/[^"\']{1,120})["\']',s):
               x=m.group(1)
-              if x not in vals:
+              if re.search(r'(video|mtv|search|list|home|latest|recommend|seven)',x,re.I) and x not in vals:
                   vals.append(x)
-          for x in vals:
-              print(x)
-
-          print('\n===== QUERY PARAM OBJECT KEYS AROUND videoType =====')
-          for m in list(re.finditer('videoType',s,re.I))[:60]:
-              a=max(0,m.start()-1600); b=min(len(s),m.end()+3200)
-              print('\nCTX\n',s[a:b].replace('\n',' '))
+          for x in vals: print(x)
           PY
