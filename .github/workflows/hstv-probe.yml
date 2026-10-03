@@ -12,7 +12,7 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract HSTV config module
+      - name: Isolate HSTV config module
         shell: bash
         run: |
           set -euo pipefail
@@ -20,38 +20,43 @@ jobs:
           python3 - <<'PY'
           import re
           s=open('main.js','r',encoding='utf-8',errors='ignore').read()
+          marker='5722(en,ot,p){'
+          start=s.find(marker)
+          print('start',start)
+          if start<0: raise SystemExit(1)
+          brace=start+len(marker)-1
+          depth=0; quote=None; esc=False; end=None
+          for i in range(brace,len(s)):
+              ch=s[i]
+              if quote:
+                  if esc: esc=False
+                  elif ch=='\\': esc=True
+                  elif ch==quote: quote=None
+                  continue
+              if ch in ('"',"'","\x60"):
+                  quote=ch; continue
+              if ch=='{': depth+=1
+              elif ch=='}':
+                  depth-=1
+                  if depth==0:
+                      end=i+1; break
+          mod=s[start:end]
+          print('module_len',len(mod))
 
-          # Find webpack module 5722 and print until the next module boundary.
-          starts=[]
-          for pat in [r'5722\s*\(', r'5722\s*:', r'5722\s*\{']:
-              for m in re.finditer(pat,s):
-                  starts.append(m.start())
-          print('5722 starts',starts[:20])
+          print('\n=== AUTH CONTEXTS INSIDE 5722 ===')
+          hits=list(re.finditer('auth',mod,re.I))
+          print('count',len(hits))
+          for j,m in enumerate(hits):
+              print('\nAUTH',j+1,mod[max(0,m.start()-800):min(len(mod),m.end()+1600)])
 
-          for idx,start in enumerate(sorted(set(starts))[:10]):
-              # generous extraction around config module
-              print('\n===== 5722 CANDIDATE',idx+1,'=====')
-              print(s[max(0,start-1000):min(len(s),start+30000)].replace('\n',' '))
+          print('\n=== ASSIGNMENT-LIKE KEYS ===')
+          for key in ['auth','deviceInfo','language','app','version','httpName']:
+              print('\nKEY',key)
+              for m in re.finditer(r'(?:M\.)?'+re.escape(key)+r'\s*[:=]',mod):
+                  print(mod[max(0,m.start()-500):min(len(mod),m.end()+1600)])
 
-          print('\n===== AUTH WORD CONTEXTS =====')
-          for i,m in enumerate(re.finditer(r'auth',s,re.I)):
-              if i>=100: break
-              frag=s[max(0,m.start()-1800):min(len(s),m.end()+2600)].replace('\n',' ')
-              print('\nAUTHCTX',i+1,frag)
-
-          print('\n===== BEARER CONTEXTS =====')
-          for i,m in enumerate(re.finditer(r'Bearer',s)):
-              if i>=30: break
-              print(s[max(0,m.start()-2500):min(len(s),m.end()+3500)].replace('\n',' '))
-
-          print('\n===== LONG STRING LITERALS NEAR CONFIG =====')
-          # Strings that look token-like.
-          vals=[]
-          for m in re.finditer(r'["\']([A-Za-z0-9._~+\-/=]{20,500})["\']',s):
-              x=m.group(1)
-              if x in vals: continue
-              if len(x)>=24:
-                  vals.append(x)
-          for x in vals[:300]:
-              print(len(x),x)
+          print('\n=== IMPORT 5338 CONTEXT ===')
+          for m in re.finditer(r'5338',s):
+              print(s[max(0,m.start()-2500):min(len(s),m.end()+6000)])
+              break
           PY
